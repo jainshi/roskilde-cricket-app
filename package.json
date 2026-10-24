@@ -1,0 +1,44 @@
+{
+  "name": "roskilde-cricket-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-slot": "^1.1.2",
+    "argon2": "^0.41.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.475.0",
+    "next": "15.1.7",
+    "nodemailer": "^6.10.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.3",
+    "prisma": "^6.4.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6"
+  }
+}

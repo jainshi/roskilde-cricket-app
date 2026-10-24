@@ -9,11 +9,11 @@
 
 **Purpose**: Project initialization, core runtime dependencies, styling, tooling, and database engine.
 
-- [ ] T001 Initialize Next.js 15+ App Router application with TypeScript (strict mode) and Tailwind CSS in repository root
-- [ ] T002 Install core runtime dependencies (`@prisma/client`, `zod`, `argon2`, `nodemailer`, `lucide-react`, `clsx`, `tailwind-merge`) and dev dependencies (`prisma`, `vitest`, `@types/nodemailer`, `@types/node`) in `package.json`
-- [ ] T003 [P] Configure TypeScript strict settings (`"strict": true`, `"noImplicitAny": true`) in `tsconfig.json`
-- [ ] T004 [P] Initialize shadcn/ui components architecture and add baseline UI primitives (button, input, label, card, dialog, dropdown-menu, select, checkbox) under `src/components/ui/`
-- [ ] T005 [P] Setup Vitest unit testing framework configuration in `vitest.config.ts`
+- [X] T001 Initialize Next.js 15+ App Router application with TypeScript (strict mode) and Tailwind CSS in repository root
+- [X] T002 Install core runtime dependencies (`@prisma/client`, `zod`, `argon2`, `nodemailer`, `lucide-react`, `clsx`, `tailwind-merge`) and dev dependencies (`prisma`, `vitest`, `@types/nodemailer`, `@types/node`) in `package.json`
+- [X] T003 [P] Configure TypeScript strict settings (`"strict": true`, `"noImplicitAny": true`) in `tsconfig.json`
+- [X] T004 [P] Initialize shadcn/ui components architecture and add baseline UI primitives (button, input, label, card, dialog, dropdown-menu, select, checkbox) under `src/components/ui/`
+- [X] T005 [P] Setup Vitest unit testing framework configuration in `vitest.config.ts`
 
 ---
 
