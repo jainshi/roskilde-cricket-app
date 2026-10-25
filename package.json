@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test:unit": "vitest run",
+    "postinstall": "prisma generate",
     "db:seed": "prisma db seed",
     "seed:inventory": "tsx scripts/seed-inventory.ts",
     "seed:users": "tsx scripts/seed-users.ts"
