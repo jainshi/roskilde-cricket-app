@@ -1,5 +1,9 @@
 import * as argon2 from "argon2";
 import crypto from "crypto";
+import {
+  getFailedPasswordRules,
+  type PasswordRule,
+} from "@/modules/auth-rbac/domain/password-rules";
 
 // Unambiguous character set (no 0/O, 1/I/l) to avoid transcription errors
 const UNAMBIGUOUS_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -51,31 +55,27 @@ export function generateTemporaryPassword(length = 8): string {
  * - Lowercase letter
  * - Digit
  * - Special symbol
+ *
+ * Rule evaluation is delegated to the shared pure module so the client-side
+ * checklist and server-side enforcement can never drift apart.
  */
+const RULE_MESSAGES: Record<PasswordRule, string> = {
+  MIN_LENGTH: "Password must be at least 8 characters long.",
+  UPPERCASE: "Password must contain at least one uppercase letter.",
+  LOWERCASE: "Password must contain at least one lowercase letter.",
+  DIGIT: "Password must contain at least one digit.",
+  SYMBOL: "Password must contain at least one symbol.",
+};
+
 export function validatePasswordComplexity(password: string): {
   isValid: boolean;
   errors: string[];
+  failedRules: PasswordRule[];
 } {
-  const errors: string[] = [];
-
-  if (password.length < 8) {
-    errors.push("Password must be at least 8 characters long.");
-  }
-  if (!/[A-Z]/.test(password)) {
-    errors.push("Password must contain at least one uppercase letter.");
-  }
-  if (!/[a-z]/.test(password)) {
-    errors.push("Password must contain at least one lowercase letter.");
-  }
-  if (!/[0-9]/.test(password)) {
-    errors.push("Password must contain at least one digit.");
-  }
-  if (!/[^A-Za-z0-9]/.test(password)) {
-    errors.push("Password must contain at least one symbol.");
-  }
-
+  const failedRules = getFailedPasswordRules(password);
   return {
-    isValid: errors.length === 0,
-    errors,
+    isValid: failedRules.length === 0,
+    errors: failedRules.map((rule) => RULE_MESSAGES[rule]),
+    failedRules,
   };
 }

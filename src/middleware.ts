@@ -26,16 +26,11 @@ export async function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
-  // If unauthenticated and trying to access a protected path, redirect to signin
+  // Unauthenticated access to protected path
   if (!sessionToken && !isPublicPath && pathname !== "/") {
     const signInUrl = new URL("/signin", request.url);
     signInUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(signInUrl);
-  }
-
-  // If authenticated and visiting signin, redirect to dashboard
-  if (sessionToken && pathname === "/signin") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

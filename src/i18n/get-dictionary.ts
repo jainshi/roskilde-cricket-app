@@ -18,3 +18,15 @@ export function getDictionary(locale?: string): Dictionary {
   }
   return dictionaries.en;
 }
+
+/**
+ * Replaces `{key}` placeholders in a template string with provided values.
+ */
+export function formatMessage(
+  template: string,
+  vars: Record<string, string | number>
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) => {
+    return vars[key] !== undefined ? String(vars[key]) : `{${key}}`;
+  });
+}

@@ -8,20 +8,124 @@
     "cancel": "Annuller",
     "dashboard": "Oversigt",
     "directory": "Medlemsliste",
-    "profile": "Profil"
+    "profile": "Profil",
+    "admin": "Administration",
+    "members": "Medlemmer",
+    "loading": "Indlæser...",
+    "submitting": "Gemmer...",
+    "back": "Tilbage"
+  },
+  "roles": {
+    "ADMIN": "Administrator",
+    "COACH": "Træner",
+    "AD_HOC_COACH": "Ad-Hoc Træner",
+    "PLAYER": "Spiller",
+    "PARENT": "Forælder"
   },
   "auth": {
+    "title": "Medlemslogin",
+    "subtitle": "Få adgang til Roskilde Cricket Clubs medlemsportal",
     "emailLabel": "E-mailadresse",
     "passwordLabel": "Adgangskode",
-    "temporaryPasswordNotice": "Du skal oprette en ny sikker adgangskode, før du kan fortsætte.",
+    "submitSignIn": "Log ind på RCC",
+    "temporaryPasswordNotice": "Du er logget ind med en midlertidig adgangskode. Du skal oprette en ny sikker adgangskode for at fortsætte.",
     "newPasswordLabel": "Ny adgangskode",
     "confirmPasswordLabel": "Bekræft ny adgangskode",
     "forgotPasswordPrompt": "Glemt din adgangskode?",
-    "resetPasswordTitle": "Nulstil adgangskode",
+    "resetPasswordTitle": "Obligatorisk nulstilling af adgangskode",
+    "resetPasswordSubtitle": "Opret venligst en ny adgangskode, som opfylder klubbens sikkerhedskrav",
     "setPasswordButton": "Gem adgangskode og fortsæt",
     "gdprConsentTitle": "Privatlivs- og samtykkepolitik",
-    "gdprConsentBody": "Roskilde Cricket Club beskytter dine data. Ved at fortsætte accepterer du klubbens håndtering i henhold til GDPR.",
-    "gdprConsentButton": "Jeg accepterer"
+    "gdprConsentSubtitle": "Version {version} — Påkrævet for portaladgang",
+    "gdprConsentBody": "Roskilde Cricket Club behandler dine personoplysninger for at administrere medlemskaber, kampe og klubkommunikation i henhold til GDPR.",
+    "gdprConsentCheckbox": "Jeg har læst og accepterer RCCs privatlivspolitik og giver samtykke til databehandling.",
+    "gdprConsentButton": "Jeg accepterer og fortsætter",
+    "minorAwaitingConsentTitle": "Forældre-/værgesamtykke påkrævet",
+    "minorAwaitingConsentBody": "Da du er under 18 år, skal en tilknyttet forælder eller værge logge ind og give GDPR-samtykke, før din konto kan benyttes.",
+    "passwordRules": {
+      "title": "Krav til adgangskode:",
+      "MIN_LENGTH": "Mindst 8 tegn",
+      "UPPERCASE": "Mindst ét stort bogstav (A-Z)",
+      "LOWERCASE": "Mindst ét lille bogstav (a-z)",
+      "DIGIT": "Mindst ét tal (0-9)",
+      "SYMBOL": "Mindst ét specialtegn (!@#$%...)"
+    },
+    "errors": {
+      "invalidCredentials": "Ugyldig e-mail eller adgangskode.",
+      "accountLocked": "Kontoen er midlertidigt låst pga. for mange mislykkede loginforsøg. Prøv igen om 15 minutter.",
+      "invitationExpired": "Den midlertidige invitationsadgangskode er udløbet. Kontakt venligst klubbens administrator for en ny invitation.",
+      "accountDeactivated": "Denne konto er deaktiveret. Kontakt venligst klubadministrationen.",
+      "passwordsDoNotMatch": "Adgangskoderne stemmer ikke overens.",
+      "sameAsCurrentPassword": "Den nye adgangskode skal være forskellig fra den nuværende midlertidige adgangskode.",
+      "genericError": "Der opstod en uventet fejl. Prøv venligst igen.",
+      "consentRequired": "Du skal markere feltet for at acceptere privatlivspolitikken."
+    }
+  },
+  "dashboard": {
+    "welcome": "Velkommen tilbage, {name}",
+    "portalBadge": "RCC Medlemsportal",
+    "yourRoles": "Dine roller",
+    "quickActions": "Hurtige handlinger",
+    "adminTools": "Klubadministration",
+    "onboardMember": "Opret nyt medlem",
+    "onboardMemberDesc": "Registrer en ny spiller, træner, forælder eller administrator og opret login."
+  },
+  "admin": {
+    "onboarding": {
+      "title": "Opret nyt medlem",
+      "subtitle": "Opret en medlemsprofil og tilknyt eventuelt loginadgang til portalen",
+      "personalDetails": "Personlige oplysninger",
+      "firstName": "Fornavn",
+      "lastName": "Efternavn",
+      "email": "E-mailadresse",
+      "phone": "Telefonnummer",
+      "dateOfBirth": "Fødselsdato",
+      "categoryTitle": "Medlemsklassifikation",
+      "categoryAdultPlayer": "Senior- / Voksenmedlem (18+ år)",
+      "categoryAdultPlayerDesc": "Selvstændig spiller/træner/administrator med eget login. Ingen forældretilknytning påkrævet.",
+      "categoryYouthPlayer": "Ungdomsspiller (<18 år)",
+      "categoryYouthPlayerDesc": "Under 13 år har intet login (administreres af forældre). Unge 13-17 år kan eventuelt have eget spillerlogin. Kan tilknyttes op til 2 forældre.",
+      "categoryUnder13": "Ungdomsspiller (Under 13 år)",
+      "categoryUnder13Desc": "Børn under 13 år kan ikke have loginadgang. Profilen administreres udelukkende af tilknyttede forældre.",
+      "rolesTitle": "Tilknyttede roller",
+      "rolesSubtitle": "Voksne kan have enhver kombination af roller. Unge (<18) er begrænset til kun at have Spiller-rollen.",
+      "credentialsTitle": "Portal loginoplysninger",
+      "grantLogin": "Giv medlemmet adgang til at logge ind i portalen",
+      "grantLoginHelp": "Genererer en 6-8 tegns midlertidig adgangskode og sender en invitations-e-mail. Kræver e-mailadresse og alder 13+.",
+      "parentsTitle": "Forældre- og værgetilknytning (Maks 2)",
+      "parentsSubtitle": "Ungdoms- og juniorspillere skal tilknyttes mindst én forælder. Opret direkte eller vælg et eksisterende medlem.",
+      "parent1Title": "Primær forælder / værge (Påkrævet)",
+      "parent2Title": "Sekundær forælder / værge (Valgfrit)",
+      "parentModeExisting": "Vælg eksisterende medlem",
+      "parentModeNew": "Opret ny forælder direkte",
+      "relationshipLabel": "Relation (f.eks. Mor, Far, Værge)",
+      "selectParentPlaceholder": "Vælg et klubmedlem...",
+      "successParentsNotified": "Invitations-e-mails er sendt til nyoprettede forældre.",
+      "submitButton": "Opret medlemsprofil",
+      "successTitle": "Medlem oprettet!",
+      "successEmailSent": "En invitations-e-mail med midlertidige loginoplysninger er sendt til {email}.",
+      "successNoCredentials": "Medlemsprofil oprettet uden loginadgang.",
+      "createAnother": "Opret et nyt medlem"
+    },
+    "errors": {
+      "EMAIL_IN_USE": "Et medlem med denne e-mailadresse findes allerede.",
+      "PARENT_EMAIL_IN_USE": "En forælder med denne e-mailadresse findes allerede.",
+      "PARENT_1_REQUIRED": "Ungdomsspillere skal have mindst én tilknyttet forælder eller værge.",
+      "SAME_PARENT_SLOTS": "Du kan ikke vælge det samme medlem for både Forælder 1 og Forælder 2.",
+      "PLAYER_REQUIRES_DOB": "Fødselsdato er påkrævet for medlemmer med Spiller-rollen.",
+      "DOB_IN_FUTURE": "Fødselsdato kan ikke være i fremtiden.",
+      "MINOR_ROLES_RESTRICTED": "Unge under 18 år må kun have Spiller-rollen.",
+      "LOGIN_REQUIRES_EMAIL": "En e-mailadresse er påkrævet for at give loginadgang.",
+      "LOGIN_REQUIRES_AGE_13": "Børn under 13 år kan ikke have loginadgang til portalen.",
+      "SAVE_FAILED": "Kunne ikke oprette medlemmet. Kontroller venligst oplysningerne og prøv igen."
+    }
+  },
+  "validation": {
+    "required": "Dette felt er påkrævet.",
+    "invalidEmail": "Indtast venligst en gyldig e-mailadresse.",
+    "invalidDate": "Indtast venligst en gyldig dato (YYYY-MM-DD).",
+    "rolesRequired": "Vælg mindst én rolle.",
+    "tooLong": "Feltet overskrider den tilladte længde."
   },
   "profile": {
     "personalInfo": "Personlige oplysninger",
@@ -29,5 +133,16 @@
     "kitSizes": "Klubtøj og udstyr",
     "emergencyContact": "Nødkontakt",
     "privacySettings": "Privatlivsindstillinger"
+  },
+  "emails": {
+    "invitation": {
+      "subject": "Velkommen til Roskilde Cricket Club - Kontoaktivering",
+      "greeting": "Hej {firstName},",
+      "intro": "Der er oprettet en konto til dig hos Roskilde Cricket Club.",
+      "instructions": "Log ind med din midlertidige adgangskode nedenfor inden for {days} dage. Du vil blive bedt om at vælge en permanent adgangskode ved første login.",
+      "tempPasswordLabel": "Midlertidig adgangskode:",
+      "signInButton": "Log ind på portalen",
+      "urlFallback": "Eller gå til: {signInUrl}"
+    }
   }
 }

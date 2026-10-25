@@ -31,6 +31,12 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        "club-blue": {
+          DEFAULT: "#0ea5e9",
+          hover: "#0284c7",
+          light: "#e0f2fe",
+          dark: "#0c2340",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",

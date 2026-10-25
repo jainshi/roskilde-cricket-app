@@ -42,18 +42,18 @@
 **Independent Test**: Create adult member with login access; verify temporary credentials email log; authenticate; verify forced redirect to password reset; submit valid password; accept GDPR privacy consent; verify dashboard arrival.
 
 ### Tests for User Story 1
-- [ ] T013 [P] [US1] Unit tests for password complexity validator and CSPRNG temporary password rules in `tests/unit/password-validation.test.ts`
-- [ ] T014 [P] [US1] Unit test for first-login reset gate and activation flow state transitions in `tests/unit/account-activation.test.ts`
+- [X] T013 [P] [US1] Unit tests for password complexity validator and CSPRNG temporary password rules in `tests/unit/password-validation.test.ts`
+- [X] T014 [P] [US1] Unit test for first-login reset gate and activation flow state transitions in `tests/unit/account-activation.test.ts`
 
 ### Implementation for User Story 1
-- [ ] T015 [P] [US1] Implement Zod schemas for member onboarding and password reset matching contracts in `src/modules/auth-rbac/contracts/schemas.ts`
-- [ ] T016 [US1] Implement member creation and credential provisioning service in `src/modules/auth-rbac/services/onboarding.service.ts`
-- [ ] T017 [US1] Implement user authentication, temporary credential verification, and account lockout after 5 failed attempts in `src/modules/auth-rbac/services/auth.service.ts`
-- [ ] T018 [US1] Create sign-in page UI (`/signin`) with username/password form and error handling in `src/app/(auth)/signin/page.tsx`
-- [ ] T019 [US1] Create mandatory password reset page UI (`/reset-password`) enforcing complexity rules in `src/app/(auth)/reset-password/page.tsx`
-- [ ] T020 [US1] Create GDPR consent modal / gate step and consent record persistence in `src/components/gdpr-consent-gate.tsx`
-- [ ] T021 [US1] Create Admin member onboarding form page (`/admin/members/new`) with credentials toggle in `src/app/(dashboard)/admin/members/new/page.tsx`
-- [ ] T022 [US1] Create baseline authenticated dashboard page in `src/app/(dashboard)/dashboard/page.tsx`
+- [X] T015 [P] [US1] Implement Zod schemas for member onboarding and password reset matching contracts in `src/modules/auth-rbac/contracts/schemas.ts`
+- [X] T016 [US1] Implement member creation and credential provisioning service in `src/modules/auth-rbac/services/onboarding.service.ts`
+- [X] T017 [US1] Implement user authentication, temporary credential verification, and account lockout after 5 failed attempts in `src/modules/auth-rbac/services/auth.service.ts`
+- [X] T018 [US1] Create sign-in page UI (`/signin`) with username/password form and error handling in `src/app/(auth)/signin/page.tsx`
+- [X] T019 [US1] Create mandatory password reset page UI (`/reset-password`) enforcing complexity rules in `src/app/(auth)/reset-password/page.tsx`
+- [X] T020 [US1] Create GDPR consent modal / gate step and consent record persistence in `src/components/gdpr-consent-gate.tsx`
+- [X] T021 [US1] Create Admin member onboarding form page (`/admin/members/new`) with credentials toggle in `src/app/(dashboard)/admin/members/new/page.tsx`
+- [X] T022 [US1] Create baseline authenticated dashboard page in `src/app/(dashboard)/dashboard/page.tsx`
 
 **Checkpoint**: User Story 1 is functional as a standalone MVP slice.
 

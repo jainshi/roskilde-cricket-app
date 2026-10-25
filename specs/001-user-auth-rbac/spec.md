@@ -354,8 +354,10 @@ sign in and their personal data no longer appears anywhere.
 #### Parent-Child Association & Contact Resolution
 
 - **FR-030**: System MUST link Parent-role members to youth Player profiles. A parent MAY be linked
-  to any number of youth; a youth MUST be linked to at most 2 parents. A duplicate link or a third
-  parent link MUST be refused with an explanatory message.
+  to any number of youth; a player MUST have 0..2 linked parents:
+  - **Adult / Senior Players** (age ≥ 18) MUST have `0` linked parents and manage their own profile and credentials independently.
+  - **Youth / Minor Players** (age < 18) MAY be linked to `1..2` parents (strictly capped at 2 parents per youth).
+  A duplicate link or a third parent link MUST be refused with an explanatory message.
 - **FR-031**: Parent-child links MUST be created and removed only by Admins. Parents MUST NOT be
   able to create, claim, or remove links; they manage linked youth data as described in FR-032.
 - **FR-032**: Linked parents MUST be able to view and edit their linked youth's profile details,

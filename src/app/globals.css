@@ -13,57 +13,59 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Roskilde Cricket Club Burgundy & Gold identity palette */
-    --primary: 348 83% 47%;
-    --primary-foreground: 210 40% 98%;
+    /* Roskilde Cricket Club Official Identity Palette (roskildecricket.dk) */
+    /* Primary: Sky / Club Blue (#0ea5e9 -> hsl 199 89% 48%) */
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 43 96% 56%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary / Dark Navy: Deep Club Navy (#0c2340 -> hsl 213 68% 15%) */
+    --secondary: 213 68% 15%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 204 100% 97%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 204 100% 95%;
+    --accent-foreground: 213 68% 15%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 348 83% 47%;
+    --ring: 199 89% 48%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 213 68% 10%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 213 68% 13%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 213 68% 13%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 348 83% 47%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 43 96% 56%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 213 68% 22%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 215 28% 17%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 215 28% 20%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 348 83% 47%;
+    --border: 215 28% 18%;
+    --input: 215 28% 18%;
+    --ring: 199 89% 48%;
   }
 }
 

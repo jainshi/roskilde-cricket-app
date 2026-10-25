@@ -151,7 +151,9 @@ Join model supporting compound roles across the 5 predefined roles.
 ---
 
 #### `ParentChildLink`
-Links Parent-role members to youth Player profiles. Strictly capped at 2 parents per youth.
+Links Parent-role members to youth Player profiles. Strictly 0..2 parents per player:
+- **Adult / Senior Players** (e.g., Senior 1st XI, Senior 2nd XI, Social XI) have `0` parent links. They maintain their own independent profile, contact details, and `UserAccount` login credentials.
+- **Youth / Minor Players** (<18) have `1..2` parent links (strictly capped at 2 parents per youth).
 
 | Field | Type | Attributes | Description |
 | :--- | :--- | :--- | :--- |
@@ -163,7 +165,7 @@ Links Parent-role members to youth Player profiles. Strictly capped at 2 parents
 | `createdAt` | `DateTime` | `@default(now())` | Link creation timestamp. |
 
 - **Constraints**:
-  - `@@unique([playerId, slot])`: Enforces maximum 2 parents per youth at database level.
+  - `@@unique([playerId, slot])`: Enforces maximum 2 parents per youth at database level (slots 1 and 2 only).
   - `@@unique([playerId, parentId])`: Prevents duplicate links for the same parent-player pair.
 
 ---

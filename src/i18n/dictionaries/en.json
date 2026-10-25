@@ -8,20 +8,124 @@
     "cancel": "Cancel",
     "dashboard": "Dashboard",
     "directory": "Member Directory",
-    "profile": "Profile"
+    "profile": "Profile",
+    "admin": "Admin",
+    "members": "Members",
+    "loading": "Loading...",
+    "submitting": "Submitting...",
+    "back": "Back"
+  },
+  "roles": {
+    "ADMIN": "Admin",
+    "COACH": "Coach",
+    "AD_HOC_COACH": "Ad-Hoc Coach",
+    "PLAYER": "Player",
+    "PARENT": "Parent"
   },
   "auth": {
+    "title": "Member Sign In",
+    "subtitle": "Access your Roskilde Cricket Club member portal",
     "emailLabel": "Email Address",
     "passwordLabel": "Password",
-    "temporaryPasswordNotice": "You must set a new secure password before accessing the club portal.",
+    "submitSignIn": "Sign In to RCC",
+    "temporaryPasswordNotice": "You are logging in with a temporary password. You must set a new secure password before accessing the club portal.",
     "newPasswordLabel": "New Password",
     "confirmPasswordLabel": "Confirm New Password",
     "forgotPasswordPrompt": "Forgot your password?",
-    "resetPasswordTitle": "Reset Password",
+    "resetPasswordTitle": "Mandatory Password Reset",
+    "resetPasswordSubtitle": "Please set a new password that meets club security requirements",
     "setPasswordButton": "Set Password & Continue",
     "gdprConsentTitle": "Club Privacy & Data Consent",
-    "gdprConsentBody": "Roskilde Cricket Club protects member privacy. By continuing, you agree to our GDPR data management policy.",
-    "gdprConsentButton": "I Agree & Accept"
+    "gdprConsentSubtitle": "Version {version} — Required for portal access",
+    "gdprConsentBody": "Roskilde Cricket Club processes your personal data to administer memberships, fixtures, and club communications in accordance with Danish and European data protection laws (GDPR).",
+    "gdprConsentCheckbox": "I have read and agree to the RCC privacy policy and consent to data processing for club activities.",
+    "gdprConsentButton": "I Agree & Continue",
+    "minorAwaitingConsentTitle": "Parent/Guardian Consent Required",
+    "minorAwaitingConsentBody": "Because you are under 18, a linked parent or guardian must sign in and provide GDPR consent before your account can be used.",
+    "passwordRules": {
+      "title": "Password Requirements:",
+      "MIN_LENGTH": "At least 8 characters",
+      "UPPERCASE": "At least one uppercase letter (A-Z)",
+      "LOWERCASE": "At least one lowercase letter (a-z)",
+      "DIGIT": "At least one digit (0-9)",
+      "SYMBOL": "At least one symbol (!@#$%...)"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password.",
+      "accountLocked": "Account temporarily locked due to multiple failed login attempts. Please try again in 15 minutes.",
+      "invitationExpired": "Temporary invitation password has expired. Please contact a club administrator for a new invite.",
+      "accountDeactivated": "This account is inactive. Please contact club administration.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "sameAsCurrentPassword": "New password must be different from your current temporary password.",
+      "genericError": "An unexpected error occurred. Please try again.",
+      "consentRequired": "You must check the box to accept the privacy policy."
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {name}",
+    "portalBadge": "RCC Member Portal",
+    "yourRoles": "Your Roles",
+    "quickActions": "Quick Actions",
+    "adminTools": "Club Administration",
+    "onboardMember": "Onboard New Member",
+    "onboardMemberDesc": "Register a new player, coach, parent, or admin and provision credentials."
+  },
+  "admin": {
+    "onboarding": {
+      "title": "Onboard New Member",
+      "subtitle": "Create a club member profile and optionally provision portal login access",
+      "personalDetails": "Personal Details",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "dateOfBirth": "Date of Birth",
+      "categoryTitle": "Member Profile Classification",
+      "categoryAdultPlayer": "Adult / Senior Member (Age 18+)",
+      "categoryAdultPlayerDesc": "Standalone player/coach/admin with independent credentials. No parent linkage required.",
+      "categoryYouthPlayer": "Youth Player (<18)",
+      "categoryYouthPlayerDesc": "Under 13 has no login (managed by parents). Ages 13–17 can optionally receive Player login credentials. Linkable to up to 2 parents.",
+      "categoryUnder13": "Youth Player (Under 13)",
+      "categoryUnder13Desc": "Under 13 cannot have login credentials. Profile is managed exclusively by linked parents.",
+      "rolesTitle": "Assigned Roles",
+      "rolesSubtitle": "Adults can hold any combination of roles. Minors (<18) are restricted to Player role only.",
+      "credentialsTitle": "Portal Login Credentials",
+      "grantLogin": "Grant member access to sign in to the portal",
+      "grantLoginHelp": "Generates a 6-8 character temporary password and dispatches an invitation email. Requires email address and age 13+.",
+      "parentsTitle": "Parent & Guardian Links (Max 2)",
+      "parentsSubtitle": "Youth and minor players must be linked to at least one parent. Create inline or link an existing member.",
+      "parent1Title": "Primary Parent / Guardian (Required)",
+      "parent2Title": "Secondary Parent / Guardian (Optional)",
+      "parentModeExisting": "Select Existing Member",
+      "parentModeNew": "Create New Parent Inline",
+      "relationshipLabel": "Relationship (e.g. Mother, Father, Guardian)",
+      "selectParentPlaceholder": "Choose a club member...",
+      "successParentsNotified": "Account invitations dispatched to newly created parents.",
+      "submitButton": "Create Member Profile",
+      "successTitle": "Member Created Successfully!",
+      "successEmailSent": "An invitation email with temporary credentials was dispatched to {email}.",
+      "successNoCredentials": "Member profile registered without login credentials.",
+      "createAnother": "Onboard Another Member"
+    },
+    "errors": {
+      "EMAIL_IN_USE": "A member with this email address already exists.",
+      "PARENT_EMAIL_IN_USE": "A parent with this email already exists.",
+      "PARENT_1_REQUIRED": "Youth/minor players must have at least one linked parent/guardian.",
+      "SAME_PARENT_SLOTS": "You cannot select the same member for both Parent 1 and Parent 2.",
+      "PLAYER_REQUIRES_DOB": "Date of birth is required for members assigned the Player role.",
+      "DOB_IN_FUTURE": "Date of birth cannot be in the future.",
+      "MINOR_ROLES_RESTRICTED": "Minors under 18 years old can only hold the Player role.",
+      "LOGIN_REQUIRES_EMAIL": "An email address is required to grant portal login credentials.",
+      "LOGIN_REQUIRES_AGE_13": "Youth under 13 cannot have portal login credentials.",
+      "SAVE_FAILED": "Failed to create member. Please verify the information and try again."
+    }
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalidEmail": "Please enter a valid email address.",
+    "invalidDate": "Please enter a valid date (YYYY-MM-DD).",
+    "rolesRequired": "Select at least one role.",
+    "tooLong": "Input exceeds maximum allowed length."
   },
   "profile": {
     "personalInfo": "Personal Information",
@@ -29,5 +133,16 @@
     "kitSizes": "Apparel & Kit",
     "emergencyContact": "Emergency Contact",
     "privacySettings": "Directory Privacy"
+  },
+  "emails": {
+    "invitation": {
+      "subject": "Welcome to Roskilde Cricket Club - Account Activation",
+      "greeting": "Hello {firstName},",
+      "intro": "An account has been created for you at Roskilde Cricket Club.",
+      "instructions": "Please sign in using your temporary password below within {days} days. You will be prompted to choose a permanent password upon first sign in.",
+      "tempPasswordLabel": "Temporary Password:",
+      "signInButton": "Sign In to Portal",
+      "urlFallback": "Or navigate to: {signInUrl}"
+    }
   }
 }

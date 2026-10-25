@@ -10,6 +10,8 @@ export interface ActiveSessionData {
   userAccountId: string;
   memberProfileId: string;
   email: string;
+  firstName: string;
+  lastName: string;
   mustResetPassword: boolean;
   isAnonymized: boolean;
   roles: Role[];
@@ -88,6 +90,8 @@ export async function validateSession(
     userAccountId: userAccount.id,
     memberProfileId: userAccount.memberProfile.id,
     email: userAccount.email,
+    firstName: userAccount.memberProfile.isAnonymized ? "Member" : userAccount.memberProfile.firstName,
+    lastName: userAccount.memberProfile.isAnonymized ? "" : userAccount.memberProfile.lastName,
     mustResetPassword: userAccount.mustResetPassword,
     isAnonymized: userAccount.memberProfile.isAnonymized,
     roles,
