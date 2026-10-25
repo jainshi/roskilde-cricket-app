@@ -8,6 +8,16 @@
 
 **Input**: User description: "Create and checkout a new feature branch named 003-teams-matches-scheduling from master, and specify Module 3: Teams, Squads, Training & Match Scheduling for the Roskilde Cricket Club web application (adhering to Constitution v1.1.0 and integrating with Module 1 001-user-auth-rbac and Module 2 002-inventory-equipment-management)"
 
+## Clarifications
+
+### Session 2026-10-25
+
+- Q: How should the system handle match squad lineup sizes across different categories (senior league, youth, friendlies)? → A: Configurable lineup size per match type (defaults to 11 for Senior League, customizable 8–12 for Youth and Friendlies).
+- Q: How should availability (RSVP) be initialized for recurring training sessions vs competitive matches? → A: Explicit RSVP for matches (starts as NO_RESPONSE); training sessions require explicit RSVP as well.
+- Q: When a facility collision occurs (e.g., overlapping pitch or net booking), should the system allow conflict overrides? → A: Strict blocking for regular coaches, but allow club Administrators to override with an explicit warning acknowledgment.
+- Q: What age filter and export format should be used for the Danish Folkeoplysning municipal attendance report? → A: All club members regardless of age included in the municipal attendance export.
+- Q: Should live ball-by-ball match scoring be included in Module 3, or deferred to Module 4? → A: Strictly event lifecycle only (SCHEDULED, PLAYED, RAINED_OUT, CANCELLED) with zero score recording. Match scoring is permanently out of scope for the entire app (handled in an external scoring app); allow an optional external scorecard URL link on fixtures if needed.
+
 ---
 
 ## User Scenarios & Testing *(mandatory)*
@@ -44,7 +54,7 @@ So that team members have clear schedules, facility collisions (e.g., two teams 
 **Acceptance Scenarios**:
 
 1. **Given** a Coach scheduling a league fixture for the 1st XI, **When** they specify date, match start time (13:00), meet time (12:00), home venue, opponent "Svanholm CC", and select "Poppelgårdsvej Main Pitch", **Then** the fixture is created, published to squad members, and reserved on the facility schedule.
-2. **Given** an existing fixture booked on "Poppelgårdsvej Main Pitch" on Saturday at 13:00, **When** another Coach attempts to schedule a 2nd XI friendly or training session on the same pitch during the overlapping time slot, **Then** the system detects the facility conflict, highlights the collision, and blocks creation until an alternative facility or time is selected.
+2. **Given** an existing fixture booked on "Poppelgårdsvej Main Pitch" on Saturday at 13:00, **When** another Coach attempts to schedule a 2nd XI friendly or training session on the same pitch during the overlapping time slot, **Then** the system detects the facility conflict, highlights the collision, and blocks creation until an alternative facility or time is selected (unless an Administrator actively confirms an override with reason).
 3. **Given** a scheduled home match fixture, **When** the assigned Coach links a match-day kit bag or bulk match balls from the club equipment inventory (Module 2), **Then** the fixture displays the linked equipment reference, enabling pitch-side checkout.
 4. **Given** an away match fixture, **When** the Coach inputs the away venue name, address, and meet time, **Then** the event clearly displays travel details and distinguishes itself visually from home ground sessions.
 
@@ -112,20 +122,20 @@ So that club attendance records are accurately tracked for Danish municipal (Fol
 - **FR-005**: System MUST allow filtering and searching squad rosters by role, age group, batting position, and bowling style (integrating with Module 1 profile attributes).
 
 #### 2. Fixtures & Training Session Scheduling
-- **FR-006**: System MUST support scheduling competitive matches with match type (`LEAGUE`, `FRIENDLY`, `CUP`, `TOURNAMENT`), opponent club name, date, start time, meet time, home/away indicator, and venue details.
+- **FR-006**: System MUST support scheduling competitive matches with match type (`LEAGUE`, `FRIENDLY`, `CUP`, `TOURNAMENT`), opponent club name, date, start time, meet time, home/away indicator, venue details, lifecycle status (`SCHEDULED`, `PLAYED`, `RAINED_OUT`, `CANCELLED`), and an optional external scorecard URL link (`scorecardUrl`).
 - **FR-007**: System MUST support scheduling training sessions with session type (`NET_PRACTICE`, `FIELDING_FITNESS`, `INDOOR_WINTER`, `OPEN_NETS`), recurring schedule patterns (e.g., every Tuesday & Thursday), date, start time, and end time.
 - **FR-008**: System MUST manage club facilities/resources (e.g., "Poppelgårdsvej Main Pitch", "Practice Nets 1-2", "Practice Nets 3-4", "Indoor Sports Hall") and track bookings per event.
-- **FR-009**: System MUST execute automated facility conflict detection, preventing two different events from reserving the same ground or facility resource during overlapping time windows.
+- **FR-009**: System MUST execute automated facility conflict detection, hard-blocking overlapping ground/facility reservations for regular Coaches, while allowing club Administrators to override with an explicit warning acknowledgment and audit rationale.
 - **FR-010**: System MUST allow Coaches to link required equipment items or bulk consumables from Module 2 (e.g., Match Ball Box, Kit Bag) to a scheduled event for 1-click pitch-side checkout.
 
 #### 3. Availability Tracking (RSVPs) & Parental Delegation
-- **FR-011**: System MUST provide a mobile-friendly 1-tap RSVP interface allowing players to indicate availability (`AVAILABLE`, `UNAVAILABLE`, `MAYBE`) with an optional note (e.g., "Arriving 15 mins late", "Need ride").
+- **FR-011**: System MUST provide a mobile-friendly 1-tap RSVP interface allowing players to indicate availability (`AVAILABLE`, `UNAVAILABLE`, `MAYBE`) with an optional note (e.g., "Arriving 15 mins late", "Need ride"). All scheduled events (both competitive matches and training sessions) MUST initialize rostered squad members with an explicit `NO_RESPONSE` status upon publication.
 - **FR-012**: System MUST allow parents to view upcoming events and submit RSVPs on behalf of their linked minor child(ren) using the Module 1 `HeaderProfileSwitcher` delegation context.
 - **FR-013**: System MUST support configuring an RSVP cutoff deadline (e.g., 48 hours prior to match meet time), after which self-service RSVP edits are locked.
-- **FR-014**: System MUST aggregate squad availability in real time, displaying counts of `AVAILABLE`, `UNAVAILABLE`, `MAYBE`, and `NO_RESPONSE` players to team coaches.
+- **FR-014**: System MUST aggregate squad availability in real time, displaying counts of `AVAILABLE`, `UNAVAILABLE`, `MAYBE`, and `NO_RESPONSE` players to team coaches for both matches and training sessions.
 
 #### 4. Match-Day Squad Selection & Lineup Publication
-- **FR-015**: System MUST provide Coaches and Team Captains with a Match-Day Selection console to select the Playing XI (or custom squad size) and designated substitutes from the list of available players.
+- **FR-015**: System MUST provide Coaches and Team Captains with a Match-Day Selection console to select the Playing Squad (configurable target size per match: defaults to 11 for Senior League, customizable 8–12 for Youth and Friendlies) and designated substitutes from the list of available players.
 - **FR-016**: System MUST allow assigning match-day tactical roles to selected players, including Captain (`C`), Vice-Captain (`VC`), and Wicketkeeper (`WK`).
 - **FR-017**: System MUST warn the Coach if a selected player has an active scheduling conflict (e.g., selected for another squad's match on the same day).
 - **FR-018**: System MUST support draft selection state (`DRAFT`) and published state (`PUBLISHED`), allowing coaches to construct the lineup privately before releasing it.
@@ -134,13 +144,17 @@ So that club attendance records are accurately tracked for Danish municipal (Fol
 #### 5. Pitch-Side Attendance Tracking & Statistics Foundation
 - **FR-020**: System MUST provide a fast mobile-first pitch-side attendance checklist (<30s on 360px viewport) allowing Coaches and Ad-Hoc Coaches to mark attendance as `PRESENT`, `LATE`, `ABSENT_EXCUSED`, or `NO_SHOW`.
 - **FR-021**: Attendance checklist MUST default to `PRESENT` for players who were selected or RSVP'd `AVAILABLE`, minimizing manual tapping on match day.
-- **FR-022**: System MUST support finalizing and locking attendance records to generate immutable event attendance reports for Danish municipal youth sports reporting (Folkeoplysning).
+- **FR-022**: System MUST support finalizing and locking attendance records to generate immutable event attendance reports for Danish municipal reporting (Folkeoplysning), exporting CSV summaries covering all attending club members regardless of age with date, session type, squad, member name, age group, and attendance status.
 - **FR-023**: System MUST maintain aggregate seasonal attendance percentages and match appearance counts per player per squad.
 
 #### 6. Cross-Module GDPR Article 17 Integrity
 - **FR-024**: When a member profile is anonymized into a `"Former Member #..."` shell record under GDPR Article 17 (Module 1), the system MUST preserve all historical match appearances, team lineup references, and attendance counts attached to the profile ID, ensuring club historical match records remain statistically accurate.
 - **FR-025**: System MUST purge all personal notes, RSVP transportation comments, and free-text attendance explanations associated with an anonymized member.
 - **FR-026**: System MUST update Module 1's "Download My Data" (GDPR Article 20) export package to include the member's complete match selections, RSVPs, and attendance records.
+
+### Out of Scope
+- **Live Match Ball-by-Ball Scoring**: Ball-by-ball scoring, live match run tracking, bowling figures, and in-game scoring logic are permanently out of scope for this web application (matches are officially scored in external federation scoring software such as DCF / CricClubs). Scheduled matches track event lifecycle status only (`SCHEDULED`, `PLAYED`, `RAINED_OUT`, `CANCELLED`) and provide an optional external scorecard URL link (`scorecardUrl`).
+- **League Tables / Standing Calculations**: Automatic league points tables and net run rate (NRR) computation are out of scope (managed externally by DCF).
 
 ---
 
@@ -149,10 +163,10 @@ So that club attendance records are accurately tracked for Danish municipal (Fol
 - **Team**: Represents a high-level club team entity (e.g., "Roskilde 1st XI", "Roskilde U15", "Roskilde Social XI") with category (`SENIOR`, `YOUTH`, `SOCIAL`), gender group, and active status.
 - **SquadMembership**: Junction entity connecting `MemberProfile` to `Team` with roster role (`PLAYER`, `COACH`, `AD_HOC_COACH`, `CAPTAIN`, `VICE_CAPTAIN`), jersey number, joined date, and active flag.
 - **Facility**: Represents a physical club resource (e.g., Main Pitch, Nets 1-2, Indoor Gym, Clubhouse) with capacity, address, and availability rules.
-- **ScheduledEvent**: Master event model representing either a competitive match or a training session, with event type (`MATCH`, `TRAINING`), sub-type (`LEAGUE`, `FRIENDLY`, `CUP`, `NET_PRACTICE`, `FIELDING_FITNESS`), title, date, start time, end time, meet time, home/away status, opponent name, venue, RSVP deadline, and facility allocation.
+- **ScheduledEvent**: Master event model representing either a competitive match or a training session, with event type (`MATCH`, `TRAINING`), sub-type (`LEAGUE`, `FRIENDLY`, `CUP`, `NET_PRACTICE`, `FIELDING_FITNESS`), lifecycle status (`SCHEDULED`, `PLAYED`, `RAINED_OUT`, `CANCELLED`), title, date, start time, end time, meet time, home/away status, opponent name, venue, optional external `scorecardUrl`, RSVP deadline, and facility allocation.
 - **FacilityBooking**: Specific reservation linking a `ScheduledEvent` to a `Facility` for conflict detection during the event's time slot.
-- **EventRsvp**: Availability response linking `MemberProfile` to `ScheduledEvent` with status (`AVAILABLE`, `UNAVAILABLE`, `MAYBE`), note, transport info, submitted by (`MemberProfileId`), and timestamp.
-- **MatchSelection**: Official team lineup for a match event with status (`DRAFT`, `PUBLISHED`), published at, and published by.
+- **EventRsvp**: Availability response linking `MemberProfile` to `ScheduledEvent` with status (`NO_RESPONSE`, `AVAILABLE`, `UNAVAILABLE`, `MAYBE`), note, transport info, submitted by (`MemberProfileId`), and timestamp.
+- **MatchSelection**: Official team lineup for a match event with target squad size (configurable, e.g., 11 for Senior League, 8–12 for Youth/Friendly), status (`DRAFT`, `PUBLISHED`), published at, and published by.
 - **MatchSelectionPlayer**: Junction linking `MatchSelection` to `MemberProfile` with selection status (`PLAYING_XI`, `SUBSTITUTE`, `RESERVE`), batting order position, match role (`CAPTAIN`, `VICE_CAPTAIN`, `WICKETKEEPER`), and player availability at selection time.
 - **AttendanceRecord**: Pitch-side check-in record linking `MemberProfile` to `ScheduledEvent` with status (`PRESENT`, `LATE`, `ABSENT_EXCUSED`, `NO_SHOW`), checked-in by (`MemberProfileId`), timestamp, and arrival time.
 
@@ -169,7 +183,7 @@ So that club attendance records are accurately tracked for Danish municipal (Fol
 - **SC-005**: Age eligibility verification rejects **100%** of over-age players attempting to join age-restricted junior squad rosters (unless explicitly flagged with approved dispensation).
 - **SC-006**: Lineup selection console allows a Coach or Captain to pick the Playing XI and assign tactical roles in under **60 seconds**.
 - **SC-007**: GDPR Article 17 anonymization retains **100%** of historical match counts and appearance statistics on the `"Former Member #..."` shell while completely erasing all personal text notes and transport comments.
-- **SC-008**: Danish municipal youth attendance export report can be generated for any date range in **1 click** (<2 seconds).
+- **SC-008**: Danish municipal attendance export report covering all club members can be generated for any date range in CSV format in **1 click** (<2 seconds).
 
 ---
 
@@ -180,3 +194,4 @@ So that club attendance records are accurately tracked for Danish municipal (Fol
 - Players under 18 years old are classified as minor players (`isMinor === true`), and their attendance and match notifications must adhere to Module 1's dual-parent notification governance.
 - Training sessions may recur weekly or bi-weekly throughout the active season (April to September).
 - Match kit bags and equipment items linked to fixtures will reference the existing `EquipmentItem` and `EquipmentLoan` entities from Module 2.
+- Match ball-by-ball scoring and statistics are handled externally (e.g., via DCF official scoring systems); fixtures provide an optional `scorecardUrl` for club members to view the external scorecard.
