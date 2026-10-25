@@ -12,10 +12,10 @@
 
 **Goal**: Establish the relational data schema for all equipment items, loans, stock ledger transactions, loan extensions, and damage reports; generate Prisma client types and provide realistic seed data.
 
-- [ ] T001 Define Module 2 Enums (`TrackingType`, `EquipmentCategory`, `AgeGroup`, `ItemCondition`, `ItemStatus`, `LoanStatus`, `StockTransactionType`, `ExtensionStatus`, `DamageReportStatus`) and Models (`EquipmentItem`, `EquipmentLoan`, `StockTransaction`, `EquipmentLoanExtension`, `EquipmentDamageReport`) with `MemberProfile` relation fields in `prisma/schema.prisma`
-- [ ] T002 Create and execute Prisma migration `add_inventory_equipment_module` and regenerate Prisma client via `npx prisma generate`
-- [ ] T003 [P] Create realistic club inventory seed script in `scripts/seed-inventory.ts` seeding serialized match bats (`BAT-2026-001`, `BAT-2026-002`), Masuri helmets, BOLA bowling machine, facility shed keys, and bulk match balls/cones/bibs with purchase prices in integer øre
-- [ ] T004 [P] Add seed execution script `seed:inventory` in `package.json`
+- [X] T001 Define Module 2 Enums (`TrackingType`, `EquipmentCategory`, `AgeGroup`, `ItemCondition`, `ItemStatus`, `LoanStatus`, `StockTransactionType`, `ExtensionStatus`, `DamageReportStatus`) and Models (`EquipmentItem`, `EquipmentLoan`, `StockTransaction`, `EquipmentLoanExtension`, `EquipmentDamageReport`) with `MemberProfile` relation fields in `prisma/schema.prisma`
+- [X] T002 Create and execute Prisma migration `add_inventory_equipment_module` and regenerate Prisma client via `npx prisma generate`
+- [X] T003 [P] Create realistic club inventory seed script in `scripts/seed-inventory.ts` seeding serialized match bats (`BAT-2026-001`, `BAT-2026-002`), Masuri helmets, BOLA bowling machine, facility shed keys, and bulk match balls/cones/bibs with purchase prices in integer øre
+- [X] T004 [P] Add seed execution script `seed:inventory` in `package.json`
 
 **Checkpoint**: Database schema migrated and validated; sample club inventory seeded.
 
@@ -25,14 +25,14 @@
 
 **Goal**: Implement framework-agnostic, zero-dependency pure TypeScript business rules for equipment state transitions, stock math, category return deadline defaults, and 24-hour reminder cooldowns.
 
-- [ ] T005 [P] Implement `src/modules/inventory/domain/equipment-state-machine.ts` with valid state transitions (`AVAILABLE`, `ON_LOAN`, `UNDER_MAINTENANCE`, `RETIRED`), role authorizations, and terminal `RETIRED` state invariants
-- [ ] T006 [P] Implement unit tests in `tests/unit/inventory/equipment-state-machine.test.ts` covering allowed transitions, damaged returns, maintenance completions, and rejection of forbidden/terminal moves
-- [ ] T007 [P] Implement `src/modules/inventory/domain/stock-math.ts` with serialized vs. bulk stock arithmetic, `RETURNABLE_LOAN` decrements/replenishments, `DIRECT_CONSUMPTION` total/available decrements, and low-stock threshold triggers
-- [ ] T008 [P] Implement unit tests in `tests/unit/inventory/stock-math.test.ts` covering consumable consumption, return restocking, partial bulk returns, and write-offs
-- [ ] T009 [P] Implement `src/modules/inventory/domain/return-deadline.ts` with category-based default return calculators (Same-Day 23:59 for `FACILITY_KEYS` and match balls; +7 days for `BATTING`/`PROTECTIVE`/`TRAINING_GROUND`; end-of-season/+180 days for `APPAREL_KIT` and Coach kit bags)
-- [ ] T010 [P] Implement unit tests in `tests/unit/inventory/return-deadline.test.ts` covering each equipment category and custom date overrides
-- [ ] T011 [P] Implement `src/modules/inventory/domain/overdue-evaluator.ts` evaluating overdue conditions and enforcing the 24-hour notification cooldown guard
-- [ ] T012 [P] Implement unit tests in `tests/unit/inventory/overdue-evaluator.test.ts` verifying overdue detection and cooldown suppression (<24h vs >=24h)
+- [X] T005 [P] Implement `src/modules/inventory/domain/equipment-state-machine.ts` with valid state transitions (`AVAILABLE`, `ON_LOAN`, `UNDER_MAINTENANCE`, `RETIRED`), role authorizations, and terminal `RETIRED` state invariants
+- [X] T006 [P] Implement unit tests in `tests/unit/inventory/equipment-state-machine.test.ts` covering allowed transitions, damaged returns, maintenance completions, and rejection of forbidden/terminal moves
+- [X] T007 [P] Implement `src/modules/inventory/domain/stock-math.ts` with serialized vs. bulk stock arithmetic, `RETURNABLE_LOAN` decrements/replenishments, `DIRECT_CONSUMPTION` total/available decrements, and low-stock threshold triggers
+- [X] T008 [P] Implement unit tests in `tests/unit/inventory/stock-math.test.ts` covering consumable consumption, return restocking, partial bulk returns, and write-offs
+- [X] T009 [P] Implement `src/modules/inventory/domain/return-deadline.ts` with category-based default return calculators (Same-Day 23:59 for `FACILITY_KEYS` and match balls; +7 days for `BATTING`/`PROTECTIVE`/`TRAINING_GROUND`; end-of-season/+180 days for `APPAREL_KIT` and Coach kit bags)
+- [X] T010 [P] Implement unit tests in `tests/unit/inventory/return-deadline.test.ts` covering each equipment category and custom date overrides
+- [X] T011 [P] Implement `src/modules/inventory/domain/overdue-evaluator.ts` evaluating overdue conditions and enforcing the 24-hour notification cooldown guard
+- [X] T012 [P] Implement unit tests in `tests/unit/inventory/overdue-evaluator.test.ts` verifying overdue detection and cooldown suppression (<24h vs >=24h)
 
 **Checkpoint**: All domain unit tests passing with 100% pure function coverage (`npm run test:unit`).
 
