@@ -37,6 +37,8 @@ interface EventCalendarViewProps {
   squads: SquadOption[];
   facilities: FacilityOption[];
   canManage: boolean;
+  isPlayerOnly?: boolean;
+  currentMemberProfileId?: string;
 }
 
 export function EventCalendarView({
@@ -44,8 +46,11 @@ export function EventCalendarView({
   squads,
   facilities,
   canManage,
+  isPlayerOnly = false,
+  currentMemberProfileId,
 }: EventCalendarViewProps) {
   const [eventTypeFilter, setEventTypeFilter] = useState<string>("ALL");
+  const [scopeFilter, setScopeFilter] = useState<"ALL" | "MY_REPLY">("ALL");
   const [squadFilter, setSquadFilter] = useState<string>("ALL");
   const [facilityFilter, setFacilityFilter] = useState<string>("ALL");
   const [statusFilter, setStatusFilter] = useState<string>("UPCOMING");
@@ -56,6 +61,10 @@ export function EventCalendarView({
   // Filter events based on selections
   const filteredEvents = useMemo(() => {
     return events.filter((ev) => {
+      // Scope filter (for staff toggling between all events and events they can reply to)
+      if (!isPlayerOnly && scopeFilter === "MY_REPLY" && !ev.canReply) {
+        return false;
+      }
       // Type filter
       if (eventTypeFilter !== "ALL" && ev.eventType !== eventTypeFilter) {
         return false;
@@ -97,6 +106,8 @@ export function EventCalendarView({
     });
   }, [
     events,
+    isPlayerOnly,
+    scopeFilter,
     eventTypeFilter,
     squadFilter,
     facilityFilter,
@@ -163,16 +174,52 @@ export function EventCalendarView({
             </button>
           </div>
 
-          {/* Action / Schedule Button */}
-          {canManage && (
-            <Link
-              href="/events/new"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all active:scale-[0.98]"
-            >
-              <Plus className="w-4 h-4" />
-              Schedule Event
-            </Link>
-          )}
+          {/* Controls Right Section */}
+          <div className="flex items-center gap-3">
+            {!isPlayerOnly && (
+              <div className="flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-xl text-xs">
+                <button
+                  type="button"
+                  onClick={() => setScopeFilter("ALL")}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
+                    scopeFilter === "ALL"
+                      ? "bg-slate-800 text-white font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  All Club Events
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScopeFilter("MY_REPLY")}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
+                    scopeFilter === "MY_REPLY"
+                      ? "bg-sky-600 text-white font-bold"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  My RSVPs ({events.filter((e) => e.canReply).length})
+                </button>
+              </div>
+            )}
+
+            {isPlayerOnly && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-950/60 border border-sky-800/60 text-sky-300 text-xs font-medium">
+                <Shield className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span>Showing your squad events</span>
+              </div>
+            )}
+
+            {canManage && (
+              <Link
+                href="/events/new"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all active:scale-[0.98]"
+              >
+                <Plus className="w-4 h-4" />
+                Schedule Event
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Detailed Dropdown Filters */}
@@ -250,7 +297,9 @@ export function EventCalendarView({
           <CalendarIcon className="w-12 h-12 text-slate-600 mx-auto mb-3" />
           <h3 className="text-base font-bold text-white mb-1">No scheduled events found</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
-            No events match your current filter criteria. Try adjusting the filters or schedule a new match or training session.
+            {isPlayerOnly
+              ? "You do not have any upcoming squad matches or training sessions requiring your RSVP. When your squad schedules events, they will appear here."
+              : "No events match your current filter criteria. Try adjusting the filters or schedule a new match or training session."}
           </p>
           {canManage && (
             <Link
@@ -329,6 +378,34 @@ export function EventCalendarView({
                               >
                                 <AlertTriangle className="w-3 h-3" />
                                 Override
+                              </span>
+                            )}
+
+                            {/* User's Individual RSVP Status Badge */}
+                            {ev.userRsvp && (
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border flex items-center gap-1 ${
+                                  ev.userRsvp.status === "AVAILABLE"
+                                    ? "bg-emerald-950/90 border-emerald-700 text-emerald-300"
+                                    : ev.userRsvp.status === "UNAVAILABLE"
+                                    ? "bg-rose-950/90 border-rose-700 text-rose-300"
+                                    : ev.userRsvp.status === "MAYBE"
+                                    ? "bg-amber-950/90 border-amber-700 text-amber-300"
+                                    : "bg-sky-950/90 border-sky-600 text-sky-300 animate-pulse"
+                                }`}
+                              >
+                                {ev.userRsvp.status === "AVAILABLE" && (
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                )}
+                                {ev.userRsvp.status === "UNAVAILABLE" && (
+                                  <XCircle className="w-3 h-3 text-rose-400" />
+                                )}
+                                {ev.userRsvp.status === "MAYBE" && (
+                                  <HelpCircle className="w-3 h-3 text-amber-400" />
+                                )}
+                                {ev.userRsvp.status === "NO_RESPONSE"
+                                  ? "RSVP Needed"
+                                  : `My RSVP: ${ev.userRsvp.status}`}
                               </span>
                             )}
                           </div>

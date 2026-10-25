@@ -42,6 +42,11 @@ export interface ScheduledEventSummary {
     maybe: number;
     noResponse: number;
   };
+  userRsvp?: {
+    status: string;
+    transportNote: string | null;
+  } | null;
+  canReply?: boolean;
 }
 
 /**
@@ -335,6 +340,14 @@ export async function getScheduledEventById(id: string) {
               },
             },
           },
+          roster: {
+            where: { isActive: true },
+            select: {
+              memberProfileId: true,
+              rosterRole: true,
+              jerseyNumber: true,
+            },
+          },
         },
       },
       facility: true,
@@ -398,6 +411,8 @@ export async function listScheduledEvents(params: {
   toDate?: Date;
   eventType?: EventType;
   lifecycleStatus?: EventLifecycleStatus;
+  replyOnlyForMemberProfileId?: string;
+  currentMemberProfileId?: string;
 }): Promise<ScheduledEventSummary[]> {
   const where: any = {};
 
@@ -405,6 +420,28 @@ export async function listScheduledEvents(params: {
   if (params.facilityId) where.facilityId = params.facilityId;
   if (params.eventType) where.eventType = params.eventType;
   if (params.lifecycleStatus) where.lifecycleStatus = params.lifecycleStatus;
+
+  if (params.replyOnlyForMemberProfileId) {
+    where.OR = [
+      {
+        rsvps: {
+          some: {
+            memberProfileId: params.replyOnlyForMemberProfileId,
+          },
+        },
+      },
+      {
+        teamSquad: {
+          roster: {
+            some: {
+              memberProfileId: params.replyOnlyForMemberProfileId,
+              isActive: true,
+            },
+          },
+        },
+      },
+    ];
+  }
 
   if (params.fromDate || params.toDate) {
     where.startAt = {};
@@ -417,16 +454,33 @@ export async function listScheduledEvents(params: {
     orderBy: { startAt: "asc" },
     include: {
       teamSquad: {
-        select: { id: true, name: true, category: true },
+        select: {
+          id: true,
+          name: true,
+          category: true,
+          roster: {
+            select: {
+              memberProfileId: true,
+              isActive: true,
+            },
+          },
+        },
       },
       facility: {
         select: { id: true, name: true },
       },
       rsvps: {
-        select: { status: true },
+        select: {
+          memberProfileId: true,
+          status: true,
+          transportNote: true,
+        },
       },
     },
   });
+
+  const memberIdToCheck =
+    params.replyOnlyForMemberProfileId || params.currentMemberProfileId;
 
   return events.map((event) => {
     const rsvpStats = {
@@ -436,6 +490,18 @@ export async function listScheduledEvents(params: {
       maybe: event.rsvps.filter((r) => r.status === "MAYBE").length,
       noResponse: event.rsvps.filter((r) => r.status === "NO_RESPONSE").length,
     };
+
+    const userRsvpRecord = memberIdToCheck
+      ? event.rsvps.find((r) => r.memberProfileId === memberIdToCheck)
+      : undefined;
+
+    const isMemberRostered = memberIdToCheck
+      ? event.teamSquad.roster.some(
+          (r) => r.memberProfileId === memberIdToCheck && r.isActive
+        )
+      : false;
+
+    const canReply = Boolean(userRsvpRecord || isMemberRostered);
 
     return {
       id: event.id,
@@ -462,6 +528,13 @@ export async function listScheduledEvents(params: {
       scorecardUrl: event.scorecardUrl,
       hasCollisionOverride: Boolean(event.collisionOverrideById),
       rsvpStats,
+      userRsvp: userRsvpRecord
+        ? {
+            status: userRsvpRecord.status,
+            transportNote: userRsvpRecord.transportNote,
+          }
+        : null,
+      canReply,
     };
   });
 }

@@ -10,7 +10,7 @@ export const createSquadSchema = z.object({
 });
 
 export const updateSquadSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().min(1),
   name: z.string().trim().min(2).max(100).optional(),
   category: z.enum(["SENIOR", "YOUTH", "SOCIAL"]).optional(),
   ageGroupRule: z.string().trim().max(20).optional(),
@@ -21,8 +21,8 @@ export const updateSquadSchema = z.object({
 });
 
 export const assignRosterMemberSchema = z.object({
-  teamSquadId: z.string().uuid(),
-  memberProfileId: z.string().uuid(),
+  teamSquadId: z.string().min(1),
+  memberProfileId: z.string().min(1),
   rosterRole: z.enum(["PLAYER", "CAPTAIN", "VICE_CAPTAIN"]).default("PLAYER"),
   jerseyNumber: z.coerce.number().int().min(1).max(99).optional().nullable(),
   hasDispensation: z.boolean().default(false),
@@ -30,19 +30,19 @@ export const assignRosterMemberSchema = z.object({
 });
 
 export const removeRosterMemberSchema = z.object({
-  teamSquadId: z.string().uuid(),
-  memberProfileId: z.string().uuid(),
+  teamSquadId: z.string().min(1),
+  memberProfileId: z.string().min(1),
 });
 
 export const assignSquadCoachSchema = z.object({
-  teamSquadId: z.string().uuid(),
-  coachProfileId: z.string().uuid(),
+  teamSquadId: z.string().min(1),
+  coachProfileId: z.string().min(1),
   role: z.enum(["HEAD_COACH", "ASSISTANT_COACH", "AD_HOC_COACH"]).default("HEAD_COACH"),
 });
 
 export const removeSquadCoachSchema = z.object({
-  teamSquadId: z.string().uuid(),
-  coachProfileId: z.string().uuid(),
+  teamSquadId: z.string().min(1),
+  coachProfileId: z.string().min(1),
 });
 
 export type CreateSquadInput = z.infer<typeof createSquadSchema>;

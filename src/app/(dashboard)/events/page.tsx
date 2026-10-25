@@ -21,13 +21,50 @@ export default async function EventsPage() {
     session.roles.includes("AD_HOC_COACH");
   const isAdmin = session.roles.includes("ADMIN");
 
-  const [events, squads, facilities] = await Promise.all([
-    listScheduledEvents({}),
-    prisma.teamSquad.findMany({
+  const targetProfileId = session.activeProfileId || session.memberProfileId;
+  const isPlayerOnly = !canManage;
+
+  // For players/parents, only query events they can reply to.
+  // For staff/coaches, query all events with user's specific context.
+  const eventQueryParams = isPlayerOnly
+    ? { replyOnlyForMemberProfileId: targetProfileId }
+    : { currentMemberProfileId: targetProfileId };
+
+  // If player, only fetch the squads they are rostered in (or have invitations to)
+  let squadPromise;
+  if (isPlayerOnly) {
+    const [rosterMemberships, rsvpEvents] = await Promise.all([
+      prisma.teamRosterMember.findMany({
+        where: { memberProfileId: targetProfileId, isActive: true },
+        select: { teamSquadId: true },
+      }),
+      prisma.eventRsvp.findMany({
+        where: { memberProfileId: targetProfileId },
+        select: { scheduledEvent: { select: { teamSquadId: true } } },
+      }),
+    ]);
+    const squadIds = Array.from(
+      new Set([
+        ...rosterMemberships.map((m) => m.teamSquadId),
+        ...rsvpEvents.map((r) => r.scheduledEvent.teamSquadId),
+      ])
+    );
+    squadPromise = prisma.teamSquad.findMany({
+      where: { id: { in: squadIds }, isActive: true },
+      select: { id: true, name: true, category: true },
+      orderBy: { name: "asc" },
+    });
+  } else {
+    squadPromise = prisma.teamSquad.findMany({
       where: { isActive: true },
       select: { id: true, name: true, category: true },
       orderBy: { name: "asc" },
-    }),
+    });
+  }
+
+  const [events, squads, facilities] = await Promise.all([
+    listScheduledEvents(eventQueryParams),
+    squadPromise,
     listFacilities(true),
   ]);
 
@@ -89,6 +126,8 @@ export default async function EventsPage() {
         squads={squadOptions}
         facilities={facilityOptions}
         canManage={canManage}
+        isPlayerOnly={isPlayerOnly}
+        currentMemberProfileId={targetProfileId}
       />
     </div>
   );

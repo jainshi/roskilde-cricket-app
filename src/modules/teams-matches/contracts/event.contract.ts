@@ -18,8 +18,8 @@ export const facilityTypeEnum = z.nativeEnum(FacilityType);
  */
 export const createScheduledEventSchema = z
   .object({
-    teamSquadId: z.string().uuid("Invalid squad ID"),
-    facilityId: z.string().uuid("Invalid facility ID").optional().nullable(),
+    teamSquadId: z.string().min(1, "Invalid squad ID"),
+    facilityId: z.string().min(1, "Invalid facility ID").optional().nullable(),
     eventType: eventTypeEnum,
     matchType: matchTypeEnum.optional().nullable(),
     trainingType: trainingTypeEnum.optional().nullable(),
@@ -42,7 +42,7 @@ export const createScheduledEventSchema = z
       .optional()
       .nullable()
       .or(z.literal("")),
-    linkedEquipmentLoanId: z.string().uuid("Invalid loan ID").optional().nullable(),
+    linkedEquipmentLoanId: z.string().min(1, "Invalid loan ID").optional().nullable(),
     collisionOverrideReason: z
       .string()
       .trim()
@@ -70,8 +70,8 @@ export type CreateScheduledEventInput = z.infer<typeof createScheduledEventSchem
  */
 export const updateScheduledEventSchema = z
   .object({
-    id: z.string().uuid("Invalid event ID"),
-    facilityId: z.string().uuid("Invalid facility ID").optional().nullable(),
+    id: z.string().min(1, "Invalid event ID"),
+    facilityId: z.string().min(1, "Invalid facility ID").optional().nullable(),
     eventType: eventTypeEnum.optional(),
     matchType: matchTypeEnum.optional().nullable(),
     trainingType: trainingTypeEnum.optional().nullable(),
@@ -94,7 +94,7 @@ export const updateScheduledEventSchema = z
       .optional()
       .nullable()
       .or(z.literal("")),
-    linkedEquipmentLoanId: z.string().uuid().optional().nullable(),
+    linkedEquipmentLoanId: z.string().min(1).optional().nullable(),
     collisionOverrideReason: z
       .string()
       .trim()
@@ -124,7 +124,7 @@ export type UpdateScheduledEventInput = z.infer<typeof updateScheduledEventSchem
  * Schema for updating event lifecycle status
  */
 export const updateEventLifecycleStatusSchema = z.object({
-  id: z.string().uuid("Invalid event ID"),
+  id: z.string().min(1, "Invalid event ID"),
   lifecycleStatus: eventLifecycleStatusEnum,
   notes: z.string().trim().max(300).optional().nullable(),
 });
@@ -147,7 +147,7 @@ export const createFacilitySchema = z.object({
 export type CreateFacilityInput = z.infer<typeof createFacilitySchema>;
 
 export const updateFacilitySchema = createFacilitySchema.partial().extend({
-  id: z.string().uuid("Invalid facility ID"),
+  id: z.string().min(1, "Invalid facility ID"),
 });
 
 export type UpdateFacilityInput = z.infer<typeof updateFacilitySchema>;
@@ -156,10 +156,10 @@ export type UpdateFacilityInput = z.infer<typeof updateFacilitySchema>;
  * Schema for facility collision pre-flight check
  */
 export const checkFacilityConflictSchema = z.object({
-  facilityId: z.string().uuid("Invalid facility ID"),
+  facilityId: z.string().min(1, "Invalid facility ID"),
   startAt: z.string().min(1, "Start time is required"),
   endAt: z.string().min(1, "End time is required"),
-  excludeEventId: z.string().uuid().optional().nullable(),
+  excludeEventId: z.string().min(1).optional().nullable(),
 });
 
 export type CheckFacilityConflictInput = z.infer<typeof checkFacilityConflictSchema>;
@@ -170,9 +170,9 @@ export type CheckFacilityConflictInput = z.infer<typeof checkFacilityConflictSch
 export const createRecurringTrainingScheduleSchema = z
   .object({
     teamSquadIds: z
-      .array(z.string().uuid("Invalid squad ID"))
+      .array(z.string().min(1, "Invalid squad ID"))
       .min(1, "Select at least one squad"),
-    facilityId: z.string().uuid("Invalid facility ID").optional().nullable(),
+    facilityId: z.string().min(1, "Invalid facility ID").optional().nullable(),
     trainingType: trainingTypeEnum.default("INDOOR_WINTER"),
     titlePrefix: z.string().trim().max(100).optional().nullable(),
     startDate: z.string().min(1, "Start date is required"),

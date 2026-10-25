@@ -50,22 +50,50 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     lastName: session.lastName,
   };
 
+  const isStaff =
+    session.roles.includes("ADMIN") ||
+    session.roles.includes("COACH") ||
+    session.roles.includes("AD_HOC_COACH");
+
+  // Check if player is on the squad roster or already has an RSVP record
+  const isRostered =
+    event.rsvps.some((r) => r.memberProfileId === targetPlayer.id) ||
+    event.teamSquad.roster.some((r) => r.memberProfileId === targetPlayer.id);
+
+  const canReply = isRostered || isStaff;
+
+  // A player should only see events which he can reply to
+  if (!isStaff && !canReply) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16 text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+          <Shield className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl font-bold font-serif text-white">Event Restricted</h2>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          This event is scheduled for the{" "}
+          <span className="font-semibold text-white">{event.teamSquad.name}</span>{" "}
+          squad. Players can only view and reply to events for squads they are rostered in.
+        </p>
+        <div className="pt-2">
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to My Events
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Fetch player RSVP state factoring in deadline lock and delegation
   const rsvpStatus = await getPlayerEventRsvp(
     event.id,
     targetPlayer.id,
     session.memberProfileId,
     session.roles
-  );
-
-  const isStaff =
-    session.roles.includes("ADMIN") ||
-    session.roles.includes("COACH") ||
-    session.roles.includes("AD_HOC_COACH");
-
-  // Check if player is on the squad roster
-  const isRostered = event.rsvps.some(
-    (r) => r.memberProfileId === targetPlayer.id
   );
 
   const matchDateFormatted = new Date(event.startAt).toLocaleDateString("en-DK", {
