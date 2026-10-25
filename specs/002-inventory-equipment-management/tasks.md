@@ -58,12 +58,12 @@
 
 **Goal**: Deliver mobile-first pitch-side checkout and return flows completable in <30 seconds on a 360 px viewport, with youth-to-parent accountability and damage routing.
 
-- [ ] T020 [P] Define Zod validation schemas for checkout and check-in operations in `src/modules/inventory/contracts/loan.contract.ts`
-- [ ] T021 Implement checkout and check-in transaction service in `src/modules/inventory/services/loan.service.ts` enforcing at most 1 active loan per serialized asset, pre-populating category return deadlines, dispatching checkout notices to linked parents for minors, and routing damaged returns to `UNDER_MAINTENANCE`
-- [ ] T022 Implement Server Actions in `src/modules/inventory/actions/loan.actions.ts` (`checkoutEquipmentAction`, `checkinEquipmentAction`)
-- [ ] T023 [P] Build mobile-responsive pitch-side checkout form component in `src/components/inventory/pitchside-checkout-form.tsx` with predictive asset search, minor borrower parent indicators, and return deadline pre-population
-- [ ] T024 [P] Build mobile-responsive pitch-side check-in form component in `src/components/inventory/pitchside-checkin-form.tsx` with condition assessment selector (`GOOD`, `FAIR`, `NEEDS_REPAIR`) and damage note prompt
-- [ ] T025 Build dedicated pitch-side checkout route in `src/app/(dashboard)/inventory/checkout/page.tsx` and return route in `src/app/(dashboard)/inventory/checkin/page.tsx`
+- [X] T020 [P] Define Zod validation schemas for checkout and check-in operations in `src/modules/inventory/contracts/loan.contract.ts`
+- [X] T021 Implement checkout and check-in transaction service in `src/modules/inventory/services/loan.service.ts` enforcing at most 1 active loan per serialized asset, pre-populating category return deadlines, dispatching checkout notices to linked parents for minors, and routing damaged returns to `UNDER_MAINTENANCE`
+- [X] T022 Implement Server Actions in `src/modules/inventory/actions/loan.actions.ts` (`checkoutEquipmentAction`, `checkinEquipmentAction`)
+- [X] T023 [P] Build mobile-responsive pitch-side checkout form component in `src/components/inventory/pitchside-checkout-form.tsx` with predictive asset search, minor borrower parent indicators, and return deadline pre-population
+- [X] T024 [P] Build mobile-responsive pitch-side check-in form component in `src/components/inventory/pitchside-checkin-form.tsx` with condition assessment selector (`GOOD`, `FAIR`, `NEEDS_REPAIR`) and damage note prompt
+- [X] T025 Build dedicated pitch-side checkout route in `src/app/(dashboard)/inventory/checkout/page.tsx` and return route in `src/app/(dashboard)/inventory/checkin/page.tsx`
 
 **Checkpoint**: Pitch-side check-out and check-in workflow fully verified on mobile viewport (<30 seconds); youth loans bind parental responsibility.
 

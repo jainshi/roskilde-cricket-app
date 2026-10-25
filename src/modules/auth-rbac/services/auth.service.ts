@@ -39,11 +39,18 @@ export async function authenticateUser(params: {
   userAgent?: string;
   ipAddress?: string;
 }): Promise<SignInResult> {
-  const cleanEmail = params.email.trim().toLowerCase();
+  const cleanInput = params.email.trim();
+  const cleanEmail = cleanInput.toLowerCase();
   const now = new Date();
 
-  const userAccount = await prisma.userAccount.findUnique({
-    where: { email: cleanEmail },
+  const userAccount = await prisma.userAccount.findFirst({
+    where: {
+      OR: [
+        { email: cleanEmail },
+        { id: cleanInput },
+        { memberProfile: { id: cleanInput } },
+      ],
+    },
     include: {
       memberProfile: {
         select: {

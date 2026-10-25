@@ -62,7 +62,7 @@ export const createEquipmentItemSchema = z.object({
 export type CreateEquipmentItemInput = z.infer<typeof createEquipmentItemSchema>;
 
 export const updateEquipmentItemSchema = z.object({
-  id: z.string().uuid("Invalid equipment ID"),
+  id: z.string().min(1, "Invalid equipment ID"),
   assetTag: z.string().trim().min(2).max(50).nullable().optional(),
   name: z.string().trim().min(2).max(100).optional(),
   description: z.string().trim().max(500).optional(),

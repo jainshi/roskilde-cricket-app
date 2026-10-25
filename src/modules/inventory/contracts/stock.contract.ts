@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const recordStockConsumptionSchema = z.object({
-  equipmentItemId: z.string().uuid("Invalid equipment ID"),
+  equipmentItemId: z.string().min(1, "Invalid equipment ID"),
   quantity: z.coerce.number().int().min(1, "Consumed quantity must be at least 1"),
-  recipientProfileId: z.string().uuid("Invalid recipient profile ID").optional(),
+  recipientProfileId: z.string().min(1, "Invalid recipient profile ID").optional(),
   teamOrSquadName: z.string().trim().max(100, "Team/Squad name too long").optional(),
   reason: z
     .string()
@@ -15,7 +15,7 @@ export const recordStockConsumptionSchema = z.object({
 export type RecordStockConsumptionInput = z.infer<typeof recordStockConsumptionSchema>;
 
 export const restockBulkEquipmentSchema = z.object({
-  equipmentItemId: z.string().uuid("Invalid equipment ID"),
+  equipmentItemId: z.string().min(1, "Invalid equipment ID"),
   quantityToAdd: z.coerce.number().int().min(1, "Restock quantity must be at least 1"),
   reason: z
     .string()

@@ -84,7 +84,7 @@ export const SignInSchema = z.object({
     .string()
     .trim()
     .toLowerCase()
-    .email("auth.errors.invalidCredentials"),
+    .min(1, "auth.errors.invalidCredentials"),
   password: z
     .string()
     .min(1, "auth.errors.invalidCredentials"),
