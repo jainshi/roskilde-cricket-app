@@ -7,6 +7,8 @@ import {
   completeMandatoryPasswordReset,
   recordGdprConsent,
   getActivationStepForProfile,
+  requestPasswordReset,
+  resetPasswordWithToken,
 } from "../services/auth.service";
 import {
   setSessionCookie,
@@ -68,12 +70,33 @@ export async function signInAction(
   redirect(safeFrom);
 }
 
+export async function requestPasswordResetAction(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState> {
+  const email = formData.get("email") as string;
+  if (!email || !email.includes("@")) {
+    return { error: "auth.errors.invalidCredentials" };
+  }
+
+  const reqHeaders = await headers();
+  const host = reqHeaders.get("host") || "localhost:3000";
+  const protocol = reqHeaders.get("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  await requestPasswordReset({
+    email,
+    baseUrl,
+  });
+
+  return { success: true };
+}
+
 export async function resetPasswordAction(
   prevState: ActionState | null,
   formData: FormData
 ): Promise<ActionState> {
-  const session = await requireSession();
-
+  const token = (formData.get("token") as string) || null;
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
 
@@ -88,6 +111,30 @@ export async function resetPasswordAction(
     }
     return { fieldErrors };
   }
+
+  // 1. If token is present, perform tokenized reset (no session required)
+  if (token) {
+    const result = await resetPasswordWithToken({
+      token,
+      newPassword: parsed.data.password,
+    });
+
+    if (!result.ok) {
+      return {
+        error:
+          result.errorCode === "SAME_AS_CURRENT"
+            ? "auth.errors.sameAsCurrentPassword"
+            : result.errorCode === "INVALID_OR_EXPIRED"
+            ? "auth.errors.tokenExpiredOrInvalid"
+            : "auth.errors.genericError",
+      };
+    }
+
+    redirect("/signin?reason=password_reset_success");
+  }
+
+  // 2. Otherwise, perform session-based reset for mandatory initial login
+  const session = await requireSession();
 
   const result = await completeMandatoryPasswordReset({
     userAccountId: session.userAccountId,

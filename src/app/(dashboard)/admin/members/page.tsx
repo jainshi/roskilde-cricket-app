@@ -14,6 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MemberActionCell } from "./member-action-cell";
 
 export const metadata = {
   title: "All Members | Roskilde Cricket Club",
@@ -58,12 +59,13 @@ export default async function AdminMembersPage() {
               <th className="py-3.5 px-4">Contact Details</th>
               <th className="py-3.5 px-4">Account / Login</th>
               <th className="py-3.5 px-4">Family Links</th>
+              <th className="py-3.5 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/80 text-slate-200">
             {members.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-12 text-slate-500">
+                <td colSpan={7} className="text-center py-12 text-slate-500">
                   No members registered yet.
                 </td>
               </tr>
@@ -183,6 +185,17 @@ export default async function AdminMembersPage() {
                     {member.linkedParents.length === 0 && member.linkedChildren.length === 0 && (
                       <span className="text-slate-500 italic">None</span>
                     )}
+                  </td>
+
+                  {/* Actions */}
+                  <td className="py-4 px-4 text-right whitespace-nowrap">
+                    <MemberActionCell
+                      memberId={member.id}
+                      memberName={member.fullName}
+                      memberEmail={member.email}
+                      hasAccount={member.accountStatus !== "NO_ACCOUNT"}
+                      canCreateLogin={member.category !== "YOUTH_UNDER_13"}
+                    />
                   </td>
                 </tr>
               ))

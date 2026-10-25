@@ -58,8 +58,21 @@
       "passwordsDoNotMatch": "Passwords do not match.",
       "sameAsCurrentPassword": "New password must be different from your current temporary password.",
       "genericError": "An unexpected error occurred. Please try again.",
-      "consentRequired": "You must check the box to accept the privacy policy."
-    }
+      "consentRequired": "You must check the box to accept the privacy policy.",
+      "tokenExpiredOrInvalid": "This password reset link is invalid, expired, or has already been used."
+    },
+    "forgotPasswordTitle": "Forgot Password",
+    "forgotPasswordSubtitle": "Enter your email address to receive a secure password reset link",
+    "sendResetLink": "Send Password Reset Link",
+    "resetLinkSentTitle": "Check Your Inbox",
+    "resetLinkSentBody": "If an account exists with that email address, we have sent instructions to reset your password. The link will expire in 1 hour.",
+    "backToSignIn": "Back to Sign In",
+    "tokenResetTitle": "Set New Password",
+    "tokenResetSubtitle": "Choose a strong password to regain access to your RCC account",
+    "tokenInvalidTitle": "Invalid or Expired Link",
+    "tokenInvalidBody": "This password reset link is invalid, expired, or has already been used.",
+    "requestNewLink": "Request New Reset Link",
+    "passwordResetSuccessBanner": "Your password has been reset successfully. Please sign in with your new password."
   },
   "dashboard": {
     "welcome": "Welcome back, {name}",

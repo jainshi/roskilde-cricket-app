@@ -2,19 +2,26 @@
 
 import { useActionState, useId } from "react";
 import { signInAction } from "@/modules/auth-rbac/actions/auth.actions";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, AlertCircle } from "lucide-react";
+import { LogIn, AlertCircle, CheckCircle2 } from "lucide-react";
 import type { Dictionary } from "@/i18n/get-dictionary";
 
 interface SignInFormProps {
   dict: Dictionary;
   initialEmail?: string;
   fromPath?: string;
+  reason?: string;
 }
 
-export function SignInForm({ dict, initialEmail = "", fromPath = "/dashboard" }: SignInFormProps) {
+export function SignInForm({
+  dict,
+  initialEmail = "",
+  fromPath = "/dashboard",
+  reason,
+}: SignInFormProps) {
   const [state, formAction, isPending] = useActionState(signInAction, null);
   const emailId = useId();
   const passwordId = useId();
@@ -38,6 +45,19 @@ export function SignInForm({ dict, initialEmail = "", fromPath = "/dashboard" }:
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="from" value={fromPath} />
+
+      {reason === "password_reset_success" && (
+        <div
+          role="status"
+          className="p-3.5 rounded-lg bg-emerald-950/60 border border-emerald-700/80 text-emerald-200 text-sm flex items-start gap-2.5 animate-in fade-in duration-200"
+        >
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="flex-1 leading-snug">
+            {dict.auth.passwordResetSuccessBanner ||
+              "Your password has been reset successfully. Please sign in with your new password."}
+          </div>
+        </div>
+      )}
 
       {errorMessage && (
         <div
@@ -70,6 +90,12 @@ export function SignInForm({ dict, initialEmail = "", fromPath = "/dashboard" }:
           <Label htmlFor={passwordId} className="text-slate-200 text-sm font-medium">
             {dict.auth.passwordLabel}
           </Label>
+          <Link
+            href="/forgot-password"
+            className="text-xs text-sky-400 hover:text-sky-300 font-medium transition-colors"
+          >
+            {dict.auth.forgotPasswordPrompt || "Forgot password?"}
+          </Link>
         </div>
         <Input
           id={passwordId}

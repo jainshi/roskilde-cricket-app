@@ -38,6 +38,7 @@ export default async function SignInPage({
         dict={dict}
         initialEmail={params.email || ""}
         fromPath={params.from || "/dashboard"}
+        reason={params.reason}
       />
     </div>
   );

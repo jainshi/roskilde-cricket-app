@@ -11,9 +11,11 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 
 interface ResetPasswordFormProps {
   dict: Dictionary;
+  token?: string;
+  email?: string;
 }
 
-export function ResetPasswordForm({ dict }: ResetPasswordFormProps) {
+export function ResetPasswordForm({ dict, token, email }: ResetPasswordFormProps) {
   const [state, formAction, isPending] = useActionState(resetPasswordAction, null);
   const [password, setPassword] = useState("");
   const passwordId = useId();
@@ -30,10 +32,16 @@ export function ResetPasswordForm({ dict }: ResetPasswordFormProps) {
 
   return (
     <form action={formAction} className="space-y-6">
-      {/* Notice box indicating temporary password needs reset */}
-      <div className="p-3.5 rounded-lg bg-amber-950/40 border border-amber-800/80 text-amber-200 text-sm flex items-start gap-2.5">
-        <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-        <span className="leading-snug">{dict.auth.temporaryPasswordNotice}</span>
+      {token && <input type="hidden" name="token" value={token} />}
+
+      {/* Notice box */}
+      <div className="p-3.5 rounded-lg bg-sky-950/40 border border-sky-800/80 text-sky-200 text-sm flex items-start gap-2.5">
+        <ShieldAlert className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
+        <span className="leading-snug">
+          {token
+            ? `Setting new password for ${email || "your account"}. All previous sessions across all devices will be signed out.`
+            : dict.auth.temporaryPasswordNotice}
+        </span>
       </div>
 
       {state?.error && (
@@ -45,6 +53,9 @@ export function ResetPasswordForm({ dict }: ResetPasswordFormProps) {
           <div className="flex-1 leading-snug">
             {state.error === "auth.errors.sameAsCurrentPassword"
               ? dict.auth.errors.sameAsCurrentPassword
+              : state.error === "auth.errors.tokenExpiredOrInvalid"
+              ? dict.auth.errors.tokenExpiredOrInvalid ||
+                "This password reset link is invalid, expired, or has already been used."
               : dict.auth.errors.genericError}
           </div>
         </div>

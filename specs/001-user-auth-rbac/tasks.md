@@ -66,14 +66,14 @@
 **Independent Test**: Evaluate all roles against the SRS Section 2 permission matrix; verify compound roles union permissions; verify denied actions are rejected server-side even with forged requests; verify last admin cannot be deleted.
 
 ### Tests for User Story 2
-- [ ] T023 [P] [US2] Focused unit tests for pure RBAC evaluation function (`hasPermission`), compound role unions, and denial cases in `tests/unit/permissions.test.ts`
-- [ ] T024 [P] [US2] Unit test preventing last Admin role removal or account deactivation in `tests/unit/admin-safeguard.test.ts`
+- [X] T023 [P] [US2] Focused unit tests for pure RBAC evaluation function (`hasPermission`), compound role unions, and denial cases in `tests/unit/permissions.test.ts`
+- [X] T024 [P] [US2] Unit test preventing last Admin role removal or account deactivation in `tests/unit/admin-safeguard.test.ts`
 
 ### Implementation for User Story 2
-- [ ] T025 [P] [US2] Implement pure `hasPermission(action, ctx)` function encoding the central permission matrix in `src/modules/auth-rbac/domain/permissions.ts`
-- [ ] T026 [US2] Implement server-side action authorization guard helper (`requirePermission`) in `src/modules/auth-rbac/services/auth-guard.ts`
-- [ ] T027 [US2] Implement role assignment and revocation service with minor role restriction (`PLAYER` only if age < 18) in `src/modules/auth-rbac/services/role.service.ts`
-- [ ] T028 [US2] Implement Admin role management UI in `src/app/(dashboard)/admin/members/[id]/roles/page.tsx`
+- [X] T025 [P] [US2] Implement pure `hasPermission(action, ctx)` function encoding the central permission matrix in `src/modules/auth-rbac/domain/permissions.ts`
+- [X] T026 [US2] Implement server-side action authorization guard helper (`requirePermission`) in `src/modules/auth-rbac/services/auth-guard.ts`
+- [X] T027 [US2] Implement role assignment and revocation service with minor role restriction (`PLAYER` only if age < 18) in `src/modules/auth-rbac/services/role.service.ts`
+- [X] T028 [US2] Implement Admin role management UI in `src/app/(dashboard)/admin/members/[id]/roles/page.tsx`
 
 **Checkpoint**: User Stories 1 and 2 work together; all mutations protected by server-side RBAC guards.
 

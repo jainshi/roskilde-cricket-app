@@ -58,8 +58,21 @@
       "passwordsDoNotMatch": "Adgangskoderne stemmer ikke overens.",
       "sameAsCurrentPassword": "Den nye adgangskode skal være forskellig fra den nuværende midlertidige adgangskode.",
       "genericError": "Der opstod en uventet fejl. Prøv venligst igen.",
-      "consentRequired": "Du skal markere feltet for at acceptere privatlivspolitikken."
-    }
+      "consentRequired": "Du skal markere feltet for at acceptere privatlivspolitikken.",
+      "tokenExpiredOrInvalid": "Dette nulstillingslink er ugyldigt, udløbet eller allerede blevet benyttet."
+    },
+    "forgotPasswordTitle": "Glemt adgangskode",
+    "forgotPasswordSubtitle": "Indtast din e-mailadresse for at modtage et sikkert nulstillingslink",
+    "sendResetLink": "Send nulstillingslink",
+    "resetLinkSentTitle": "Tjek din indbakke",
+    "resetLinkSentBody": "Hvis en konto matcher den angivne e-mailadresse, har vi sendt instruktioner til at nulstille din adgangskode. Linket udløber om 1 time.",
+    "backToSignIn": "Tilbage til login",
+    "tokenResetTitle": "Opret ny adgangskode",
+    "tokenResetSubtitle": "Vælg en stærk adgangskode for at få adgang til din RCC-konto igen",
+    "tokenInvalidTitle": "Ugyldigt eller udløbet link",
+    "tokenInvalidBody": "Dette nulstillingslink er ugyldigt, udløbet eller allerede blevet brugt.",
+    "requestNewLink": "Anmod om et nyt link",
+    "passwordResetSuccessBanner": "Din adgangskode er blevet nulstillet. Log venligst ind med din nye adgangskode."
   },
   "dashboard": {
     "welcome": "Velkommen tilbage, {name}",
