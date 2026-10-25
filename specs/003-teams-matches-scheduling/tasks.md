@@ -79,14 +79,14 @@
 
 **Goal**: Deliver User Story 3 (P3) allowing players and parents to submit 1-tap availability RSVPs (`AVAILABLE`, `UNAVAILABLE`, `MAYBE`) with transport notes before cutoff deadlines, and providing Coaches with a Match Selection Console to pick configurable lineups (11 vs. 8–12) with simultaneous dual-parent alerts.
 
-- [ ] T032 [P] [US3] Define Zod validation schemas for RSVP submission and lineup selection in `src/modules/teams-matches/contracts/rsvp.contract.ts` and `src/modules/teams-matches/contracts/selection.contract.ts`
-- [ ] T033 [US3] Implement RSVP service in `src/modules/teams-matches/services/rsvp.service.ts` supporting 1-tap status submission, parental delegation verification via `validateDelegationAccess()`, transport notes, and cutoff deadline lock enforcement
-- [ ] T034 [US3] Implement match selection service in `src/modules/teams-matches/services/selection.service.ts` managing draft/published lineup states, configurable starting size validation, and simultaneous dual-parent notification dispatch via `NotificationService`
-- [ ] T035 [US3] Implement Server Actions in `src/modules/teams-matches/actions/rsvp.actions.ts` (`submitEventRsvpAction`) and `src/modules/teams-matches/actions/selection.actions.ts` (`saveMatchLineupDraftAction`, `publishMatchLineupAction`)
-- [ ] T036 [P] [US3] Build 1-tap mobile RSVP status bar in `src/components/events/rsvp-status-bar.tsx` with touch-friendly pills, transport note modal, and cutoff lock state indicator
-- [ ] T037 [US3] Build Match-Day Selection Console component in `src/components/events/match-selection-console.tsx` featuring player availability grouping, configurable starting lineup picker (11 vs. 8–12), substitute slots, and Captain/Vice-Captain/Wicketkeeper tactical role tags
-- [ ] T038 [US3] Build event detail and RSVP view in `src/app/(dashboard)/events/[id]/page.tsx` integrated with `HeaderProfileSwitcher` delegation for linked youth players
-- [ ] T039 [US3] Build match squad selection console route in `src/app/(dashboard)/events/[id]/selection/page.tsx`
+- [X] T032 [P] [US3] Define Zod validation schemas for RSVP submission and lineup selection in `src/modules/teams-matches/contracts/rsvp.contract.ts` and `src/modules/teams-matches/contracts/selection.contract.ts`
+- [X] T033 [US3] Implement RSVP service in `src/modules/teams-matches/services/rsvp.service.ts` supporting 1-tap status submission, parental delegation verification via `validateDelegationAccess()`, transport notes, and cutoff deadline lock enforcement
+- [X] T034 [US3] Implement match selection service in `src/modules/teams-matches/services/selection.service.ts` managing draft/published lineup states, configurable starting size validation, and simultaneous dual-parent notification dispatch via `NotificationService`
+- [X] T035 [US3] Implement Server Actions in `src/modules/teams-matches/actions/rsvp.actions.ts` (`submitEventRsvpAction`) and `src/modules/teams-matches/actions/selection.actions.ts` (`saveMatchLineupDraftAction`, `publishMatchLineupAction`)
+- [X] T036 [P] [US3] Build 1-tap mobile RSVP status bar in `src/components/events/rsvp-status-bar.tsx` with touch-friendly pills, transport note modal, and cutoff lock state indicator
+- [X] T037 [US3] Build Match-Day Selection Console component in `src/components/events/match-selection-console.tsx` featuring player availability grouping, configurable starting lineup picker (11 vs. 8–12), substitute slots, and Captain/Vice-Captain/Wicketkeeper tactical role tags
+- [X] T038 [US3] Build event detail and RSVP view in `src/app/(dashboard)/events/[id]/page.tsx` integrated with `HeaderProfileSwitcher` delegation for linked youth players
+- [X] T039 [US3] Build match squad selection console route in `src/app/(dashboard)/events/[id]/selection/page.tsx`
 
 **Checkpoint**: 1-tap mobile RSVP operates with parent delegation and cutoff locks; coaches can select and publish configurable lineups; dual-parent alerts dispatch reliably for selected minor players.
 
