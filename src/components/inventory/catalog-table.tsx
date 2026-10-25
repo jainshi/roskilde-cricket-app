@@ -148,19 +148,19 @@ export function CatalogTable({ items, isAdmin, isCoach }: CatalogTableProps) {
   return (
     <div className="space-y-4">
       {/* Search and Quick Filters Header */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-        <div className="relative md:col-span-5">
+      <div className="grid grid-cols-2 md:grid-cols-12 gap-2 sm:gap-3 items-center">
+        <div className="relative col-span-2 md:col-span-5">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search equipment by name, tag, location..."
-            className="pl-9 bg-slate-900 border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-sky-500"
+            className="pl-9 bg-slate-900 border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-sky-500 h-10"
           />
         </div>
 
         {/* Category Selector */}
-        <div className="md:col-span-3">
+        <div className="col-span-1 md:col-span-3">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -175,7 +175,7 @@ export function CatalogTable({ items, isAdmin, isCoach }: CatalogTableProps) {
         </div>
 
         {/* Status Selector */}
-        <div className="md:col-span-2">
+        <div className="col-span-1 md:col-span-2">
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
@@ -190,7 +190,7 @@ export function CatalogTable({ items, isAdmin, isCoach }: CatalogTableProps) {
         </div>
 
         {/* Low Stock Toggle Button */}
-        <div className="md:col-span-2 flex justify-end">
+        <div className="col-span-2 md:col-span-2 flex justify-end">
           <Button
             variant={onlyLowStock ? "destructive" : "outline"}
             size="sm"
@@ -229,8 +229,67 @@ export function CatalogTable({ items, isAdmin, isCoach }: CatalogTableProps) {
         )}
       </div>
 
-      {/* Main Catalog Table */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-xl backdrop-blur-sm">
+      {/* Mobile Card List View (Visible on < md) */}
+      <div className="space-y-2.5 md:hidden">
+        {filteredItems.length === 0 ? (
+          <div className="p-8 text-center bg-slate-900/60 rounded-xl border border-slate-800 text-slate-500">
+            <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm font-medium">No equipment found</p>
+            <p className="text-xs text-slate-500 mt-1">Try adjusting search or filters.</p>
+          </div>
+        ) : (
+          filteredItems.map((item) => (
+            <Link
+              key={item.id}
+              href={`/inventory/${item.id}`}
+              className="block p-3.5 rounded-xl border border-slate-800 bg-slate-900/70 hover:bg-slate-800/80 active:scale-[0.99] transition-all shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-white text-sm truncate">{item.name}</p>
+                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                    {item.assetTag ? (
+                      <span className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded bg-sky-950/80 text-sky-300 border border-sky-800/50">
+                        {item.assetTag}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-slate-400">Bulk Stock</span>
+                    )}
+                    <span className="text-[11px] text-slate-400">
+                      • {item.category.replace("_", " ")} ({item.ageGroup})
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span
+                    className={`text-base font-bold ${
+                      item.isLowStock ? "text-rose-400" : "text-emerald-400"
+                    }`}
+                  >
+                    {item.availableQuantity}
+                  </span>
+                  <span className="text-xs text-slate-400"> / {item.totalQuantity}</span>
+                </div>
+              </div>
+
+              <div className="mt-2.5 pt-2 border-t border-slate-800/70 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  {getStatusBadge(item.status)}
+                  <span className="text-slate-400 text-[11px] truncate max-w-[130px]">
+                    {item.storageLocation}
+                  </span>
+                </div>
+                <span className="text-sky-400 font-medium text-xs flex items-center gap-0.5">
+                  Details →
+                </span>
+              </div>
+            </Link>
+          ))
+        )}
+      </div>
+
+      {/* Main Desktop Catalog Table (Hidden on < md) */}
+      <div className="hidden md:block rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-xl backdrop-blur-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-200">
             <thead className="bg-[#0c2340]/90 text-xs font-semibold text-slate-300 uppercase tracking-wider border-b border-slate-800">

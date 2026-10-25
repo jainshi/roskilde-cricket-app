@@ -214,7 +214,7 @@ export function DirectoryBrowser({ initialMembers, currentUserId }: DirectoryBro
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
           {filteredMembers.map((member) => {
             const isSelf = member.id === currentUserId;
             const initials = `${member.firstName[0] || ""}${member.lastName[0] || ""}`.toUpperCase();
@@ -222,7 +222,7 @@ export function DirectoryBrowser({ initialMembers, currentUserId }: DirectoryBro
             return (
               <div
                 key={member.id}
-                className="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-5 shadow-lg flex flex-col justify-between transition-all hover:shadow-xl hover:bg-slate-900 group"
+                className="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-4 sm:p-5 shadow-lg flex flex-col justify-between transition-all hover:shadow-xl hover:bg-slate-900 group"
               >
                 <div>
                   {/* Card Header: Avatar & Name */}

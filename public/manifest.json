@@ -1,0 +1,21 @@
+{
+  "name": "Roskilde Cricket Club",
+  "short_name": "Roskilde CC",
+  "description": "Roskilde Cricket Club Official Members Portal",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/cyan-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/cyan-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

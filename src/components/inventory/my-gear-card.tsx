@@ -268,12 +268,12 @@ export function MyGearCard({
 
         {/* Action Buttons (For active loans only) */}
         {!isClosed && (
-          <div className="flex items-center justify-end gap-2.5 mt-4 pt-1">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 mt-4 pt-2 border-t border-slate-800/60">
             <Button
               size="sm"
               variant="outline"
               onClick={() => setShowDamageModal(true)}
-              className="text-xs border-slate-700 hover:bg-slate-800 text-slate-300 flex items-center gap-1.5"
+              className="text-xs border-slate-700 hover:bg-slate-800 text-slate-300 flex items-center justify-center gap-1.5 min-h-[38px]"
             >
               <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
               <span>Report Damage / Loss</span>
@@ -283,7 +283,7 @@ export function MyGearCard({
               size="sm"
               disabled={Boolean(loan.pendingExtension)}
               onClick={() => setShowExtensionModal(true)}
-              className="text-xs bg-sky-600 hover:bg-sky-500 text-white font-medium flex items-center gap-1.5"
+              className="text-xs bg-sky-600 hover:bg-sky-500 text-white font-medium flex items-center justify-center gap-1.5 min-h-[38px]"
             >
               <Calendar className="w-3.5 h-3.5" />
               <span>{loan.pendingExtension ? "Extension Requested" : "Request Extension"}</span>

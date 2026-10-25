@@ -59,60 +59,63 @@ export default async function InventoryPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Link href="/inventory/checkout">
+        {/* Quick Action Buttons: Horizontal scroll on mobile with touch snapping, flex-wrap on desktop */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap no-scrollbar">
+          <Link href="/inventory/checkout" className="shrink-0">
             <Button
               size="sm"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5 shadow-lg shadow-emerald-950/40"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium flex items-center gap-1.5 shadow-lg shadow-emerald-950/40 min-h-[38px]"
             >
               <ArrowRightLeft className="w-4 h-4" />
-              <span>Pitch-Side Check-Out</span>
+              <span>Pitch Check-Out</span>
             </Button>
           </Link>
 
-          <Link href="/inventory/checkin">
+          <Link href="/inventory/checkin" className="shrink-0">
             <Button
               size="sm"
               variant="outline"
-              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5 min-h-[38px]"
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>Check-In</span>
             </Button>
           </Link>
 
-          <Link href="/inventory/extensions">
+          <Link href="/inventory/extensions" className="shrink-0">
             <Button
               size="sm"
               variant="outline"
-              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5 min-h-[38px]"
             >
               <Clock className="w-4 h-4 text-sky-400" />
               <span>Extensions</span>
             </Button>
           </Link>
 
-          <Link href="/inventory/damage">
+          <Link href="/inventory/damage" className="shrink-0">
             <Button
               size="sm"
               variant="outline"
-              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5 min-h-[38px]"
             >
               <Wrench className="w-4 h-4 text-amber-400" />
               <span>Damage</span>
             </Button>
           </Link>
 
-          <OverdueRemindersTrigger />
+          <div className="shrink-0">
+            <OverdueRemindersTrigger />
+          </div>
 
           {isAdmin && (
-            <Link href="/inventory/new">
+            <Link href="/inventory/new" className="shrink-0">
               <Button
                 size="sm"
-                className="bg-sky-600 hover:bg-sky-500 text-white font-medium flex items-center gap-1.5 shadow-lg shadow-sky-950/40"
+                className="bg-sky-600 hover:bg-sky-500 text-white font-medium flex items-center gap-1.5 shadow-lg shadow-sky-950/40 min-h-[38px]"
               >
                 <PlusCircle className="w-4 h-4" />
-                <span>Add Equipment</span>
+                <span>Add Gear</span>
               </Button>
             </Link>
           )}
@@ -120,8 +123,8 @@ export default async function InventoryPage() {
       </div>
 
       {/* Metrics Summary Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3.5">
-        <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
+        <div className="p-3 sm:p-4 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
             <span>Total Catalog</span>
             <Package className="w-3.5 h-3.5 text-slate-500" />

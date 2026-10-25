@@ -19,30 +19,30 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-5 sm:space-y-8 animate-in fade-in duration-300">
       {/* Welcome Hero Banner with Official Club Navy/Blue gradient */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0c2340] via-slate-900 to-slate-900 border border-sky-500/30 p-6 sm:p-10 shadow-xl">
-        <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/40 text-xs font-semibold text-sky-200">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0c2340] via-slate-900 to-slate-900 border border-sky-500/30 p-4 sm:p-8 shadow-xl">
+        <div className="relative z-10 max-w-2xl space-y-2.5 sm:space-y-3">
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/40 text-[11px] sm:text-xs font-semibold text-sky-200">
             <Sparkles className="w-3.5 h-3.5 text-sky-400" />
             <span>{dict.dashboard.portalBadge}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
             {welcomeMessage}
           </h1>
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-300 leading-relaxed">
             Welcome to the official Roskilde Cricket Club member portal. View club fixtures, track team attendance, manage cricket statistics, and coordinate with teammates and coaches.
           </p>
 
           {/* Assigned Roles Badges */}
-          <div className="pt-2 flex flex-wrap items-center gap-2">
-            <span className="text-xs uppercase font-semibold text-slate-400 tracking-wider mr-1">
+          <div className="pt-1 sm:pt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span className="text-[11px] sm:text-xs uppercase font-semibold text-slate-400 tracking-wider mr-1">
               {dict.dashboard.yourRoles}:
             </span>
             {session.roles.map((role) => (
               <span
                 key={role}
-                className="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-950/70 border border-sky-600/50 text-sky-300"
+                className="px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-semibold bg-sky-950/70 border border-sky-600/50 text-sky-300"
               >
                 {dict.roles[role] || role}
               </span>
@@ -58,18 +58,18 @@ export default async function DashboardPage() {
 
       {/* Admin Quick Actions Card */}
       {isAdmin && (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-sky-400" />
-            <h2 className="text-xl font-bold text-white tracking-tight">
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-sky-400" />
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
               {dict.dashboard.adminTools}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             <Link
               href="/admin/members"
-              className="group block transition-transform duration-200 hover:-translate-y-1 focus:outline-none"
+              className="group block transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.99] focus:outline-none"
             >
               <Card className="h-full bg-slate-900/80 border-slate-800 hover:border-sky-500/60 transition-colors shadow-lg shadow-black/40">
                 <CardHeader>
