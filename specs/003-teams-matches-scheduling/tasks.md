@@ -44,15 +44,15 @@
 
 **Goal**: Deliver User Story 1 (P1) allowing Administrators and Coaches to create teams and age-group squads, assign coaching staff and team captains, manage player rosters with automated age-eligibility validation, and integrate with App Launcher Grid navigation.
 
-- [ ] T015 [P] [US1] Define Zod validation schemas for squad and roster operations in `src/modules/teams-matches/contracts/squad.contract.ts`
-- [ ] T016 [US1] Implement squad and roster management service in `src/modules/teams-matches/services/squad.service.ts` supporting squad CRUD, coach staff assignments, roster memberships, and age-eligibility checks
-- [ ] T017 [US1] Implement Server Actions in `src/modules/teams-matches/actions/squad.actions.ts` (`createSquadAction`, `updateSquadAction`, `assignRosterMemberAction`, `removeRosterMemberAction`, `assignSquadCoachesAction`) with central RBAC session validation
-- [ ] T018 [P] [US1] Build filterable squad roster table in `src/components/teams/squad-roster-table.tsx` with role badges, age categories, jersey numbers, and batting/bowling attributes
-- [ ] T019 [P] [US1] Build squad card component in `src/components/teams/squad-card.tsx` displaying category badges, coach leadership, and active player counts
-- [ ] T020 [US1] Build add roster member dialog with automated age-eligibility alerts in `src/components/teams/add-roster-member-dialog.tsx`
-- [ ] T021 [US1] Build squad directory page in `src/app/(dashboard)/teams/page.tsx` and squad creation page in `src/app/(dashboard)/teams/new/page.tsx`
-- [ ] T022 [US1] Build squad details and roster management page in `src/app/(dashboard)/teams/[id]/page.tsx` and `src/app/(dashboard)/teams/[id]/roster/page.tsx`
-- [ ] T023 [US1] Update App Launcher Grid in `src/components/navigation/app-launcher-grid.tsx` with high-visibility shortcut to `/teams`
+- [X] T015 [P] [US1] Define Zod validation schemas for squad and roster operations in `src/modules/teams-matches/contracts/squad.contract.ts`
+- [X] T016 [US1] Implement squad and roster management service in `src/modules/teams-matches/services/squad.service.ts` supporting squad CRUD, coach staff assignments, roster memberships, and age-eligibility checks
+- [X] T017 [US1] Implement Server Actions in `src/modules/teams-matches/actions/squad.actions.ts` (`createSquadAction`, `updateSquadAction`, `assignRosterMemberAction`, `removeRosterMemberAction`, `assignSquadCoachesAction`) with central RBAC session validation
+- [X] T018 [P] [US1] Build filterable squad roster table in `src/components/teams/squad-roster-table.tsx` with role badges, age categories, jersey numbers, and batting/bowling attributes
+- [X] T019 [P] [US1] Build squad card component in `src/components/teams/squad-card.tsx` displaying category badges, coach leadership, and active player counts
+- [X] T020 [US1] Build add roster member dialog with automated age-eligibility alerts in `src/components/teams/add-roster-member-dialog.tsx`
+- [X] T021 [US1] Build squad directory page in `src/app/(dashboard)/teams/page.tsx` and squad creation page in `src/app/(dashboard)/teams/new/page.tsx`
+- [X] T022 [US1] Build squad details and roster management page in `src/app/(dashboard)/teams/[id]/page.tsx` and `src/app/(dashboard)/teams/[id]/roster/page.tsx`
+- [X] T023 [US1] Update App Launcher Grid in `src/components/navigation/app-launcher-grid.tsx` with high-visibility shortcut to `/teams`
 
 **Checkpoint**: Administrators and coaches can manage squads and rosters; age eligibility prevents junior misallocations while permitting senior multi-squad play; navigates seamlessly from App Launcher Grid.
 

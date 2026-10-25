@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   BookOpen,
   User,
+  Shield,
   ShieldAlert,
   Package,
   ArrowRightLeft,
@@ -174,7 +175,26 @@ export function MobileDrawer({
               </div>
             </Link>
 
-            {/* 2. My Gear */}
+            {/* 2. Teams & Squads */}
+            <Link
+              href="/teams"
+              onClick={onClose}
+              className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                isActive("/teams") || pathname.startsWith("/teams/")
+                  ? "bg-emerald-500/15 border-emerald-500/40 text-white shadow-md shadow-emerald-950/30"
+                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2">
+                <Shield className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white leading-tight">Teams &amp; Squads</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Rosters &amp; captains</p>
+              </div>
+            </Link>
+
+            {/* 3. My Gear */}
             <Link
               href="/profile/gear"
               onClick={onClose}

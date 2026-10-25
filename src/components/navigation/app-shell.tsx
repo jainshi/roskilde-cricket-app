@@ -12,6 +12,7 @@ import {
   Users,
   UserPlus,
   ShieldAlert,
+  Shield,
   LogOut,
   Menu,
 } from "lucide-react";
@@ -107,6 +108,18 @@ export function AppShell({
               >
                 <LayoutDashboard className="w-4 h-4 text-sky-400" />
                 <span>Dashboard</span>
+              </Link>
+
+              <Link
+                href="/teams"
+                className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                  isNavActive("/teams")
+                    ? "bg-slate-800 text-white font-medium"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                }`}
+              >
+                <Shield className="w-4 h-4 text-emerald-400" />
+                <span>Teams</span>
               </Link>
 
               <Link
