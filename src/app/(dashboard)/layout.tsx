@@ -4,7 +4,7 @@ import Image from "next/image";
 import { requireActivatedSession } from "@/modules/auth-rbac/services/session-guard";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, UserPlus, Users, ArrowRightLeft, BookOpen, User } from "lucide-react";
+import { LogOut, LayoutDashboard, UserPlus, Users, ArrowRightLeft, BookOpen, User, ShieldAlert } from "lucide-react";
 import { getActiveContext } from "@/modules/auth-rbac/services/context.service";
 import { getLinkedYouthForParent } from "@/modules/auth-rbac/services/parent-child.service";
 import { ProfileSwitcher } from "@/components/profile-switcher";
@@ -93,6 +93,13 @@ export default async function DashboardLayout({
                   >
                     <UserPlus className="w-4 h-4 text-sky-400" />
                     <span>{dict.dashboard.onboardMember}</span>
+                  </Link>
+                  <Link
+                    href="/admin/gdpr"
+                    className="px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors flex items-center gap-1.5"
+                  >
+                    <ShieldAlert className="w-4 h-4 text-rose-400" />
+                    <span>GDPR Console</span>
                   </Link>
                 </>
               )}

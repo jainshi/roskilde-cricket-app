@@ -62,16 +62,31 @@ export default async function MemberProfilePage({ params }: ProfilePageProps) {
           </div>
         </div>
 
-        {/* Action Link to Admin Members if Admin */}
-        {session.roles.includes("ADMIN") && (
+        {/* Action Links */}
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-center">
           <Link
-            href="/admin/members"
-            className="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1.5 self-start sm:self-center"
+            href="/profile/security"
+            className="text-xs text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 px-3 py-1.5 rounded-lg border border-slate-700 font-semibold flex items-center gap-1.5 transition-colors"
           >
-            <Shield className="w-3.5 h-3.5" />
-            <span>Admin Roster</span>
+            <Shield className="w-3.5 h-3.5 text-sky-400" />
+            <span>Security</span>
           </Link>
-        )}
+          <Link
+            href="/profile/privacy"
+            className="text-xs text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 px-3 py-1.5 rounded-lg border border-slate-700 font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <Shield className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Privacy &amp; GDPR</span>
+          </Link>
+          {session.roles.includes("ADMIN") && (
+            <Link
+              href="/admin/members"
+              className="text-xs text-sky-400 hover:text-sky-300 bg-sky-950/60 px-3 py-1.5 rounded-lg border border-sky-800/60 font-semibold flex items-center gap-1.5"
+            >
+              <span>Admin Roster</span>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Main Profile Edit Form */}

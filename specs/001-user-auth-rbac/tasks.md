@@ -144,13 +144,13 @@
 **Independent Test**: Request password reset for existing email; verify generic success message; open emailed token link; reset password; verify old password rejected; verify "Sign out everywhere" terminates sessions across other devices.
 
 ### Tests for User Story 6
-- [ ] T045 [P] [US6] Unit test for password reset token lifecycle (single-use, 1-hour expiry, session invalidation) in `tests/unit/password-reset-lifecycle.test.ts`
+- [X] T045 [P] [US6] Unit test for password reset token lifecycle (single-use, 1-hour expiry, session invalidation) in `tests/unit/password-reset-lifecycle.test.ts`
 
 ### Implementation for User Story 6
-- [ ] T046 [US6] Implement tokenized password reset request and execution service with rate limiting in `src/modules/auth-rbac/services/password-reset.service.ts`
-- [ ] T047 [US6] Create Forgot Password request page (`/forgot-password`) with identical confirmation message in `src/app/(auth)/forgot-password/page.tsx`
-- [ ] T048 [US6] Create Password Reset token consumption page (`/reset-password/[token]`) in `src/app/(auth)/reset-password/[token]/page.tsx`
-- [ ] T049 [US6] Add "Sign out everywhere" action to profile/security settings revoking all active user sessions in `src/app/(dashboard)/profile/security/page.tsx`
+- [X] T046 [US6] Implement tokenized password reset request and execution service with rate limiting in `src/modules/auth-rbac/services/password-reset.service.ts`
+- [X] T047 [US6] Create Forgot Password request page (`/forgot-password`) with identical confirmation message in `src/app/(auth)/forgot-password/page.tsx`
+- [X] T048 [US6] Create Password Reset token consumption page (`/reset-password/[token]`) in `src/app/(auth)/reset-password/[token]/page.tsx`
+- [X] T049 [US6] Add "Sign out everywhere" action to profile/security settings revoking all active user sessions in `src/app/(dashboard)/profile/security/page.tsx`
 
 **Checkpoint**: Self-service reset and multi-device revocation fully working.
 
@@ -163,13 +163,13 @@
 **Independent Test**: Request data export as member and verify generated JSON/CSV package; submit deletion request for member; approve as Admin; verify personal info purged immediately and member converted to anonymized shell ("Former Member #123") with credentials revoked.
 
 ### Tests for User Story 7
-- [ ] T050 [P] [US7] Unit test for GDPR data anonymization logic (purge personal data, retain stats shell, sever parent links) in `tests/unit/gdpr-anonymization.test.ts`
+- [X] T050 [P] [US7] Unit test for GDPR data anonymization logic (purge personal data, retain stats shell, sever parent links) in `tests/unit/gdpr-anonymization.test.ts`
 
 ### Implementation for User Story 7
-- [ ] T051 [P] [US7] Implement GDPR data export generator assembling profile, roles, consent, and audit logs in `src/modules/auth-rbac/services/gdpr-export.service.ts`
-- [ ] T052 [US7] Implement GDPR account deletion and immediate anonymization service in `src/modules/auth-rbac/services/gdpr-deletion.service.ts`
-- [ ] T053 [US7] Create member GDPR privacy & export request UI in `src/app/(dashboard)/profile/privacy/page.tsx`
-- [ ] T054 [US7] Create Admin GDPR deletion requests review and execution dashboard in `src/app/(dashboard)/admin/gdpr/page.tsx`
+- [X] T051 [P] [US7] Implement GDPR data export generator assembling profile, roles, consent, and audit logs in `src/modules/auth-rbac/services/gdpr-export.service.ts`
+- [X] T052 [US7] Implement GDPR account deletion and immediate anonymization service in `src/modules/auth-rbac/services/gdpr-deletion.service.ts`
+- [X] T053 [US7] Create member GDPR privacy & export request UI in `src/app/(dashboard)/profile/privacy/page.tsx`
+- [X] T054 [US7] Create Admin GDPR deletion requests review and execution dashboard in `src/app/(dashboard)/admin/gdpr/page.tsx`
 
 **Checkpoint**: Full GDPR compliance workflows (export, consent, deletion/anonymization) operational.
 
@@ -179,10 +179,10 @@
 
 **Purpose**: Audit logging integration, mobile performance verification, quickstart validation, and seed script.
 
-- [ ] T055 [P] Implement centralized immutable `AuditLog` recording service in `src/modules/auth-rbac/services/audit.service.ts`
-- [ ] T056 [P] Create initial database seed script creating default Super Admin, test Coach, and test youth players in `prisma/seed.ts`
-- [ ] T057 [P] Run mobile performance check and verify initial route bundle sizes stay under 200KB JS budget
-- [ ] T058 Execute end-to-end walkthrough following `specs/001-user-auth-rbac/quickstart.md` and verify all scenarios pass
+- [X] T055 [P] Implement centralized immutable `AuditLog` recording service in `src/modules/auth-rbac/services/audit.service.ts`
+- [X] T056 [P] Create initial database seed script creating default Super Admin, test Coach, and test youth players in `prisma/seed.ts`
+- [X] T057 [P] Run mobile performance check and verify initial route bundle sizes stay under 200KB JS budget
+- [X] T058 Execute end-to-end walkthrough following `specs/001-user-auth-rbac/quickstart.md` and verify all scenarios pass
 
 ---
 

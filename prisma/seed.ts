@@ -69,8 +69,99 @@ async function main() {
   console.log(`   - Profile ID: ${profile.id}`);
   console.log(`   - Email: ${adminEmail}`);
   console.log(`   - Temporary Password: ${tempPassword}`);
-  console.log(`   - mustResetPassword: true`);
-  console.log(`   - Expires at: ${tempExpiry.toISOString()}`);
+
+  // Seed Test Coach
+  const coachEmail = "coach@roskildecricket.dk";
+  const existingCoach = await prisma.userAccount.findUnique({ where: { email: coachEmail } });
+  if (!existingCoach) {
+    const coachHash = await argon2.hash("RccCoach26", { type: argon2.argon2id });
+    await prisma.memberProfile.create({
+      data: {
+        firstName: "Henrik",
+        lastName: "Mortensen",
+        email: coachEmail,
+        phone: "+45 22 33 44 55",
+        dateOfBirth: new Date("1980-05-12"),
+        roleAssignments: { create: { role: "COACH" } },
+        battingPosition: "MIDDLE_ORDER",
+        bowlingStyle: "RIGHT_ARM_MEDIUM",
+        privacySettings: { create: { showEmailInDirectory: true, showPhoneInDirectory: true } },
+        userAccount: {
+          create: {
+            email: coachEmail,
+            passwordHash: coachHash,
+            status: "ACTIVE",
+            mustResetPassword: false,
+          },
+        },
+      },
+    });
+    console.log(`✅ Test Coach created: ${coachEmail} / RccCoach26`);
+  }
+
+  // Seed Test Parent and Linked Youth Player
+  const parentEmail = "parent@roskildecricket.dk";
+  const existingParent = await prisma.userAccount.findUnique({ where: { email: parentEmail } });
+  if (!existingParent) {
+    const parentHash = await argon2.hash("RccParent26", { type: argon2.argon2id });
+    const parentProfile = await prisma.memberProfile.create({
+      data: {
+        firstName: "Søren",
+        lastName: "Hansen",
+        email: parentEmail,
+        phone: "+45 33 44 55 66",
+        dateOfBirth: new Date("1983-09-20"),
+        roleAssignments: { create: { role: "PARENT" } },
+        privacySettings: { create: { showEmailInDirectory: false, showPhoneInDirectory: false } },
+        userAccount: {
+          create: {
+            email: parentEmail,
+            passwordHash: parentHash,
+            status: "ACTIVE",
+            mustResetPassword: false,
+          },
+        },
+      },
+    });
+
+    // Create linked Youth Player (12 years old, no login account)
+    const youthProfile = await prisma.memberProfile.create({
+      data: {
+        firstName: "Lucas",
+        lastName: "Hansen",
+        dateOfBirth: new Date("2014-04-10"),
+        roleAssignments: { create: { role: "PLAYER" } },
+        battingPosition: "TOP_ORDER",
+        bowlingStyle: "RIGHT_ARM_FAST",
+        shirtSize: "YOUTH_M",
+        trouserSize: "YOUTH_M",
+        capSize: "YOUTH_M",
+        parentLinksAsPlayer: {
+          create: {
+            parentId: parentProfile.id,
+            slot: 1,
+            relationship: "Father",
+          },
+        },
+        emergencyContacts: {
+          create: {
+            name: "Søren Hansen",
+            relationship: "Father",
+            phone: "+45 33 44 55 66",
+            isPrimary: true,
+          },
+        },
+        privacySettings: {
+          create: {
+            showEmailInDirectory: false,
+            showPhoneInDirectory: false,
+            showAddressInDirectory: false,
+          },
+        },
+      },
+    });
+    console.log(`✅ Test Parent created: ${parentEmail} / RccParent26 with linked youth Lucas Hansen (ID: ${youthProfile.id})`);
+  }
 }
 
 main()
