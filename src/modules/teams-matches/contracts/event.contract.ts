@@ -163,3 +163,63 @@ export const checkFacilityConflictSchema = z.object({
 });
 
 export type CheckFacilityConflictInput = z.infer<typeof checkFacilityConflictSchema>;
+
+/**
+ * Schema for recurring training schedules (e.g. every Sunday 08:00-10:00 for U13 & U15)
+ */
+export const createRecurringTrainingScheduleSchema = z
+  .object({
+    teamSquadIds: z
+      .array(z.string().uuid("Invalid squad ID"))
+      .min(1, "Select at least one squad"),
+    facilityId: z.string().uuid("Invalid facility ID").optional().nullable(),
+    trainingType: trainingTypeEnum.default("INDOOR_WINTER"),
+    titlePrefix: z.string().trim().max(100).optional().nullable(),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    daysOfWeek: z
+      .array(z.coerce.number().int().min(0).max(6))
+      .min(1, "Select at least one day of the week"),
+    startTime: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)"),
+    endTime: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)"),
+    meetTime: z
+      .string()
+      .regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)")
+      .optional()
+      .nullable(),
+    rsvpHoursBefore: z.coerce.number().int().min(1).max(168).default(24),
+    collisionOverrideReason: z
+      .string()
+      .trim()
+      .min(5, "Override reason must be at least 5 characters")
+      .max(300)
+      .optional()
+      .nullable(),
+    skipConflictingDates: z.boolean().default(false),
+  })
+  .refine(
+    (data) => {
+      const [sh, sm] = data.startTime.split(":").map(Number);
+      const [eh, em] = data.endTime.split(":").map(Number);
+      return sh * 60 + sm < eh * 60 + em;
+    },
+    {
+      message: "End time must be later than start time",
+      path: ["endTime"],
+    }
+  )
+  .refine(
+    (data) => {
+      return (
+        new Date(data.startDate).getTime() <= new Date(data.endDate).getTime()
+      );
+    },
+    {
+      message: "End date must be after or equal to start date",
+      path: ["endDate"],
+    }
+  );
+
+export type CreateRecurringTrainingScheduleInput = z.infer<
+  typeof createRecurringTrainingScheduleSchema
+>;

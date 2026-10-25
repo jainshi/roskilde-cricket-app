@@ -3,6 +3,7 @@ import {
   CreateScheduledEventInput,
   UpdateScheduledEventInput,
   UpdateEventLifecycleStatusInput,
+  CreateRecurringTrainingScheduleInput,
 } from "../contracts/event.contract";
 import {
   evaluateFacilityConflict,
@@ -464,3 +465,202 @@ export async function listScheduledEvents(params: {
     };
   });
 }
+
+/**
+ * Creates a recurring weekly training schedule across one or more squads
+ * (e.g. Indoor training every Sunday 08:00-10:00 for U13 & U15, or Saturday 10:00-12:00 for seniors).
+ */
+export async function createRecurringTrainingSchedule(
+  input: CreateRecurringTrainingScheduleInput,
+  callerProfileId: string,
+  callerRole: "ADMIN" | "COACH" | "AD_HOC_COACH" | "PLAYER" | "PARENT"
+) {
+  // 1. Fetch targeted squads and active rosters
+  const squads = await prisma.teamSquad.findMany({
+    where: { id: { in: input.teamSquadIds }, isActive: true },
+    include: {
+      roster: {
+        where: { isActive: true },
+        select: { memberProfileId: true },
+      },
+    },
+  });
+
+  if (squads.length === 0) {
+    throw new Error("No active squads found for the specified IDs.");
+  }
+
+  // 2. Compute matching dates between startDate and endDate
+  const startDate = new Date(input.startDate);
+  const endDate = new Date(input.endDate);
+  const daysSet = new Set(input.daysOfWeek);
+
+  const matchedDates: Date[] = [];
+  const current = new Date(startDate);
+  current.setHours(12, 0, 0, 0);
+  const endComp = new Date(endDate);
+  endComp.setHours(23, 59, 59, 999);
+
+  while (current <= endComp) {
+    if (daysSet.has(current.getDay())) {
+      matchedDates.push(new Date(current));
+    }
+    current.setDate(current.getDate() + 1);
+  }
+
+  if (matchedDates.length === 0) {
+    throw new Error(
+      "No calendar dates match the selected days of week in this date range."
+    );
+  }
+
+  // 3. If facility is reserved, fetch existing non-cancelled events
+  let existingBookings: TimeInterval[] = [];
+  if (input.facilityId) {
+    const rawEvents = await prisma.scheduledEvent.findMany({
+      where: {
+        facilityId: input.facilityId,
+        lifecycleStatus: { not: "CANCELLED" },
+        startAt: {
+          gte: new Date(startDate.getTime() - 24 * 60 * 60 * 1000),
+          lte: new Date(endDate.getTime() + 48 * 60 * 60 * 1000),
+        },
+      },
+      select: {
+        id: true,
+        facilityId: true,
+        title: true,
+        startAt: true,
+        endAt: true,
+        lifecycleStatus: true,
+        facility: { select: { name: true } },
+      },
+    });
+
+    existingBookings = rawEvents.map((e) => ({
+      id: e.id,
+      facilityId: e.facilityId!,
+      facilityName: e.facility?.name,
+      title: e.title,
+      startAt: e.startAt,
+      endAt: e.endAt,
+      lifecycleStatus: e.lifecycleStatus,
+    }));
+  }
+
+  // 4. Generate events for each date
+  let createdCount = 0;
+  let skippedCount = 0;
+  const [startH, startM] = input.startTime.split(":").map(Number);
+  const [endH, endM] = input.endTime.split(":").map(Number);
+  const [meetH, meetM] = input.meetTime
+    ? input.meetTime.split(":").map(Number)
+    : [null, null];
+
+  for (const dateObj of matchedDates) {
+    const y = dateObj.getFullYear();
+    const m = dateObj.getMonth();
+    const d = dateObj.getDate();
+
+    const startAt = new Date(y, m, d, startH, startM, 0, 0);
+    const endAt = new Date(y, m, d, endH, endM, 0, 0);
+    const meetAt =
+      meetH !== null && meetM !== null ? new Date(y, m, d, meetH, meetM, 0, 0) : null;
+    const rsvpDeadlineAt = new Date(
+      startAt.getTime() - input.rsvpHoursBefore * 60 * 60 * 1000
+    );
+    const dateOnly = new Date(y, m, d, 0, 0, 0, 0);
+
+    // Collision check against pre-existing facility bookings
+    let hasConflict = false;
+
+    if (input.facilityId) {
+      const conflictResult = evaluateFacilityConflict({
+        candidate: { facilityId: input.facilityId, startAt, endAt },
+        existingEvents: existingBookings,
+        userRole: callerRole,
+        collisionOverrideReason: input.collisionOverrideReason,
+      });
+
+      if (conflictResult.hasConflict) {
+        if (!conflictResult.isAllowed) {
+          if (input.skipConflictingDates) {
+            skippedCount++;
+            continue;
+          } else {
+            throw new Error(
+              `Conflict on ${dateOnly.toLocaleDateString()}: ${conflictResult.reason}`
+            );
+          }
+        } else if (conflictResult.isOverride) {
+          hasConflict = true;
+        }
+      }
+    }
+
+    const squadNames = squads.map((s) => s.name).join(" & ");
+    const defaultLabel =
+      input.trainingType === "INDOOR_WINTER"
+        ? "Indoor Winter Training"
+        : input.trainingType === "NET_PRACTICE"
+        ? "Net Practice"
+        : input.trainingType === "FIELDING_FITNESS"
+        ? "Fielding & Fitness"
+        : "Open Nets";
+
+    for (const squad of squads) {
+      const sessionTitle = input.titlePrefix
+        ? squads.length > 1
+          ? `${input.titlePrefix.trim()} (${squadNames})`
+          : input.titlePrefix.trim()
+        : `${squad.name} ${defaultLabel}`;
+
+      await prisma.$transaction(async (tx) => {
+        const ev = await tx.scheduledEvent.create({
+          data: {
+            teamSquadId: squad.id,
+            facilityId: input.facilityId ?? null,
+            eventType: "TRAINING",
+            trainingType: input.trainingType,
+            title: sessionTitle,
+            date: dateOnly,
+            meetAt,
+            startAt,
+            endAt,
+            isHome: true,
+            rsvpDeadlineAt,
+            targetLineupSize: squad.defaultLineupSize,
+            createdById: callerProfileId,
+            ...(hasConflict && {
+              collisionOverrideById: callerProfileId,
+              collisionOverrideReason: input.collisionOverrideReason,
+              collisionOverrideAt: new Date(),
+            }),
+          },
+        });
+
+        if (squad.roster.length > 0) {
+          await tx.eventRsvp.createMany({
+            data: squad.roster.map((r) => ({
+              scheduledEventId: ev.id,
+              memberProfileId: r.memberProfileId,
+              submittedById: callerProfileId,
+              status: "NO_RESPONSE" as const,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      });
+
+      createdCount++;
+    }
+  }
+
+  return {
+    success: true,
+    createdCount,
+    skippedCount,
+    totalDatesEvaluated: matchedDates.length,
+  };
+}
+

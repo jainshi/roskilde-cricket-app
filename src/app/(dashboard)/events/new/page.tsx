@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireActivatedSession } from "@/modules/auth-rbac/services/session-guard";
 import { prisma } from "@/lib/db";
-import { EventForm } from "@/components/events/event-form";
+import { NewEventTabs } from "@/components/events/new-event-tabs";
 import { Calendar, ArrowLeft } from "lucide-react";
 
 export const metadata = {
@@ -93,8 +93,8 @@ export default async function NewEventPage() {
         </div>
       </div>
 
-      {/* Main Scheduling Form */}
-      <EventForm
+      {/* Main Scheduling Form & Recurring Tabs */}
+      <NewEventTabs
         squads={squads}
         facilities={facilities}
         equipmentLoans={formattedLoans}
