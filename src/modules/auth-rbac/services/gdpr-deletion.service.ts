@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { computeAnonymizedShell } from "../domain/anonymization-rules";
 import { validateDelegationAccess } from "../domain/delegation-rules";
 import { notificationService } from "../notifications/notification.service";
+import { hasActiveOrOverdueLoans } from "@/modules/inventory/services/inventory-gdpr.service";
 
 export interface DeletionRequestItem {
   id: string;
@@ -70,6 +71,12 @@ export async function requestMemberDeletion(params: {
 
   if (!target || target.isAnonymized) {
     throw new Error("Target profile is not active or already anonymized.");
+  }
+
+  // Cross-Module Inventory Safeguard: Block deletion requests if active/overdue equipment loans exist
+  const loanCheck = await hasActiveOrOverdueLoans(targetProfileId);
+  if (loanCheck.hasActiveLoans) {
+    throw new Error(loanCheck.blockingReason || "Cannot request account deletion: active equipment loans must be returned first.");
   }
 
   // 2. Log deletion request in AuditLog
@@ -149,6 +156,12 @@ export async function executeMemberAnonymization(params: {
 
   if (target.isAnonymized) {
     throw new Error("This profile has already been anonymized.");
+  }
+
+  // Cross-Module Inventory Safeguard: Block irreversible anonymization if active/overdue equipment loans exist
+  const loanCheck = await hasActiveOrOverdueLoans(targetProfileId);
+  if (loanCheck.hasActiveLoans) {
+    throw new Error(loanCheck.blockingReason || "Cannot anonymize member: active or overdue equipment loans must be returned first.");
   }
 
   const shell = computeAnonymizedShell(target);

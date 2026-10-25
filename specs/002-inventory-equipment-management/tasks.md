@@ -88,13 +88,13 @@
 
 **Goal**: Automate overdue return reminders with 24-hour notification cooldowns, dispatch simultaneous notices to linked parents, and prevent GDPR account deletion if active loans exist.
 
-- [ ] T032 [P] Implement reminder evaluation and dispatch service in `src/modules/inventory/services/reminder.service.ts` identifying overdue loans, checking the 24-hour cooldown, and sending dual-parent emails via `NotificationService`
-- [ ] T033 Implement Server Action in `src/modules/inventory/actions/reminder.actions.ts` for on-demand console reminder dispatch
-- [ ] T034 Build secured Route Handler in `src/app/api/inventory/cron/overdue/route.ts` with `Bearer ${CRON_SECRET}` authentication for automated daily scheduled execution
-- [ ] T035 Implement cross-module GDPR guard in `src/modules/inventory/services/inventory-gdpr.service.ts` checking for active or overdue loans on target members and their linked minor children
-- [ ] T036 Integrate `hasActiveOrOverdueLoans()` into `src/modules/auth-rbac/services/gdpr-deletion.service.ts` to block GDPR erasure when outstanding equipment exists, while retaining historical returned loans on the `"Former Member #..."` shell
-- [ ] T037 [P] Implement unit tests in `tests/unit/inventory/inventory-gdpr-guard.test.ts` verifying erasure blocking on active loans and success on returned loans
-- [ ] T038 Execute full verification gate across the entire codebase (`npx tsc --noEmit`, `npm run test:unit`, and `npm run build`)
+- [X] T032 [P] Implement reminder evaluation and dispatch service in `src/modules/inventory/services/reminder.service.ts` identifying overdue loans, checking the 24-hour cooldown, and sending dual-parent emails via `NotificationService`
+- [X] T033 Implement Server Action in `src/modules/inventory/actions/reminder.actions.ts` for on-demand console reminder dispatch
+- [X] T034 Build secured Route Handler in `src/app/api/inventory/cron/overdue/route.ts` with `Bearer ${CRON_SECRET}` authentication for automated daily scheduled execution
+- [X] T035 Implement cross-module GDPR guard in `src/modules/inventory/services/inventory-gdpr.service.ts` checking for active or overdue loans on target members and their linked minor children
+- [X] T036 Integrate `hasActiveOrOverdueLoans()` into `src/modules/auth-rbac/services/gdpr-deletion.service.ts` to block GDPR erasure when outstanding equipment exists, while retaining historical returned loans on the `"Former Member #..."` shell
+- [X] T037 [P] Implement unit tests in `tests/unit/inventory/inventory-gdpr-guard.test.ts` verifying erasure blocking on active loans and success on returned loans
+- [X] T038 Execute full verification gate across the entire codebase (`npx tsc --noEmit`, `npm run test:unit`, and `npm run build`)
 
 **Checkpoint**: Overdue escalation automated with 24h cooldown; GDPR Article 17 guard protects club assets; entire application builds cleanly.
 

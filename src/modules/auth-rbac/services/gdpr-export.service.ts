@@ -64,6 +64,31 @@ export interface GdprExportPackage {
     timestamp: string;
     role: "ACTOR" | "TARGET";
   }[];
+  equipmentLoansHistory: {
+    id: string;
+    itemName: string;
+    assetTag: string | null;
+    category: string;
+    quantity: number;
+    status: string;
+    checkedOutAt: string;
+    expectedReturnAt: string;
+    returnedAt: string | null;
+    checkoutCondition: string;
+    returnCondition: string | null;
+    extensions: {
+      proposedReturnAt: string;
+      reason: string;
+      status: string;
+      reviewedAt: string | null;
+    }[];
+    damageReports: {
+      severity: string;
+      description: string;
+      status: string;
+      createdAt: string;
+    }[];
+  }[];
 }
 
 /**
@@ -132,6 +157,16 @@ export async function generateGdprExport(params: {
       actionsTargeted: {
         take: 50,
         orderBy: { createdAt: "desc" },
+      },
+      borrowedEquipment: {
+        include: {
+          equipmentItem: {
+            select: { name: true, assetTag: true, category: true },
+          },
+          extensions: true,
+          damageReports: true,
+        },
+        orderBy: { checkedOutAt: "desc" },
       },
     },
   });
@@ -231,6 +266,31 @@ export async function generateGdprExport(params: {
         role: "TARGET" as const,
       })),
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
+    equipmentLoansHistory: target.borrowedEquipment.map((loan) => ({
+      id: loan.id,
+      itemName: loan.equipmentItem.name,
+      assetTag: loan.equipmentItem.assetTag,
+      category: loan.equipmentItem.category,
+      quantity: loan.quantity,
+      status: loan.status,
+      checkedOutAt: loan.checkedOutAt.toISOString(),
+      expectedReturnAt: loan.expectedReturnAt.toISOString(),
+      returnedAt: loan.returnedAt?.toISOString() || null,
+      checkoutCondition: loan.checkoutCondition,
+      returnCondition: loan.returnCondition || null,
+      extensions: loan.extensions.map((ext) => ({
+        proposedReturnAt: ext.proposedReturnAt.toISOString(),
+        reason: ext.reason,
+        status: ext.status,
+        reviewedAt: ext.reviewedAt?.toISOString() || null,
+      })),
+      damageReports: loan.damageReports.map((dr) => ({
+        severity: dr.severity,
+        description: dr.description,
+        status: dr.status,
+        createdAt: dr.createdAt.toISOString(),
+      })),
+    })),
   };
 
   // 4. Log export event

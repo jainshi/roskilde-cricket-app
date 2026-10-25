@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { requireActivatedSession } from "@/modules/auth-rbac/services/session-guard";
 import { getEquipmentCatalog } from "@/modules/inventory/services/catalog.service";
 import { CatalogTable } from "@/components/inventory/catalog-table";
+import { OverdueRemindersTrigger } from "@/components/inventory/overdue-reminders-trigger";
 import { Button } from "@/components/ui/button";
 import {
   Package,
@@ -101,6 +102,8 @@ export default async function InventoryPage() {
               <span>Damage</span>
             </Button>
           </Link>
+
+          <OverdueRemindersTrigger />
 
           {isAdmin && (
             <Link href="/inventory/new">
