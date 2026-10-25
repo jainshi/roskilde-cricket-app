@@ -12,10 +12,10 @@
 
 **Goal**: Establish the relational data schema for all teams, age-group squads, club facilities, scheduled fixtures/trainings, RSVPs, match selections, and pitch-side attendances; generate Prisma client types and provide realistic seed data for Roskilde Cricket Club.
 
-- [ ] T001 Define Module 3 Enums (`SquadCategory`, `SquadStaffRole`, `RosterRole`, `FacilityType`, `EventType`, `MatchType`, `TrainingType`, `EventLifecycleStatus`, `RsvpStatus`, `SelectionPublicationStatus`, `LineupSlot`, `MatchTacticalRole`, `AttendanceStatus`) and Models (`TeamSquad`, `TeamCoachAssignment`, `TeamRosterMember`, `ClubFacility`, `ScheduledEvent`, `EventRsvp`, `MatchSelection`, `MatchSelectionPlayer`, `EventAttendance`) with `MemberProfile` and `EquipmentLoan` relations in `prisma/schema.prisma`
-- [ ] T002 Create and execute Prisma migration `add_teams_matches_scheduling` and regenerate Prisma client via `npx prisma generate`
-- [ ] T003 [P] Create realistic Roskilde Cricket Club seed script in `scripts/seed-teams-matches.ts` seeding club squads (1st XI, 2nd XI, U15 Youth, U13 Youth, Social XI), facilities (Poppelgårdsvej Main Pitch, Practice Nets 1-2, Practice Nets 3-4, Roskilde Hallen), upcoming fixtures, and recurring net practices
-- [ ] T004 [P] Add seed execution script `seed:teams` in `package.json`
+- [X] T001 Define Module 3 Enums (`SquadCategory`, `SquadStaffRole`, `RosterRole`, `FacilityType`, `EventType`, `MatchType`, `TrainingType`, `EventLifecycleStatus`, `RsvpStatus`, `SelectionPublicationStatus`, `LineupSlot`, `MatchTacticalRole`, `AttendanceStatus`) and Models (`TeamSquad`, `TeamCoachAssignment`, `TeamRosterMember`, `ClubFacility`, `ScheduledEvent`, `EventRsvp`, `MatchSelection`, `MatchSelectionPlayer`, `EventAttendance`) with `MemberProfile` and `EquipmentLoan` relations in `prisma/schema.prisma`
+- [X] T002 Create and execute Prisma migration `add_teams_matches_scheduling` and regenerate Prisma client via `npx prisma generate`
+- [X] T003 [P] Create realistic Roskilde Cricket Club seed script in `scripts/seed-teams-matches.ts` seeding club squads (1st XI, 2nd XI, U15 Youth, U13 Youth, Social XI), facilities (Poppelgårdsvej Main Pitch, Practice Nets 1-2, Practice Nets 3-4, Roskilde Hallen), upcoming fixtures, and recurring net practices
+- [X] T004 [P] Add seed execution script `seed:teams` in `package.json`
 
 **Checkpoint**: Database schema migrated and validated; sample club squads, facilities, and upcoming events seeded.
 
@@ -25,16 +25,16 @@
 
 **Goal**: Implement framework-agnostic, zero-dependency pure TypeScript business rules for age eligibility, facility conflict detection, RSVP deadline locks, configurable lineup sizing, attendance status defaults, and Folkeoplysning municipal CSV generation.
 
-- [ ] T005 [P] Implement `src/modules/teams-matches/domain/age-eligibility.ts` calculating youth category eligibility against Danish Cricket Federation (DCF) Jan 1 cutoff date, detecting overage bounds, and permitting multi-squad "playing up"
-- [ ] T006 [P] Implement unit tests in `tests/unit/teams-matches/age-eligibility.test.ts` covering U13, U15, U17 age boundaries, approved dispensation flags, and adult league eligibility
-- [ ] T007 [P] Implement `src/modules/teams-matches/domain/facility-conflicts.ts` calculating interval overlaps on club facility resources, hard-blocking `COACH` / `AD_HOC_COACH` roles, and permitting `ADMIN` overrides with required audit reason
-- [ ] T008 [P] Implement unit tests in `tests/unit/teams-matches/facility-conflicts.test.ts` verifying time-interval overlap detection, coach hard-blocking, and admin override validation
-- [ ] T009 [P] Implement `src/modules/teams-matches/domain/rsvp-evaluator.ts` initializing roster members with `NO_RESPONSE` and enforcing self-service cutoff deadline locks (`now() >= rsvpDeadlineAt`)
-- [ ] T010 [P] Implement unit tests in `tests/unit/teams-matches/rsvp-evaluator.test.ts` verifying `NO_RESPONSE` seeding, cutoff deadline locks, and parental delegation permissions
-- [ ] T011 [P] Implement `src/modules/teams-matches/domain/lineup-validator.ts` validating configurable starting squad size (11 for Senior League, 8–12 for Youth and Friendlies), unique Captain/Vice-Captain/Wicketkeeper assignments, and duplicate player guards
-- [ ] T012 [P] Implement unit tests in `tests/unit/teams-matches/lineup-validator.test.ts` verifying variable starting sizes (8, 10, 11, 12), tactical role uniqueness, and substitute slot invariants
-- [ ] T013 [P] Implement `src/modules/teams-matches/domain/folkeoplysning-export.ts` generating Danish municipal CSV attendance reports covering all attending club members across date ranges
-- [ ] T014 [P] Implement unit tests in `tests/unit/teams-matches/folkeoplysning-export.test.ts` verifying CSV formatting, age calculations at event date, and inclusion of all club members
+- [X] T005 [P] Implement `src/modules/teams-matches/domain/age-eligibility.ts` calculating youth category eligibility against Danish Cricket Federation (DCF) Jan 1 cutoff date, detecting overage bounds, and permitting multi-squad "playing up"
+- [X] T006 [P] Implement unit tests in `tests/unit/teams-matches/age-eligibility.test.ts` covering U13, U15, U17 age boundaries, approved dispensation flags, and adult league eligibility
+- [X] T007 [P] Implement `src/modules/teams-matches/domain/facility-conflicts.ts` calculating interval overlaps on club facility resources, hard-blocking `COACH` / `AD_HOC_COACH` roles, and permitting `ADMIN` overrides with required audit reason
+- [X] T008 [P] Implement unit tests in `tests/unit/teams-matches/facility-conflicts.test.ts` verifying time-interval overlap detection, coach hard-blocking, and admin override validation
+- [X] T009 [P] Implement `src/modules/teams-matches/domain/rsvp-evaluator.ts` initializing roster members with `NO_RESPONSE` and enforcing self-service cutoff deadline locks (`now() >= rsvpDeadlineAt`)
+- [X] T010 [P] Implement unit tests in `tests/unit/teams-matches/rsvp-evaluator.test.ts` verifying `NO_RESPONSE` seeding, cutoff deadline locks, and parental delegation permissions
+- [X] T011 [P] Implement `src/modules/teams-matches/domain/lineup-validator.ts` validating configurable starting squad size (11 for Senior League, 8–12 for Youth and Friendlies), unique Captain/Vice-Captain/Wicketkeeper assignments, and duplicate player guards
+- [X] T012 [P] Implement unit tests in `tests/unit/teams-matches/lineup-validator.test.ts` verifying variable starting sizes (8, 10, 11, 12), tactical role uniqueness, and substitute slot invariants
+- [X] T013 [P] Implement `src/modules/teams-matches/domain/folkeoplysning-export.ts` generating Danish municipal CSV attendance reports covering all attending club members across date ranges
+- [X] T014 [P] Implement unit tests in `tests/unit/teams-matches/folkeoplysning-export.test.ts` verifying CSV formatting, age calculations at event date, and inclusion of all club members
 
 **Checkpoint**: All domain unit tests passing with 100% pure function coverage (`npm run test:unit`).
 
