@@ -4,7 +4,7 @@ import Image from "next/image";
 import { requireActivatedSession } from "@/modules/auth-rbac/services/session-guard";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, UserPlus, Users, ArrowRightLeft } from "lucide-react";
+import { LogOut, LayoutDashboard, UserPlus, Users, ArrowRightLeft, BookOpen, User } from "lucide-react";
 import { getActiveContext } from "@/modules/auth-rbac/services/context.service";
 import { getLinkedYouthForParent } from "@/modules/auth-rbac/services/parent-child.service";
 import { ProfileSwitcher } from "@/components/profile-switcher";
@@ -63,6 +63,20 @@ export default async function DashboardLayout({
               >
                 <LayoutDashboard className="w-4 h-4 text-sky-400" />
                 <span>{dict.common.dashboard}</span>
+              </Link>
+              <Link
+                href="/directory"
+                className="px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors flex items-center gap-1.5"
+              >
+                <BookOpen className="w-4 h-4 text-sky-400" />
+                <span>Directory</span>
+              </Link>
+              <Link
+                href="/profile"
+                className="px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors flex items-center gap-1.5"
+              >
+                <User className="w-4 h-4 text-sky-400" />
+                <span>Profile</span>
               </Link>
               {isAdmin && (
                 <>

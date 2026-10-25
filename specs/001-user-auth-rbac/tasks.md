@@ -106,13 +106,13 @@
 **Independent Test**: Sign in as a parent linked to 2 youth; open header dropdown; switch to Child A; confirm child context indicator is active across all views; update kit size in Child A's context and verify audit log attributes parent as actor and child as subject.
 
 ### Tests for User Story 4
-- [ ] T035 [P] [US4] Unit test for delegated action context validation (parent acting on linked child vs unlinked youth) in `tests/unit/delegation-context.test.ts`
+- [X] T035 [P] [US4] Unit test for delegated action context validation (parent acting on linked child vs unlinked youth) in `tests/unit/delegation-context.test.ts`
 
 ### Implementation for User Story 4
-- [ ] T036 [US4] Implement active context cookie/session resolver service (`getActiveContext`) in `src/modules/auth-rbac/services/context.service.ts`
-- [ ] T037 [US4] Create pitch-side responsive `Header` component with mobile-first viewport styling in `src/components/header.tsx`
-- [ ] T038 [US4] Create `ProfileSwitcher` dropdown component displaying parent and all linked youth in `src/components/profile-switcher.tsx`
-- [ ] T039 [US4] Integrate context banner into dashboard shell layout in `src/app/(dashboard)/layout.tsx`
+- [X] T036 [US4] Implement active context cookie/session resolver service (`getActiveContext`) in `src/modules/auth-rbac/services/context.service.ts`
+- [X] T037 [US4] Create pitch-side responsive `Header` component with mobile-first viewport styling in `src/components/header.tsx`
+- [X] T038 [US4] Create `ProfileSwitcher` dropdown component displaying parent and all linked youth in `src/components/profile-switcher.tsx`
+- [X] T039 [US4] Integrate context banner into dashboard shell layout in `src/app/(dashboard)/layout.tsx`
 
 **Checkpoint**: Parents can switch between themselves and linked youth in <= 2 clicks/taps pitch-side.
 
@@ -125,13 +125,13 @@
 **Independent Test**: Edit member cricket attributes and kit sizes; verify minor contact details hidden by default; verify directory search by name, role, batting/bowling style in < 1s; verify Coaches/Admins see full emergency details while Players see only privacy-permitted fields.
 
 ### Tests for User Story 5
-- [ ] T040 [P] [US5] Unit test for directory search filtering and field-level privacy masking (minors hidden, opt-in toggles) in `tests/unit/directory-privacy.test.ts`
+- [X] T040 [P] [US5] Unit test for directory search filtering and field-level privacy masking (minors hidden, opt-in toggles) in `tests/unit/directory-privacy.test.ts`
 
 ### Implementation for User Story 5
-- [ ] T041 [P] [US5] Implement member profile data access service (cricket attributes, apparel sizes, emergency contacts) in `src/modules/auth-rbac/services/profile.service.ts`
-- [ ] T042 [US5] Implement privacy settings management service and server-side directory serialization filtering in `src/modules/auth-rbac/services/directory.service.ts`
-- [ ] T043 [US5] Create Profile View & Edit page (`/profile/[id]`) with cricket/kit attributes and privacy toggles in `src/app/(dashboard)/profile/[id]/page.tsx`
-- [ ] T044 [US5] Create Member Directory page (`/directory`) with search, role filters, and privacy-safe cards in `src/app/(dashboard)/directory/page.tsx`
+- [X] T041 [P] [US5] Implement member profile data access service (cricket attributes, apparel sizes, emergency contacts) in `src/modules/auth-rbac/services/profile.service.ts`
+- [X] T042 [US5] Implement privacy settings management service and server-side directory serialization filtering in `src/modules/auth-rbac/services/directory.service.ts`
+- [X] T043 [US5] Create Profile View & Edit page (`/profile/[id]`) with cricket/kit attributes and privacy toggles in `src/app/(dashboard)/profile/[id]/page.tsx`
+- [X] T044 [US5] Create Member Directory page (`/directory`) with search, role filters, and privacy-safe cards in `src/app/(dashboard)/directory/page.tsx`
 
 **Checkpoint**: Complete profile management and privacy-respecting member directory functioning.
 
