@@ -42,13 +42,13 @@
 
 **Goal**: Provide Administrators and Coaches with a high-performance inventory console to view, filter, create, update, restock, and directly consume club equipment.
 
-- [ ] T013 [P] Define Zod validation schemas for catalog CRUD and stock operations in `src/modules/inventory/contracts/catalog.contract.ts` and `src/modules/inventory/contracts/stock.contract.ts`
-- [ ] T014 Implement catalog query and mutation service in `src/modules/inventory/services/catalog.service.ts` supporting category/condition/status filtering and øre-to-DKK display formatting
-- [ ] T015 Implement bulk stock adjustment and consumption service in `src/modules/inventory/services/stock.service.ts` managing `StockTransaction` audit records for direct match-day consumption and restocking
-- [ ] T016 Implement Server Actions for catalog CRUD and stock operations in `src/modules/inventory/actions/catalog.actions.ts` and `src/modules/inventory/actions/stock.actions.ts` with RBAC session validation
-- [ ] T017 [P] Build filterable catalog data table in `src/components/inventory/catalog-table.tsx` with search input, category tabs, condition badges, and low-stock indicators
-- [ ] T018 Build inventory master console page in `src/app/(dashboard)/inventory/page.tsx` and asset creation page in `src/app/(dashboard)/inventory/new/page.tsx`
-- [ ] T019 Build item detail, edit, and history view in `src/app/(dashboard)/inventory/[id]/page.tsx` including bulk stock adjustment and consumption modal dialogs
+- [X] T013 [P] Define Zod validation schemas for catalog CRUD and stock operations in `src/modules/inventory/contracts/catalog.contract.ts` and `src/modules/inventory/contracts/stock.contract.ts`
+- [X] T014 Implement catalog query and mutation service in `src/modules/inventory/services/catalog.service.ts` supporting category/condition/status filtering and øre-to-DKK display formatting
+- [X] T015 Implement bulk stock adjustment and consumption service in `src/modules/inventory/services/stock.service.ts` managing `StockTransaction` audit records for direct match-day consumption and restocking
+- [X] T016 Implement Server Actions for catalog CRUD and stock operations in `src/modules/inventory/actions/catalog.actions.ts` and `src/modules/inventory/actions/stock.actions.ts` with RBAC session validation
+- [X] T017 [P] Build filterable catalog data table in `src/components/inventory/catalog-table.tsx` with search input, category tabs, condition badges, and low-stock indicators
+- [X] T018 Build inventory master console page in `src/app/(dashboard)/inventory/page.tsx` and asset creation page in `src/app/(dashboard)/inventory/new/page.tsx`
+- [X] T019 Build item detail, edit, and history view in `src/app/(dashboard)/inventory/[id]/page.tsx` including bulk stock adjustment and consumption modal dialogs
 
 **Checkpoint**: Administrators and coaches can search/filter inventory (<500ms), create assets, adjust bulk counts, and log direct match-day consumption.
 
