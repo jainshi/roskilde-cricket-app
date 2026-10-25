@@ -11,6 +11,7 @@ import {
   User,
   Shield,
   ShieldAlert,
+  Calendar,
   Package,
   ArrowRightLeft,
   CheckCircle2,
@@ -194,7 +195,26 @@ export function MobileDrawer({
               </div>
             </Link>
 
-            {/* 3. My Gear */}
+            {/* 3. Events & Fixtures */}
+            <Link
+              href="/events"
+              onClick={onClose}
+              className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                isActive("/events") || pathname.startsWith("/events/")
+                  ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
+                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
+                <Calendar className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white leading-tight">Events</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Fixtures &amp; nets</p>
+              </div>
+            </Link>
+
+            {/* 4. My Gear */}
             <Link
               href="/profile/gear"
               onClick={onClose}

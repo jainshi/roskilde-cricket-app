@@ -62,14 +62,14 @@
 
 **Goal**: Deliver User Story 2 (P2) allowing Coaches and Administrators to schedule competitive matches and training sessions with facility collision detection, Coach hard-blocking, Admin warning overrides, optional external `scorecardUrl`, and Module 2 kit bag linkage.
 
-- [ ] T024 [P] [US2] Define Zod validation schemas for event scheduling and facility bookings in `src/modules/teams-matches/contracts/event.contract.ts`
-- [ ] T025 [US2] Implement facility management and conflict checking service in `src/modules/teams-matches/services/facility.service.ts`
-- [ ] T026 [US2] Implement event scheduling service in `src/modules/teams-matches/services/event.service.ts` handling match/training creation, real-time facility conflict detection, admin collision override auditing, and automatic `NO_RESPONSE` RSVP seeding for rostered players
-- [ ] T027 [US2] Implement Server Actions in `src/modules/teams-matches/actions/event.actions.ts` (`createScheduledEventAction`, `updateScheduledEventAction`, `updateEventLifecycleStatusAction`)
-- [ ] T028 [P] [US2] Build master event and training calendar view in `src/components/events/event-calendar-view.tsx` with month/week filters and home/away badges
-- [ ] T029 [US2] Build event scheduling form component in `src/components/events/event-form.tsx` featuring real-time facility collision alerts, Admin override input, optional `scorecardUrl`, and Module 2 equipment bag picker
-- [ ] T030 [US2] Build master events schedule page in `src/app/(dashboard)/events/page.tsx` and event creation page in `src/app/(dashboard)/events/new/page.tsx`
-- [ ] T031 [US2] Build administrative facilities directory and booking view in `src/app/(dashboard)/admin/facilities/page.tsx`
+- [X] T024 [P] [US2] Define Zod validation schemas for event scheduling and facility bookings in `src/modules/teams-matches/contracts/event.contract.ts`
+- [X] T025 [US2] Implement facility management and conflict checking service in `src/modules/teams-matches/services/facility.service.ts`
+- [X] T026 [US2] Implement event scheduling service in `src/modules/teams-matches/services/event.service.ts` handling match/training creation, real-time facility conflict detection, admin collision override auditing, and automatic `NO_RESPONSE` RSVP seeding for rostered players
+- [X] T027 [US2] Implement Server Actions in `src/modules/teams-matches/actions/event.actions.ts` (`createScheduledEventAction`, `updateScheduledEventAction`, `updateEventLifecycleStatusAction`)
+- [X] T028 [P] [US2] Build master event and training calendar view in `src/components/events/event-calendar-view.tsx` with month/week filters and home/away badges
+- [X] T029 [US2] Build event scheduling form component in `src/components/events/event-form.tsx` featuring real-time facility collision alerts, Admin override input, optional `scorecardUrl`, and Module 2 equipment bag picker
+- [X] T030 [US2] Build master events schedule page in `src/app/(dashboard)/events/page.tsx` and event creation page in `src/app/(dashboard)/events/new/page.tsx`
+- [X] T031 [US2] Build administrative facilities directory and booking view in `src/app/(dashboard)/admin/facilities/page.tsx`
 
 **Checkpoint**: Coaches and admins can schedule fixtures and net practices; overlapping facility bookings are hard-blocked for coaches and audited for admins; external scorecard links and Module 2 kit bags link directly.
 
