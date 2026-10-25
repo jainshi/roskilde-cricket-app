@@ -23,13 +23,13 @@
 
 **⚠️ CRITICAL**: Must complete before any user story implementation can begin.
 
-- [ ] T006 Define complete Prisma relational schema (`MemberProfile`, `UserAccount`, `RoleAssignment`, `ParentChildLink`, `Session`, `EmergencyContact`, `PrivacySettings`, `ConsentRecord`, `AuditLog`, and Enums) with verbatim unique constraints in `prisma/schema.prisma`
-- [ ] T007 Initialize Prisma client singleton and database connection manager in `src/lib/db.ts`
-- [ ] T008 [P] Implement Argon2id password hashing and CSPRNG 6–8 alphanumeric temporary password generator in `src/lib/password.ts`
-- [ ] T009 [P] Implement pluggable `NotificationService` interface and `ConsoleNotificationAdapter` / `SmtpNotificationAdapter` in `src/modules/auth-rbac/notifications/notification.service.ts`
-- [ ] T010 [P] Implement i18n dictionary structure and helper with English (`src/i18n/dictionaries/en.json`) and Danish readiness (`src/i18n/dictionaries/da.json`) in `src/i18n/get-dictionary.ts`
-- [ ] T011 Implement database session management utilities (session creation, token resolution, sliding expiry, multi-device tracking) in `src/modules/auth-rbac/services/session.service.ts`
-- [ ] T012 Implement edge authentication and mandatory password reset middleware guard in `src/middleware.ts`
+- [X] T006 Define complete Prisma relational schema (`MemberProfile`, `UserAccount`, `RoleAssignment`, `ParentChildLink`, `Session`, `EmergencyContact`, `PrivacySettings`, `ConsentRecord`, `AuditLog`, and Enums) with verbatim unique constraints in `prisma/schema.prisma`
+- [X] T007 Initialize Prisma client singleton and database connection manager in `src/lib/db.ts`
+- [X] T008 [P] Implement Argon2id password hashing and CSPRNG 6–8 alphanumeric temporary password generator in `src/lib/password.ts`
+- [X] T009 [P] Implement pluggable `NotificationService` interface and `ConsoleNotificationAdapter` / `SmtpNotificationAdapter` in `src/modules/auth-rbac/notifications/notification.service.ts`
+- [X] T010 [P] Implement i18n dictionary structure and helper with English (`src/i18n/dictionaries/en.json`) and Danish readiness (`src/i18n/dictionaries/da.json`) in `src/i18n/get-dictionary.ts`
+- [X] T011 Implement database session management utilities (session creation, token resolution, sliding expiry, multi-device tracking) in `src/modules/auth-rbac/services/session.service.ts`
+- [X] T012 Implement edge authentication and mandatory password reset middleware guard in `src/middleware.ts`
 
 **Checkpoint**: Foundation ready — database, auth plumbing, notifications, and middleware guard active.
 

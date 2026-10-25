@@ -1,0 +1,210 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  COACH
+  AD_HOC_COACH
+  PLAYER
+  PARENT
+}
+
+enum AccountStatus {
+  ACTIVE
+  INVITED
+  LOCKED
+  DEACTIVATED
+}
+
+enum BattingPosition {
+  OPENING_BATTER
+  TOP_ORDER
+  MIDDLE_ORDER
+  FINISHER
+  TAILENDER
+}
+
+enum BowlingStyle {
+  RIGHT_ARM_FAST
+  RIGHT_ARM_MEDIUM
+  LEFT_ARM_FAST
+  LEFT_ARM_MEDIUM
+  OFF_SPIN
+  LEG_SPIN
+  LEFT_ARM_ORTHODOX
+  LEFT_ARM_WRIST_SPIN
+  DOES_NOT_BOWL
+}
+
+enum SecondaryRole {
+  WICKETKEEPER
+  ALL_ROUNDER
+}
+
+enum ApparelSize {
+  YOUTH_XXS
+  YOUTH_XS
+  YOUTH_S
+  YOUTH_M
+  YOUTH_L
+  YOUTH_XL
+  ADULT_S
+  ADULT_M
+  ADULT_L
+  ADULT_XL
+  ADULT_XXL
+  ADULT_XXXL
+}
+
+model MemberProfile {
+  id              String            @id @default(uuid())
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime?
+  email           String?           @unique
+  phone           String?
+  address         String?
+  city            String?
+  postalCode      String?
+  battingPosition BattingPosition?
+  bowlingStyle    BowlingStyle?
+  secondaryRoles  SecondaryRole[]
+  shirtSize       ApparelSize?
+  trouserSize     ApparelSize?
+  capSize         ApparelSize?
+  isAnonymized    Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  userAccount       UserAccount?
+  roleAssignments   RoleAssignment[]
+  parentLinksAsParent ParentChildLink[]  @relation("ParentLinks")
+  parentLinksAsPlayer ParentChildLink[]  @relation("PlayerLinks")
+  emergencyContacts EmergencyContact[]
+  privacySettings   PrivacySettings?
+  consentsGiven     ConsentRecord[]      @relation("ConsentedBy")
+  consentsReceived  ConsentRecord[]      @relation("SubjectProfile")
+  actionsPerformed  AuditLog[]           @relation("AuditActor")
+  actionsTargeted   AuditLog[]           @relation("AuditTarget")
+}
+
+model UserAccount {
+  id                         String        @id @default(uuid())
+  memberProfileId            String        @unique
+  email                      String        @unique
+  passwordHash               String
+  status                     AccountStatus @default(INVITED)
+  mustResetPassword          Boolean       @default(true)
+  temporaryPasswordExpiresAt DateTime?
+  failedLoginAttempts        Int           @default(0)
+  lockedUntil                DateTime?
+  sessionVersion             Int           @default(1)
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @updatedAt
+
+  memberProfile       MemberProfile        @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+  sessions            Session[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model RoleAssignment {
+  id              String        @id @default(uuid())
+  memberProfileId String
+  role            Role
+  assignedAt      DateTime      @default(now())
+  assignedById    String?
+
+  memberProfile MemberProfile @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([memberProfileId, role])
+}
+
+model ParentChildLink {
+  id           String        @id @default(uuid())
+  playerId     String
+  parentId     String
+  slot         Int
+  relationship String?
+  createdAt    DateTime      @default(now())
+
+  player MemberProfile @relation("PlayerLinks", fields: [playerId], references: [id], onDelete: Cascade)
+  parent MemberProfile @relation("ParentLinks", fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, slot])
+  @@unique([playerId, parentId])
+}
+
+model Session {
+  id            String      @id @default(uuid())
+  sessionToken  String      @unique
+  userAccountId String
+  userAgent     String?
+  ipAddress     String?
+  expiresAt     DateTime
+  createdAt     DateTime    @default(now())
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id            String      @id @default(uuid())
+  token         String      @unique
+  userAccountId String
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime    @default(now())
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+}
+
+model EmergencyContact {
+  id              String        @id @default(uuid())
+  memberProfileId String
+  name            String
+  relationship    String
+  phone           String
+  isPrimary       Boolean       @default(true)
+
+  memberProfile MemberProfile @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+}
+
+model PrivacySettings {
+  id                     String        @id @default(uuid())
+  memberProfileId        String        @unique
+  showEmailInDirectory   Boolean       @default(false)
+  showPhoneInDirectory   Boolean       @default(false)
+  showAddressInDirectory Boolean       @default(false)
+
+  memberProfile MemberProfile @relation(fields: [memberProfileId], references: [id], onDelete: Cascade)
+}
+
+model ConsentRecord {
+  id               String        @id @default(uuid())
+  subjectProfileId String
+  consentedById    String
+  policyVersion    String
+  consentedAt      DateTime      @default(now())
+  ipAddress        String?
+
+  subjectProfile MemberProfile @relation("SubjectProfile", fields: [subjectProfileId], references: [id], onDelete: Cascade)
+  consentedBy    MemberProfile @relation("ConsentedBy", fields: [consentedById], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id              String         @id @default(uuid())
+  actorProfileId  String?
+  targetProfileId String?
+  action          String
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+
+  actorProfile  MemberProfile? @relation("AuditActor", fields: [actorProfileId], references: [id], onDelete: SetNull)
+  targetProfile MemberProfile? @relation("AuditTarget", fields: [targetProfileId], references: [id], onDelete: SetNull)
+}

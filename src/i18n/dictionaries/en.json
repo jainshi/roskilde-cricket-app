@@ -1,0 +1,33 @@
+{
+  "common": {
+    "appName": "Roskilde Cricket Club",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signOutEverywhere": "Sign Out Everywhere",
+    "save": "Save",
+    "cancel": "Cancel",
+    "dashboard": "Dashboard",
+    "directory": "Member Directory",
+    "profile": "Profile"
+  },
+  "auth": {
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "temporaryPasswordNotice": "You must set a new secure password before accessing the club portal.",
+    "newPasswordLabel": "New Password",
+    "confirmPasswordLabel": "Confirm New Password",
+    "forgotPasswordPrompt": "Forgot your password?",
+    "resetPasswordTitle": "Reset Password",
+    "setPasswordButton": "Set Password & Continue",
+    "gdprConsentTitle": "Club Privacy & Data Consent",
+    "gdprConsentBody": "Roskilde Cricket Club protects member privacy. By continuing, you agree to our GDPR data management policy.",
+    "gdprConsentButton": "I Agree & Accept"
+  },
+  "profile": {
+    "personalInfo": "Personal Information",
+    "cricketAttributes": "Cricket Attributes",
+    "kitSizes": "Apparel & Kit",
+    "emergencyContact": "Emergency Contact",
+    "privacySettings": "Directory Privacy"
+  }
+}
