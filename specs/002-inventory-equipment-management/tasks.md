@@ -73,12 +73,12 @@
 
 **Goal**: Allow all registered members (and parents via active profile switching) to view loaned equipment, submit 1-click extension requests, and report damaged/lost gear.
 
-- [ ] T026 [P] Define Zod validation schemas for extension requests and damage reports in `src/modules/inventory/contracts/extension.contract.ts` and `src/modules/inventory/contracts/damage.contract.ts`
-- [ ] T027 Implement extension and damage services in `src/modules/inventory/services/extension.service.ts` and `src/modules/inventory/services/damage.service.ts` supporting member submission, parent delegation, and administrative review
-- [ ] T028 Implement Server Actions in `src/modules/inventory/actions/extension.actions.ts` and `src/modules/inventory/actions/damage.actions.ts`
-- [ ] T029 [P] Build "My Gear" loan card and active items list in `src/components/inventory/my-gear-card.tsx` with "Request Extension" modal and "Report Damage / Loss" dialog
-- [ ] T030 Build "My Gear" member dashboard in `src/app/(dashboard)/profile/gear/page.tsx` integrated with `HeaderProfileSwitcher` context for linked youth
-- [ ] T031 Build administrative review queues in `src/app/(dashboard)/inventory/extensions/page.tsx` (1-click approval/rejection) and `src/app/(dashboard)/inventory/damage/page.tsx` (damage incident resolution referencing replacement cost in øre/DKK)
+- [X] T026 [P] Define Zod validation schemas for extension requests and damage reports in `src/modules/inventory/contracts/extension.contract.ts` and `src/modules/inventory/contracts/damage.contract.ts`
+- [X] T027 Implement extension and damage services in `src/modules/inventory/services/extension.service.ts` and `src/modules/inventory/services/damage.service.ts` supporting member submission, parent delegation, and administrative review
+- [X] T028 Implement Server Actions in `src/modules/inventory/actions/extension.actions.ts` and `src/modules/inventory/actions/damage.actions.ts`
+- [X] T029 [P] Build "My Gear" loan card and active items list in `src/components/inventory/my-gear-card.tsx` with "Request Extension" modal and "Report Damage / Loss" dialog
+- [X] T030 Build "My Gear" member dashboard in `src/app/(dashboard)/profile/gear/page.tsx` integrated with `HeaderProfileSwitcher` context for linked youth
+- [X] T031 Build administrative review queues in `src/app/(dashboard)/inventory/extensions/page.tsx` (1-click approval/rejection) and `src/app/(dashboard)/inventory/damage/page.tsx` (damage incident resolution referencing replacement cost in øre/DKK)
 
 **Checkpoint**: Members and parents can manage loaned gear; extension requests can be approved with 1-click; damage reports can be logged and resolved.
 

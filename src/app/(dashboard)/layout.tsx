@@ -81,6 +81,13 @@ export default async function DashboardLayout({
                 <User className="w-4 h-4 text-sky-400" />
                 <span>Profile</span>
               </Link>
+              <Link
+                href="/profile/gear"
+                className="px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors flex items-center gap-1.5"
+              >
+                <Package className="w-4 h-4 text-emerald-400" />
+                <span>My Gear</span>
+              </Link>
               {isOfficial && (
                 <Link
                   href="/inventory"

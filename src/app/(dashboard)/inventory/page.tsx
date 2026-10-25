@@ -80,6 +80,28 @@ export default async function InventoryPage() {
             </Button>
           </Link>
 
+          <Link href="/inventory/extensions">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+            >
+              <Clock className="w-4 h-4 text-sky-400" />
+              <span>Extensions</span>
+            </Button>
+          </Link>
+
+          <Link href="/inventory/damage">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-200 flex items-center gap-1.5"
+            >
+              <Wrench className="w-4 h-4 text-amber-400" />
+              <span>Damage</span>
+            </Button>
+          </Link>
+
           {isAdmin && (
             <Link href="/inventory/new">
               <Button

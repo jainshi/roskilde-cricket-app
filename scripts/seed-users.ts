@@ -3,7 +3,7 @@ import * as argon2 from "argon2";
 
 const prisma = new PrismaClient();
 
-const SHARED_PASSWORD = "Rodkilde@123";
+const SHARED_PASSWORD = "Roskilde@123";
 
 async function main() {
   console.log(`\n🌱 Starting Roskilde Cricket Club User Seeding...`);
@@ -11,6 +11,17 @@ async function main() {
 
   const passwordHash = await argon2.hash(SHARED_PASSWORD, {
     type: argon2.argon2id,
+  });
+
+  // Reset and unlock all existing user accounts with the updated password hash
+  await prisma.userAccount.updateMany({
+    data: {
+      passwordHash,
+      status: AccountStatus.ACTIVE,
+      mustResetPassword: false,
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+    },
   });
 
   // 1. Super Admin
@@ -415,6 +426,91 @@ async function main() {
       },
     });
     console.log(`✅ Adult Player ready: id="${player.id}", email="${player.email}" (${player.firstName} ${player.lastName})`);
+  }
+
+  // 5. Seed realistic sample active loans for interactive verification
+  const bat1 = await prisma.equipmentItem.findUnique({ where: { assetTag: "BAT-2026-001" } });
+  if (bat1) {
+    const returnDate = new Date();
+    returnDate.setDate(returnDate.getDate() + 5);
+
+    await prisma.equipmentLoan.upsert({
+      where: { id: "seed-loan-adult-001" },
+      update: {},
+      create: {
+        id: "seed-loan-adult-001",
+        equipmentItemId: bat1.id,
+        borrowerProfileId: "adult-player-001",
+        issuedById: "coach001",
+        quantity: 1,
+        status: "ACTIVE",
+        expectedReturnAt: returnDate,
+        checkoutCondition: "GOOD",
+        checkoutNotes: "Checked out for senior net practice and weekend fixture",
+      },
+    });
+
+    await prisma.equipmentItem.update({
+      where: { id: bat1.id },
+      data: { status: "ON_LOAN", availableQuantity: 0 },
+    });
+    console.log(`🏏 Seeded active loan for Adult Player Vikram Sharma (Kookaburra Senior Bat)`);
+  }
+
+  const bat2 = await prisma.equipmentItem.findUnique({ where: { assetTag: "BAT-2026-002" } });
+  if (bat2) {
+    const returnDate = new Date();
+    returnDate.setDate(returnDate.getDate() + 6);
+
+    await prisma.equipmentLoan.upsert({
+      where: { id: "seed-loan-junior-001" },
+      update: {},
+      create: {
+        id: "seed-loan-junior-001",
+        equipmentItemId: bat2.id,
+        borrowerProfileId: "junior-player001",
+        issuedById: "coach001",
+        quantity: 1,
+        status: "ACTIVE",
+        expectedReturnAt: returnDate,
+        checkoutCondition: "GOOD",
+        checkoutNotes: "Checked out for U13 practice under father's supervision",
+      },
+    });
+
+    await prisma.equipmentItem.update({
+      where: { id: bat2.id },
+      data: { status: "ON_LOAN", availableQuantity: 0 },
+    });
+    console.log(`🏏 Seeded active loan for Minor Player Lucas Hansen (Gray-Nicolls Junior Bat)`);
+  }
+
+  const helmet1 = await prisma.equipmentItem.findUnique({ where: { assetTag: "HLM-2026-001" } });
+  if (helmet1) {
+    const overdueDate = new Date();
+    overdueDate.setDate(overdueDate.getDate() - 2); // 2 days ago = Overdue
+
+    await prisma.equipmentLoan.upsert({
+      where: { id: "seed-loan-adult-002" },
+      update: {},
+      create: {
+        id: "seed-loan-adult-002",
+        equipmentItemId: helmet1.id,
+        borrowerProfileId: "adult-player-002",
+        issuedById: "coach001",
+        quantity: 1,
+        status: "OVERDUE",
+        expectedReturnAt: overdueDate,
+        checkoutCondition: "GOOD",
+        checkoutNotes: "Senior match helmet - past due date",
+      },
+    });
+
+    await prisma.equipmentItem.update({
+      where: { id: helmet1.id },
+      data: { status: "ON_LOAN", availableQuantity: 0 },
+    });
+    console.log(`🏏 Seeded overdue loan for Christian Lindqvist (Masuri Helmet)`);
   }
 
   console.log(`\n🎉 User database seeding complete! All users can log in with:`);

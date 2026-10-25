@@ -71,16 +71,16 @@ export function SignInForm({
 
       <div className="space-y-2">
         <Label htmlFor={emailId} className="text-slate-200 text-sm font-medium">
-          {dict.auth.emailLabel}
+          Email Address or Member ID
         </Label>
         <Input
           id={emailId}
           name="email"
-          type="email"
-          autoComplete="email"
+          type="text"
+          autoComplete="username"
           required
           defaultValue={initialEmail}
-          placeholder="navn@eksempel.dk"
+          placeholder="e.g. adult-player-001 or email@example.com"
           className="bg-slate-950/60 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-sky-500 h-11"
         />
       </div>
