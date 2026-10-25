@@ -50,6 +50,14 @@ export function AppShell({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const pathname = usePathname();
 
+  const handleCloseDrawer = React.useCallback(() => {
+    setIsDrawerOpen(false);
+  }, []);
+
+  const handleToggleDrawer = React.useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
+
   const isNavActive = (path: string) => {
     if (path === "/dashboard" && pathname === "/dashboard") return true;
     if (path !== "/dashboard" && pathname.startsWith(path)) return true;
@@ -234,7 +242,7 @@ export function AppShell({
 
             {/* Mobile Hamburger / Profile Button */}
             <button
-              onClick={() => setIsDrawerOpen(true)}
+              onClick={handleToggleDrawer}
               className="md:hidden p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5"
               aria-label="Toggle mobile menu"
             >
@@ -255,14 +263,14 @@ export function AppShell({
       {/* Mobile Fixed Bottom Navigation Bar */}
       <MobileBottomNav
         isOfficial={isOfficial}
-        onOpenMenu={() => setIsDrawerOpen(true)}
+        onOpenMenu={handleToggleDrawer}
         isMenuOpen={isDrawerOpen}
       />
 
       {/* Mobile Slide-over Drawer */}
       <MobileDrawer
         isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        onClose={handleCloseDrawer}
         session={session}
         isAdmin={isAdmin}
         isOfficial={isOfficial}
