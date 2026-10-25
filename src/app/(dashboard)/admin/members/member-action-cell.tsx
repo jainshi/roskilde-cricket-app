@@ -11,6 +11,7 @@ import {
   Shield,
   KeyRound,
   UserPlus,
+  Users,
   Copy,
   Check,
   AlertCircle,
@@ -24,6 +25,7 @@ interface MemberActionCellProps {
   memberEmail: string | null;
   hasAccount: boolean;
   canCreateLogin: boolean;
+  isMinor: boolean;
 }
 
 export function MemberActionCell({
@@ -32,6 +34,7 @@ export function MemberActionCell({
   memberEmail,
   hasAccount,
   canCreateLogin,
+  isMinor,
 }: MemberActionCellProps) {
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isCreateLoginOpen, setIsCreateLoginOpen] = useState(false);
@@ -98,6 +101,18 @@ export function MemberActionCell({
           <Shield className="w-3.5 h-3.5 text-sky-400" />
           Roles
         </Link>
+
+        {/* Manage Parent-Child Links button: ONLY for youth/minor profiles (FR-030) */}
+        {isMinor && (
+          <Link
+            href={`/admin/members/${memberId}/links`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-950/70 border border-sky-600/50 hover:bg-sky-900/80 text-sky-300 text-xs font-semibold transition-colors shadow-sm"
+            title="Manage parent-child links for youth player"
+          >
+            <Users className="w-3.5 h-3.5 text-sky-400" />
+            Links
+          </Link>
+        )}
 
         {/* Reset Password button (for existing accounts) */}
         {hasAccount && (

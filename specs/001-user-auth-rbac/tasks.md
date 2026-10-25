@@ -86,14 +86,14 @@
 **Independent Test**: Link 1st and 2nd parent to youth; attempt linking 3rd parent and verify rejection; attempt credential grant to under-13 profile and verify rejection; grant credential to 14-year-old and verify Player-only role; resolve contact for player without email and verify simultaneous dual-parent delivery.
 
 ### Tests for User Story 5
-- [ ] T029 [P] [US3] Unit tests for `ParentChildLink` 2-parent limit and age-eligibility credential rules in `tests/unit/parent-child-rules.test.ts`
-- [ ] T030 [P] [US3] Unit tests for contact fallback resolution and dual-parent simultaneous notification routing in `tests/unit/contact-resolver.test.ts`
+- [X] T029 [P] [US3] Unit tests for `ParentChildLink` 2-parent limit and age-eligibility credential rules in `tests/unit/parent-child-rules.test.ts`
+- [X] T030 [P] [US3] Unit tests for contact fallback resolution and dual-parent simultaneous notification routing in `tests/unit/contact-resolver.test.ts`
 
 ### Implementation for User Story 5
-- [ ] T031 [P] [US3] Implement pure contact resolver function (`resolveMemberContact`) supporting dual-parent fallback in `src/modules/auth-rbac/domain/contact-resolver.ts`
-- [ ] T032 [US3] Implement parent-child link management service enforcing max 2 parents per youth in `src/modules/auth-rbac/services/parent-child.service.ts`
-- [ ] T033 [US3] Implement youth login credential eligibility service enforcing age >= 13 rule in `src/modules/auth-rbac/services/youth-account.service.ts`
-- [ ] T034 [US3] Implement Admin parent-child linkage interface on member management page in `src/app/(dashboard)/admin/members/[id]/links/page.tsx`
+- [X] T031 [P] [US3] Implement pure contact resolver function (`resolveMemberContact`) supporting dual-parent fallback in `src/modules/auth-rbac/domain/contact-resolver.ts`
+- [X] T032 [US3] Implement parent-child link management service enforcing max 2 parents per youth in `src/modules/auth-rbac/services/parent-child.service.ts`
+- [X] T033 [US3] Implement youth login credential eligibility service enforcing age >= 13 rule in `src/modules/auth-rbac/services/youth-account.service.ts`
+- [X] T034 [US3] Implement Admin parent-child linkage interface on member management page in `src/app/(dashboard)/admin/members/[id]/links/page.tsx`
 
 **Checkpoint**: Parent-child links and youth credential decoupling fully operational.
 

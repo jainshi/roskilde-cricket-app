@@ -186,6 +186,12 @@ export async function createMemberProfile(
       }
 
       // C. Process Parent Associations for Minor Player (Slot 1 and Slot 2)
+      if (!isMinorPlayer && (input.parent1 || input.parent2)) {
+        throw new Error(
+          "Parent/guardian links can only be assigned to youth players under 18 years of age (FR-030). Adult members manage their own profiles."
+        );
+      }
+
       if (isMinorPlayer) {
         const slots: { slot: number; data: ParentSlotInput | null | undefined }[] = [
           { slot: 1, data: input.parent1 },
@@ -199,6 +205,26 @@ export async function createMemberProfile(
 
           if (data.mode === "EXISTING" && data.existingProfileId) {
             parentProfileId = data.existingProfileId;
+
+            if (parentProfileId === profile.id) {
+              throw new Error("A player cannot be linked as their own parent.");
+            }
+
+            // Verify parent exists and is an adult (FR-004, FR-030)
+            const parentCandidate = await tx.memberProfile.findUnique({
+              where: { id: parentProfileId },
+              select: { id: true, dateOfBirth: true },
+            });
+
+            if (!parentCandidate) {
+              throw new Error("Selected parent profile does not exist.");
+            }
+
+            if (isMinor(parentCandidate.dateOfBirth)) {
+              throw new Error(
+                "Minors under 18 cannot be linked as parents (FR-004, FR-030). Parents must be adult members."
+              );
+            }
 
             // Ensure the existing profile has the PARENT role
             const existingRole = await tx.roleAssignment.findUnique({
@@ -415,7 +441,8 @@ export async function createMemberProfile(
 }
 
 /**
- * Returns potential parents for dropdown selector (all members or members with PARENT/COACH/ADMIN roles).
+ * Returns potential parents for dropdown selector.
+ * ONLY adult members (isMinor === false) are returned (FR-004, FR-030).
  */
 export async function getAvailableParents(): Promise<{ id: string; name: string; email: string | null }[]> {
   const members = await prisma.memberProfile.findMany({
@@ -427,6 +454,7 @@ export async function getAvailableParents(): Promise<{ id: string; name: string;
       firstName: true,
       lastName: true,
       email: true,
+      dateOfBirth: true,
       roleAssignments: {
         select: { role: true },
       },
@@ -437,7 +465,10 @@ export async function getAvailableParents(): Promise<{ id: string; name: string;
     ],
   });
 
-  return members.map((m) => ({
+  // Filter out any minor profiles - parents MUST be adults (FR-004, FR-030)
+  const adultMembers = members.filter((m) => !isMinor(m.dateOfBirth));
+
+  return adultMembers.map((m) => ({
     id: m.id,
     name: `${m.firstName} ${m.lastName}${m.roleAssignments.some((r) => r.role === "PARENT") ? " (Parent)" : ""}`,
     email: m.email,

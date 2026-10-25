@@ -4,7 +4,11 @@ import Image from "next/image";
 import { requireActivatedSession } from "@/modules/auth-rbac/services/session-guard";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, UserPlus, Users } from "lucide-react";
+import { LogOut, LayoutDashboard, UserPlus, Users, ArrowRightLeft } from "lucide-react";
+import { getActiveContext } from "@/modules/auth-rbac/services/context.service";
+import { getLinkedYouthForParent } from "@/modules/auth-rbac/services/parent-child.service";
+import { ProfileSwitcher } from "@/components/profile-switcher";
+import { switchContextAction } from "@/modules/auth-rbac/actions/context.actions";
 
 export default async function DashboardLayout({
   children,
@@ -14,6 +18,13 @@ export default async function DashboardLayout({
   const session = await requireActivatedSession();
   const dict = getDictionary("en");
   const isAdmin = session.roles.includes("ADMIN");
+
+  const [context, linkedYouth] = await Promise.all([
+    getActiveContext(),
+    getLinkedYouthForParent(session.memberProfileId),
+  ]);
+
+  const isDelegated = context?.isDelegated ?? false;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
@@ -75,6 +86,20 @@ export default async function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Header Profile Switcher for Parents */}
+            {linkedYouth.length > 0 && (
+              <ProfileSwitcher
+                parentProfileId={session.memberProfileId}
+                parentName={`${session.firstName} ${session.lastName}`.trim()}
+                activeProfileId={context?.activeProfileId || session.memberProfileId}
+                isDelegated={isDelegated}
+                linkedChildren={linkedYouth.map((ly) => ({
+                  id: ly.playerId,
+                  name: ly.playerName,
+                }))}
+              />
+            )}
+
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold text-white leading-tight">
                 {session.firstName} {session.lastName}
@@ -98,6 +123,38 @@ export default async function DashboardLayout({
           </div>
         </div>
       </header>
+
+      {/* Pitch-Side Context Delegation Banner */}
+      {isDelegated && context?.targetChild && (
+        <div className="bg-amber-950/90 border-b border-amber-500/60 text-amber-200 px-4 py-2 text-xs shadow-md">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+              <span>
+                Pitch-Side Active Context: Managing on behalf of{" "}
+                <strong className="text-white underline">
+                  {context.targetChild.name}
+                </strong>{" "}
+                (Linked Youth Player)
+              </span>
+            </div>
+            <form
+              action={async () => {
+                "use server";
+                await switchContextAction(session.memberProfileId);
+              }}
+            >
+              <button
+                type="submit"
+                className="text-xs font-semibold text-amber-300 hover:text-white underline underline-offset-2 transition-colors flex items-center gap-1"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5" />
+                Switch back to My Profile ({session.firstName})
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">

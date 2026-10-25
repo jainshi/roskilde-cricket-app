@@ -158,19 +158,24 @@ export default async function AdminMembersPage() {
 
                   {/* Family Links */}
                   <td className="py-4 px-4 text-xs">
-                    {member.linkedParents.length > 0 && (
-                      <div className="space-y-0.5">
-                        <span className="text-[10px] uppercase font-bold text-slate-400">
-                          Parents ({member.linkedParents.length}):
+                    {member.isMinor ? (
+                      member.linkedParents.length > 0 ? (
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] uppercase font-bold text-slate-400">
+                            Parents ({member.linkedParents.length}):
+                          </span>
+                          {member.linkedParents.map((p) => (
+                            <div key={p.id} className="text-sky-300 font-medium">
+                              &bull; {p.name} {p.relationship ? `(${p.relationship})` : ""}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-amber-400/90 italic font-medium">
+                          No linked parents (Required)
                         </span>
-                        {member.linkedParents.map((p) => (
-                          <div key={p.id} className="text-sky-300 font-medium">
-                            &bull; {p.name} {p.relationship ? `(${p.relationship})` : ""}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {member.linkedChildren.length > 0 && (
+                      )
+                    ) : member.linkedChildren.length > 0 ? (
                       <div className="space-y-0.5">
                         <span className="text-[10px] uppercase font-bold text-slate-400">
                           Children ({member.linkedChildren.length}):
@@ -181,9 +186,8 @@ export default async function AdminMembersPage() {
                           </div>
                         ))}
                       </div>
-                    )}
-                    {member.linkedParents.length === 0 && member.linkedChildren.length === 0 && (
-                      <span className="text-slate-500 italic">None</span>
+                    ) : (
+                      <span className="text-slate-500 italic">Independent Adult</span>
                     )}
                   </td>
 
@@ -195,6 +199,7 @@ export default async function AdminMembersPage() {
                       memberEmail={member.email}
                       hasAccount={member.accountStatus !== "NO_ACCOUNT"}
                       canCreateLogin={member.category !== "YOUTH_UNDER_13"}
+                      isMinor={member.isMinor}
                     />
                   </td>
                 </tr>
