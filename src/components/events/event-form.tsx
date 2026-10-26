@@ -14,6 +14,16 @@ import {
   ExternalLink,
   CheckCircle2,
   XCircle,
+  Users,
+  UserPlus,
+  Mail,
+  Search,
+  Sparkles,
+  Check,
+  CheckSquare,
+  Square,
+  X,
+  Filter,
 } from "lucide-react";
 import {
   createScheduledEventAction,
@@ -25,13 +35,7 @@ import {
   MatchType,
   TrainingType,
 } from "@prisma/client";
-
-interface SquadItem {
-  id: string;
-  name: string;
-  category: string;
-  defaultLineupSize: number;
-}
+import { SquadItem, ClubPlayerItem, PlayerProfileItem } from "./new-event-tabs";
 
 interface FacilityItem {
   id: string;
@@ -51,6 +55,7 @@ interface EventFormProps {
   squads: SquadItem[];
   facilities: FacilityItem[];
   equipmentLoans?: EquipmentLoanItem[];
+  allClubPlayers?: ClubPlayerItem[];
   isAdmin: boolean;
   initialEvent?: {
     id: string;
@@ -80,6 +85,7 @@ export function EventForm({
   squads,
   facilities,
   equipmentLoans = [],
+  allClubPlayers = [],
   isAdmin,
   initialEvent,
 }: EventFormProps) {
@@ -151,6 +157,131 @@ export function EventForm({
   const [linkedEquipmentLoanId, setLinkedEquipmentLoanId] = useState<string>(
     initialEvent?.linkedEquipmentLoanId || ""
   );
+
+  // Participant & RSVP Invitation state
+  const [participantPreset, setParticipantPreset] = useState<
+    "ALL_SQUAD" | "BATSMEN" | "BOWLERS" | "WICKETKEEPERS" | "CUSTOM"
+  >("ALL_SQUAD");
+  const [selectedParticipantIds, setSelectedParticipantIds] = useState<string[]>([]);
+  const [additionalGuestPlayers, setAdditionalGuestPlayers] = useState<PlayerProfileItem[]>([]);
+  const [notifyParticipants, setNotifyParticipants] = useState<boolean>(true);
+  const [isGuestPickerOpen, setIsGuestPickerOpen] = useState<boolean>(false);
+  const [guestSearch, setGuestSearch] = useState<string>("");
+
+  const currentRoster = selectedSquad?.roster || [];
+
+  function isBatsman(p: PlayerProfileItem): boolean {
+    if (p.battingPosition && p.battingPosition !== "TAILENDER") return true;
+    if (p.secondaryRoles?.includes("ALL_ROUNDER")) return true;
+    return false;
+  }
+
+  function isBowler(p: PlayerProfileItem): boolean {
+    if (p.bowlingStyle && p.bowlingStyle !== "DOES_NOT_BOWL") return true;
+    if (p.secondaryRoles?.includes("ALL_ROUNDER")) return true;
+    return false;
+  }
+
+  function isWicketkeeper(p: PlayerProfileItem): boolean {
+    return Boolean(p.secondaryRoles?.includes("WICKETKEEPER"));
+  }
+
+  const batsmenCount = currentRoster.filter((r) => isBatsman(r.memberProfile)).length;
+  const bowlersCount = currentRoster.filter((r) => isBowler(r.memberProfile)).length;
+  const wkCount = currentRoster.filter((r) => isWicketkeeper(r.memberProfile)).length;
+
+  function applyPreset(preset: "ALL_SQUAD" | "BATSMEN" | "BOWLERS" | "WICKETKEEPERS") {
+    setParticipantPreset(preset);
+    const guestIds = additionalGuestPlayers.map((g) => g.id);
+    if (preset === "ALL_SQUAD") {
+      const allIds = currentRoster.map((r) => r.memberProfile.id);
+      setSelectedParticipantIds(
+        Array.from(new Set([...allIds, ...guestIds]))
+      );
+    } else if (preset === "BATSMEN") {
+      const bIds = currentRoster
+        .filter((r) => isBatsman(r.memberProfile))
+        .map((r) => r.memberProfile.id);
+      setSelectedParticipantIds(
+        bIds.length > 0
+          ? Array.from(new Set([...bIds, ...guestIds]))
+          : currentRoster.map((r) => r.memberProfile.id)
+      );
+    } else if (preset === "BOWLERS") {
+      const bwIds = currentRoster
+        .filter((r) => isBowler(r.memberProfile))
+        .map((r) => r.memberProfile.id);
+      setSelectedParticipantIds(
+        bwIds.length > 0
+          ? Array.from(new Set([...bwIds, ...guestIds]))
+          : currentRoster.map((r) => r.memberProfile.id)
+      );
+    } else if (preset === "WICKETKEEPERS") {
+      const wkIds = currentRoster
+        .filter((r) => isWicketkeeper(r.memberProfile))
+        .map((r) => r.memberProfile.id);
+      setSelectedParticipantIds(
+        wkIds.length > 0
+          ? Array.from(new Set([...wkIds, ...guestIds]))
+          : currentRoster.map((r) => r.memberProfile.id)
+      );
+    }
+  }
+
+  // Auto-sync roster members when squad changes
+  useEffect(() => {
+    if (!initialEvent && selectedSquad) {
+      applyPreset("ALL_SQUAD");
+    }
+  }, [teamSquadId, selectedSquad]);
+
+  function toggleParticipant(id: string) {
+    setParticipantPreset("CUSTOM");
+    setSelectedParticipantIds((prev) =>
+      prev.includes(id) ? prev.filter((pId) => pId !== id) : [...prev, id]
+    );
+  }
+
+  function selectAllRoster() {
+    setParticipantPreset("ALL_SQUAD");
+    const allIds = [
+      ...currentRoster.map((r) => r.memberProfile.id),
+      ...additionalGuestPlayers.map((g) => g.id),
+    ];
+    setSelectedParticipantIds(Array.from(new Set(allIds)));
+  }
+
+  function deselectAllRoster() {
+    setParticipantPreset("CUSTOM");
+    setSelectedParticipantIds([]);
+  }
+
+  function addGuestPlayer(player: ClubPlayerItem) {
+    if (!additionalGuestPlayers.some((g) => g.id === player.id)) {
+      setAdditionalGuestPlayers((prev) => [...prev, player]);
+      setSelectedParticipantIds((prev) => Array.from(new Set([...prev, player.id])));
+    }
+    setGuestSearch("");
+    setIsGuestPickerOpen(false);
+  }
+
+  function removeGuestPlayer(id: string) {
+    setAdditionalGuestPlayers((prev) => prev.filter((g) => g.id !== id));
+    setSelectedParticipantIds((prev) => prev.filter((pId) => pId !== id));
+  }
+
+  const availableGuests = allClubPlayers.filter((p) => {
+    if (currentRoster.some((r) => r.memberProfile.id === p.id)) return false;
+    if (additionalGuestPlayers.some((g) => g.id === p.id)) return false;
+    if (guestSearch.trim()) {
+      const q = guestSearch.toLowerCase();
+      return (
+        p.firstName.toLowerCase().includes(q) ||
+        p.lastName.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
 
   // Conflict state
   const [collisionDetected, setCollisionDetected] = useState<boolean>(false);
@@ -303,6 +434,9 @@ export function EventForm({
         linkedEquipmentLoanId: linkedEquipmentLoanId || null,
         collisionOverrideReason:
           collisionDetected && isAdmin ? collisionOverrideReason.trim() : null,
+        participantFilter: participantPreset,
+        invitedMemberIds: selectedParticipantIds,
+        notifyParticipants,
       };
 
       if (initialEvent) {
@@ -648,7 +782,297 @@ export function EventForm({
         </div>
       </div>
 
-      {/* 3. Availability RSVP & Matchday Config */}
+      {/* 3. Eligible Participants & RSVP Invitations */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <Users className="w-4 h-4 text-sky-400" />
+              Eligible Participants &amp; RSVP Invitations
+            </h3>
+            <p className="text-xs text-slate-400 mt-1">
+              Select which squad players (or specialized groups) receive notification invitations and can submit availability RSVPs.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-950/80 border border-sky-800 text-sky-300">
+              {selectedParticipantIds.length} Invited
+            </span>
+          </div>
+        </div>
+
+        {/* Quick Filter Presets */}
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          <button
+            type="button"
+            onClick={() => applyPreset("ALL_SQUAD")}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              participantPreset === "ALL_SQUAD"
+                ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
+                : "bg-slate-950 border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white"
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            All Squad ({currentRoster.length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => applyPreset("BATSMEN")}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              participantPreset === "BATSMEN"
+                ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                : "bg-slate-950 border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white"
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            Special Batting Session ({batsmenCount})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => applyPreset("BOWLERS")}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              participantPreset === "BOWLERS"
+                ? "bg-indigo-500 text-white shadow-md shadow-indigo-500/20"
+                : "bg-slate-950 border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white"
+            }`}
+          >
+            <Dumbbell className="w-3.5 h-3.5" />
+            Special Bowling Session ({bowlersCount})
+          </button>
+
+          {wkCount > 0 && (
+            <button
+              type="button"
+              onClick={() => applyPreset("WICKETKEEPERS")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                participantPreset === "WICKETKEEPERS"
+                  ? "bg-amber-500 text-white shadow-md shadow-amber-500/20"
+                  : "bg-slate-950 border border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white"
+              }`}
+            >
+              🧤 Wicketkeepers ({wkCount})
+            </button>
+          )}
+
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={selectAllRoster}
+              className="text-[11px] font-semibold text-sky-400 hover:text-sky-300"
+            >
+              Select All
+            </button>
+            <span className="text-slate-600">•</span>
+            <button
+              type="button"
+              onClick={deselectAllRoster}
+              className="text-[11px] font-semibold text-slate-400 hover:text-slate-300"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+
+        {/* Squad Roster Members Checklist */}
+        <div className="bg-slate-950 border border-slate-800/80 rounded-xl p-3 max-h-64 overflow-y-auto space-y-1.5">
+          {currentRoster.length === 0 ? (
+            <p className="text-xs text-slate-500 text-center py-4">
+              No active players rostered in this squad. Use the button below to add players.
+            </p>
+          ) : (
+            currentRoster.map((r) => {
+              const p = r.memberProfile;
+              const isSelected = selectedParticipantIds.includes(p.id);
+
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => toggleParticipant(p.id)}
+                  className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-all ${
+                    isSelected
+                      ? "bg-sky-500/10 border-sky-500/30 text-white"
+                      : "bg-slate-900/60 border-slate-800/80 text-slate-400 hover:border-slate-700"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? "bg-sky-500 border-sky-500 text-white"
+                          : "border-slate-700 bg-slate-900"
+                      }`}
+                    >
+                      {isSelected && <Check className="w-3 h-3" />}
+                    </div>
+
+                    <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
+                      {p.firstName[0]}
+                      {p.lastName[0]}
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-white">
+                          {p.firstName} {p.lastName}
+                        </span>
+                        {r.jerseyNumber && (
+                          <span className="text-[10px] font-mono text-slate-400">
+                            #{r.jerseyNumber}
+                          </span>
+                        )}
+                        {r.rosterRole && r.rosterRole !== "PLAYER" && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/80 border border-amber-800 text-amber-300 font-semibold">
+                            {r.rosterRole}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Attribute Pills */}
+                      <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                        {p.battingPosition && (
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-800/60">
+                            {p.battingPosition}
+                          </span>
+                        )}
+                        {p.bowlingStyle && (
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-950/70 text-indigo-400 border border-indigo-800/60">
+                            {p.bowlingStyle}
+                          </span>
+                        )}
+                        {p.secondaryRoles?.map((sr) => (
+                          <span
+                            key={sr}
+                            className="text-[9px] px-1.5 py-0.2 rounded bg-purple-950/70 text-purple-400 border border-purple-800/60"
+                          >
+                            {sr}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    {p.dateOfBirth && (
+                      <span className="text-[10px] text-slate-500">
+                        b. {new Date(p.dateOfBirth).getFullYear()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Additional Guest / Call-Up Players */}
+        {additionalGuestPlayers.length > 0 && (
+          <div className="space-y-2 pt-2 border-t border-slate-800/80">
+            <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Called Up / Guest Participants from Other Squads ({additionalGuestPlayers.length})
+            </h4>
+            <div className="flex items-center gap-2 flex-wrap">
+              {additionalGuestPlayers.map((g) => (
+                <span
+                  key={g.id}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs bg-slate-800 border border-slate-700 text-slate-200"
+                >
+                  <span className="font-semibold">{g.firstName} {g.lastName}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeGuestPlayer(g.id)}
+                    className="p-0.5 hover:text-red-400 rounded transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Call Up Other Players Button & Search Dropdown */}
+        <div className="relative pt-1">
+          <button
+            type="button"
+            onClick={() => setIsGuestPickerOpen(!isGuestPickerOpen)}
+            className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 font-semibold"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            + Call up / Invite Player from Another Squad
+          </button>
+
+          {isGuestPickerOpen && (
+            <div className="absolute z-20 left-0 mt-2 w-full max-w-md bg-slate-950 border border-slate-800 rounded-2xl p-3 shadow-2xl space-y-2">
+              <div className="flex items-center gap-2 px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl">
+                <Search className="w-3.5 h-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search club players by name..."
+                  value={guestSearch}
+                  onChange={(e) => setGuestSearch(e.target.value)}
+                  className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
+                  autoFocus
+                />
+              </div>
+
+              <div className="max-h-48 overflow-y-auto space-y-1">
+                {availableGuests.length === 0 ? (
+                  <p className="text-xs text-slate-500 text-center py-2">
+                    No matching club players found.
+                  </p>
+                ) : (
+                  availableGuests.slice(0, 10).map((player) => (
+                    <div
+                      key={player.id}
+                      onClick={() => addGuestPlayer(player)}
+                      className="p-2 rounded-lg hover:bg-slate-900 flex items-center justify-between cursor-pointer text-xs"
+                    >
+                      <div>
+                        <p className="font-semibold text-white">
+                          {player.firstName} {player.lastName}
+                        </p>
+                        <p className="text-[10px] text-slate-400">
+                          {player.rosterMemberships && player.rosterMemberships.length > 0
+                            ? player.rosterMemberships.map((m) => m.teamSquad.name).join(", ")
+                            : "General Pool"}
+                        </p>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800 font-semibold">
+                        Add &rarr;
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Email Notification Option */}
+        <div className="pt-3 border-t border-slate-800/80 flex items-start gap-2.5">
+          <input
+            type="checkbox"
+            id="notifyParticipants"
+            checked={notifyParticipants}
+            onChange={(e) => setNotifyParticipants(e.target.checked)}
+            className="mt-0.5 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-sky-500"
+          />
+          <label htmlFor="notifyParticipants" className="text-xs text-slate-300 leading-normal cursor-pointer">
+            <span className="font-semibold text-white flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-emerald-400" />
+              Send email notifications with 1-tap RSVP button
+            </span>
+            <span className="text-slate-400 block text-[11px] mt-0.5">
+              All selected participants (or linked parents for youth players) will immediately receive match/training details and an instant RSVP link.
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* 4. Availability RSVP & Matchday Config */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-cyan-400" />

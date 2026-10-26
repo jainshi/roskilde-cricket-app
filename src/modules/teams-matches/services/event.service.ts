@@ -4,11 +4,14 @@ import {
   UpdateScheduledEventInput,
   UpdateEventLifecycleStatusInput,
   CreateRecurringTrainingScheduleInput,
+  InviteEventParticipantsInput,
 } from "../contracts/event.contract";
 import {
   evaluateFacilityConflict,
   TimeInterval,
 } from "../domain/facility-conflicts";
+import { calculateAgeOnCutoff } from "../domain/age-eligibility";
+import { notificationService } from "@/modules/auth-rbac/notifications/notification.service";
 import { EventLifecycleStatus, EventType } from "@prisma/client";
 
 export interface ScheduledEventSummary {
@@ -122,19 +125,73 @@ export async function createScheduledEvent(
     }
   }
 
-  // 2. Fetch Active Roster Members of the Squad for RSVP Initialization
+  // 2. Fetch Active Roster Members of the Squad with skill attributes for RSVP Initialization
   const squad = await prisma.teamSquad.findUnique({
     where: { id: input.teamSquadId },
     include: {
       roster: {
         where: { isActive: true },
-        select: { memberProfileId: true },
+        include: {
+          memberProfile: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              battingPosition: true,
+              bowlingStyle: true,
+              secondaryRoles: true,
+            },
+          },
+        },
       },
     },
   });
 
   if (!squad) {
     throw new Error("Specified squad does not exist.");
+  }
+
+  // Determine eligible participant IDs based on filter / invited list
+  let targetMemberIds: string[] = [];
+
+  if (input.invitedMemberIds && input.invitedMemberIds.length > 0) {
+    // Explicit custom participant selection (can include squad members and invited guests)
+    targetMemberIds = Array.from(new Set(input.invitedMemberIds));
+  } else if (input.participantFilter === "BATSMEN") {
+    // Eligible batsmen preset (e.g. for special batting sessions)
+    const batsmen = squad.roster.filter((r) => {
+      const p = r.memberProfile;
+      return (
+        (p.battingPosition && p.battingPosition !== "TAILENDER") ||
+        p.secondaryRoles.includes("ALL_ROUNDER")
+      );
+    });
+    targetMemberIds = (batsmen.length > 0 ? batsmen : squad.roster).map(
+      (r) => r.memberProfileId
+    );
+  } else if (input.participantFilter === "BOWLERS") {
+    // Eligible bowlers preset (pace/spin bowlers or all-rounders)
+    const bowlers = squad.roster.filter((r) => {
+      const p = r.memberProfile;
+      return (
+        (p.bowlingStyle && p.bowlingStyle !== "DOES_NOT_BOWL") ||
+        p.secondaryRoles.includes("ALL_ROUNDER")
+      );
+    });
+    targetMemberIds = (bowlers.length > 0 ? bowlers : squad.roster).map(
+      (r) => r.memberProfileId
+    );
+  } else if (input.participantFilter === "WICKETKEEPERS") {
+    // Wicketkeepers preset
+    const keepers = squad.roster.filter((r) =>
+      r.memberProfile.secondaryRoles.includes("WICKETKEEPER")
+    );
+    targetMemberIds = (keepers.length > 0 ? keepers : squad.roster).map(
+      (r) => r.memberProfileId
+    );
+  } else {
+    // Default ALL_SQUAD (e.g. all U13 players for U13 squad session)
+    targetMemberIds = squad.roster.map((r) => r.memberProfileId);
   }
 
   // 3. Create Event in Database
@@ -168,12 +225,12 @@ export async function createScheduledEvent(
       },
     });
 
-    // 4. Seed NO_RESPONSE RSVPs for all active roster members
-    if (squad.roster.length > 0) {
+    // 4. Seed NO_RESPONSE RSVPs for all eligible participants
+    if (targetMemberIds.length > 0) {
       await tx.eventRsvp.createMany({
-        data: squad.roster.map((r) => ({
+        data: targetMemberIds.map((mId) => ({
           scheduledEventId: event.id,
-          memberProfileId: r.memberProfileId,
+          memberProfileId: mId,
           submittedById: callerProfileId,
           status: "NO_RESPONSE" as const,
         })),
@@ -184,10 +241,42 @@ export async function createScheduledEvent(
     return event;
   });
 
+  // 5. Send Email Notifications to invited participants and linked parents
+  let notifiedCount = 0;
+  if (input.notifyParticipants !== false && targetMemberIds.length > 0) {
+    const facility = input.facilityId
+      ? await prisma.clubFacility.findUnique({
+          where: { id: input.facilityId },
+          select: { name: true },
+        })
+      : null;
+
+    notifiedCount = await sendEventInvitations(
+      {
+        id: createdEvent.id,
+        title: createdEvent.title,
+        eventType: createdEvent.eventType,
+        matchType: createdEvent.matchType,
+        trainingType: createdEvent.trainingType,
+        startAt: createdEvent.startAt,
+        endAt: createdEvent.endAt,
+        meetAt: createdEvent.meetAt,
+        venueName: createdEvent.venueName,
+        venueAddress: createdEvent.venueAddress,
+        facilityName: facility?.name ?? null,
+        rsvpDeadlineAt: createdEvent.rsvpDeadlineAt,
+        squadName: squad.name,
+      },
+      targetMemberIds
+    );
+  }
+
   return {
     success: true,
     event: createdEvent,
     warning: warningMessage,
+    participantCount: targetMemberIds.length,
+    notifiedCount,
   };
 }
 
@@ -734,6 +823,207 @@ export async function createRecurringTrainingSchedule(
     createdCount,
     skippedCount,
     totalDatesEvaluated: matchedDates.length,
+  };
+}
+
+/**
+ * Sends event invitation emails with 1-tap RSVP links to the specified participants
+ * (routing to parents if participant is minor).
+ */
+export async function sendEventInvitations(
+  event: {
+    id: string;
+    title: string;
+    eventType: EventType;
+    matchType?: string | null;
+    trainingType?: string | null;
+    startAt: Date;
+    endAt: Date;
+    meetAt?: Date | null;
+    venueName?: string | null;
+    venueAddress?: string | null;
+    facilityName?: string | null;
+    rsvpDeadlineAt: Date;
+    squadName: string;
+  },
+  memberProfileIds: string[]
+): Promise<number> {
+  if (memberProfileIds.length === 0) return 0;
+
+  const participants = await prisma.memberProfile.findMany({
+    where: { id: { in: memberProfileIds } },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      dateOfBirth: true,
+      email: true,
+      parentLinksAsPlayer: {
+        include: {
+          parent: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const eventDateFormatted = new Date(event.startAt).toLocaleDateString("en-DK", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const startTime = new Date(event.startAt).toLocaleTimeString("en-DK", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const endTime = new Date(event.endAt).toLocaleTimeString("en-DK", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const deadlineFormatted = new Date(event.rsvpDeadlineAt).toLocaleDateString("en-DK", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const venueDesc =
+    event.facilityName ||
+    event.venueName ||
+    event.venueAddress ||
+    "Poppelgårdsvej Cricket Ground";
+
+  let notifiedCount = 0;
+  const currentYear = new Date().getFullYear();
+
+  for (const p of participants) {
+    let isMinor = false;
+    if (p.dateOfBirth) {
+      try {
+        const age = calculateAgeOnCutoff(p.dateOfBirth, currentYear);
+        if (age < 18) isMinor = true;
+      } catch {
+        // Fallback
+      }
+    }
+    if (p.parentLinksAsPlayer && p.parentLinksAsPlayer.length > 0) {
+      isMinor = true;
+    }
+
+    if (isMinor && p.parentLinksAsPlayer && p.parentLinksAsPlayer.length > 0) {
+      for (const link of p.parentLinksAsPlayer) {
+        if (link.parent?.email) {
+          await notificationService.sendEmail({
+            to: link.parent.email,
+            subject: `RSVP Needed: ${event.title} for ${p.firstName}`,
+            html: `
+              <h2>Roskilde Cricket Club - Event Invitation</h2>
+              <p>Dear ${link.parent.firstName},</p>
+              <p>A new ${event.eventType === "MATCH" ? "match fixture" : "training session"} has been scheduled for <strong>${p.firstName} ${p.lastName}</strong> with the <strong>${event.squadName}</strong>:</p>
+              <div style="background:#0f172a;color:#f8fafc;padding:16px;border-radius:12px;margin:16px 0;border:1px solid #334155;">
+                <p style="margin:4px 0;"><strong>Event:</strong> ${event.title}</p>
+                <p style="margin:4px 0;"><strong>Squad:</strong> ${event.squadName}</p>
+                <p style="margin:4px 0;"><strong>Date:</strong> ${eventDateFormatted} (${startTime} – ${endTime})</p>
+                <p style="margin:4px 0;"><strong>Venue:</strong> ${venueDesc}</p>
+                <p style="margin:4px 0;color:#f59e0b;"><strong>RSVP Cutoff:</strong> ${deadlineFormatted}</p>
+              </div>
+              <p>Please log in to the RCC portal and submit your child's availability:</p>
+              <p><a href="/events/${event.id}" style="display:inline-block;background:#0284c7;color:#ffffff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;">Submit 1-Tap RSVP</a></p>
+            `,
+          });
+          notifiedCount++;
+        }
+      }
+    } else if (p.email) {
+      await notificationService.sendEmail({
+        to: p.email,
+        subject: `RSVP Invitation: ${event.title}`,
+        html: `
+          <h2>Roskilde Cricket Club - Event Invitation</h2>
+          <p>Hi ${p.firstName},</p>
+          <p>You have been invited to participate in <strong>${event.title}</strong> with the <strong>${event.squadName}</strong>:</p>
+          <div style="background:#0f172a;color:#f8fafc;padding:16px;border-radius:12px;margin:16px 0;border:1px solid #334155;">
+            <p style="margin:4px 0;"><strong>Event:</strong> ${event.title}</p>
+            <p style="margin:4px 0;"><strong>Squad:</strong> ${event.squadName}</p>
+            <p style="margin:4px 0;"><strong>Date:</strong> ${eventDateFormatted} (${startTime} – ${endTime})</p>
+            <p style="margin:4px 0;"><strong>Venue:</strong> ${venueDesc}</p>
+            <p style="margin:4px 0;color:#f59e0b;"><strong>RSVP Cutoff:</strong> ${deadlineFormatted}</p>
+          </div>
+          <p>Please confirm your availability (Available / Maybe / Unavailable):</p>
+          <p><a href="/events/${event.id}" style="display:inline-block;background:#0284c7;color:#ffffff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;">Submit 1-Tap RSVP</a></p>
+        `,
+      });
+      notifiedCount++;
+    }
+  }
+
+  return notifiedCount;
+}
+
+/**
+ * Invites additional participants to an existing event and creates NO_RESPONSE RSVPs.
+ */
+export async function inviteEventParticipants(
+  input: InviteEventParticipantsInput,
+  callerProfileId: string
+) {
+  const event = await prisma.scheduledEvent.findUnique({
+    where: { id: input.scheduledEventId },
+    include: {
+      teamSquad: { select: { name: true } },
+      facility: { select: { name: true } },
+    },
+  });
+
+  if (!event) throw new Error("Event not found");
+
+  const memberIds = Array.from(new Set(input.memberProfileIds));
+
+  // Create NO_RESPONSE RSVPs for any participants not yet added
+  await prisma.eventRsvp.createMany({
+    data: memberIds.map((mId) => ({
+      scheduledEventId: event.id,
+      memberProfileId: mId,
+      submittedById: callerProfileId,
+      status: "NO_RESPONSE" as const,
+    })),
+    skipDuplicates: true,
+  });
+
+  let notifiedCount = 0;
+  if (input.notifyParticipants !== false) {
+    notifiedCount = await sendEventInvitations(
+      {
+        id: event.id,
+        title: event.title,
+        eventType: event.eventType,
+        matchType: event.matchType,
+        trainingType: event.trainingType,
+        startAt: event.startAt,
+        endAt: event.endAt,
+        meetAt: event.meetAt,
+        venueName: event.venueName,
+        venueAddress: event.venueAddress,
+        facilityName: event.facility?.name ?? null,
+        rsvpDeadlineAt: event.rsvpDeadlineAt,
+        squadName: event.teamSquad.name,
+      },
+      memberIds
+    );
+  }
+
+  return {
+    success: true,
+    invitedCount: memberIds.length,
+    notifiedCount,
   };
 }
 

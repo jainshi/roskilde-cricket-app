@@ -24,7 +24,7 @@ export default async function NewEventPage() {
 
   const isAdmin = session.roles.includes("ADMIN");
 
-  const [squads, facilities, equipmentLoans] = await Promise.all([
+  const [squads, facilities, equipmentLoans, allClubPlayers] = await Promise.all([
     prisma.teamSquad.findMany({
       where: { isActive: true },
       select: {
@@ -32,6 +32,25 @@ export default async function NewEventPage() {
         name: true,
         category: true,
         defaultLineupSize: true,
+        roster: {
+          where: { isActive: true },
+          select: {
+            rosterRole: true,
+            jerseyNumber: true,
+            memberProfile: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                dateOfBirth: true,
+                email: true,
+                battingPosition: true,
+                bowlingStyle: true,
+                secondaryRoles: true,
+              },
+            },
+          },
+        },
       },
       orderBy: { name: "asc" },
     }),
@@ -61,6 +80,24 @@ export default async function NewEventPage() {
       },
       orderBy: { expectedReturnAt: "asc" },
       take: 20,
+    }),
+    prisma.memberProfile.findMany({
+      where: { isAnonymized: false },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        dateOfBirth: true,
+        email: true,
+        battingPosition: true,
+        bowlingStyle: true,
+        secondaryRoles: true,
+        rosterMemberships: {
+          where: { isActive: true },
+          select: { teamSquad: { select: { id: true, name: true } } },
+        },
+      },
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
     }),
   ]);
 
@@ -98,6 +135,7 @@ export default async function NewEventPage() {
         squads={squads}
         facilities={facilities}
         equipmentLoans={formattedLoans}
+        allClubPlayers={allClubPlayers}
         isAdmin={isAdmin}
       />
     </div>

@@ -10,12 +10,14 @@ import {
   updateFacilitySchema,
   checkFacilityConflictSchema,
   createRecurringTrainingScheduleSchema,
+  inviteEventParticipantsSchema,
 } from "../contracts/event.contract";
 import {
   createScheduledEvent,
   updateScheduledEvent,
   updateEventLifecycleStatus,
   createRecurringTrainingSchedule,
+  inviteEventParticipants,
 } from "../services/event.service";
 import {
   createFacility,
@@ -352,6 +354,51 @@ export async function createRecurringTrainingScheduleAction(
       success: false,
       error: message,
       collisionDetected: isCollision,
+    };
+  }
+}
+
+/**
+ * Server Action: Invite additional participants to an existing event
+ */
+export async function inviteEventParticipantsAction(
+  rawInput: unknown
+): Promise<EventActionResult> {
+  try {
+    const session = await requireActivatedSession();
+    if (!isStaff(session.roles)) {
+      return {
+        success: false,
+        error: "Forbidden: Only coaches and administrators can invite participants.",
+      };
+    }
+
+    const parsed = inviteEventParticipantsSchema.safeParse(rawInput);
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: parsed.error.issues[0]?.message || "Invalid participant input",
+      };
+    }
+
+    const result = await inviteEventParticipants(
+      parsed.data,
+      session.memberProfileId
+    );
+
+    revalidatePath(`/events/${parsed.data.scheduledEventId}`);
+    revalidatePath("/events");
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to invite participants";
+    return {
+      success: false,
+      error: message,
     };
   }
 }

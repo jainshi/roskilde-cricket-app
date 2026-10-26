@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { getScheduledEventById } from "@/modules/teams-matches/services/event.service";
 import { getPlayerEventRsvp } from "@/modules/teams-matches/services/rsvp.service";
 import { RsvpStatusBar } from "@/components/events/rsvp-status-bar";
+import { InviteParticipantsModal } from "@/components/events/invite-participants-modal";
 import {
   Calendar,
   Clock,
@@ -121,6 +122,46 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     event.matchSelection?.selectionStatus === "PUBLISHED"
       ? event.matchSelection
       : null;
+
+  // If staff, fetch candidate players for the participant invitation modal
+  let candidatePlayers: any[] = [];
+  if (isStaff) {
+    const clubProfiles = await prisma.memberProfile.findMany({
+      where: { isAnonymized: false },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        battingPosition: true,
+        bowlingStyle: true,
+        secondaryRoles: true,
+        rosterMemberships: {
+          where: { isActive: true },
+          select: { teamSquad: { select: { id: true, name: true } } },
+        },
+      },
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    });
+
+    candidatePlayers = clubProfiles.map((cp) => {
+      const isRosteredInSquad = cp.rosterMemberships.some(
+        (m) => m.teamSquad.id === event.teamSquadId
+      );
+      const squadName =
+        cp.rosterMemberships.map((m) => m.teamSquad.name).join(", ") ||
+        "Club Pool";
+      return {
+        id: cp.id,
+        firstName: cp.firstName,
+        lastName: cp.lastName,
+        battingPosition: cp.battingPosition,
+        bowlingStyle: cp.bowlingStyle,
+        secondaryRoles: cp.secondaryRoles,
+        squadName,
+        isRosteredInSquad,
+      };
+    });
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -345,12 +386,26 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         {/* Right Column (1 col): Availability Summary */}
         <div className="space-y-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-              <span>Squad Availability</span>
-              <span className="text-[10px] text-slate-500 font-mono">
-                {event.rsvps.length} rostered
-              </span>
-            </h3>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Squad Availability
+                </h3>
+                <span className="text-[10px] text-slate-500 font-mono">
+                  {event.rsvps.length} participant{event.rsvps.length === 1 ? "" : "s"} invited
+                </span>
+              </div>
+
+              {isStaff && (
+                <InviteParticipantsModal
+                  scheduledEventId={event.id}
+                  eventTitle={event.title}
+                  squadName={event.teamSquad.name}
+                  alreadyInvitedMemberIds={event.rsvps.map((r) => r.memberProfileId)}
+                  candidatePlayers={candidatePlayers}
+                />
+              )}
+            </div>
 
             {/* Participation Counter Pills */}
             <div className="grid grid-cols-2 gap-2 text-xs">

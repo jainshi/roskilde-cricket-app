@@ -50,6 +50,12 @@ export const createScheduledEventSchema = z
       .max(300)
       .optional()
       .nullable(),
+    participantFilter: z
+      .enum(["ALL_SQUAD", "BATSMEN", "BOWLERS", "WICKETKEEPERS", "CUSTOM"])
+      .default("ALL_SQUAD")
+      .optional(),
+    invitedMemberIds: z.array(z.string().min(1)).optional(),
+    notifyParticipants: z.boolean().default(true).optional(),
   })
   .refine(
     (data) => {
@@ -222,4 +228,19 @@ export const createRecurringTrainingScheduleSchema = z
 
 export type CreateRecurringTrainingScheduleInput = z.infer<
   typeof createRecurringTrainingScheduleSchema
+>;
+
+/**
+ * Schema for inviting additional participants to an existing event
+ */
+export const inviteEventParticipantsSchema = z.object({
+  scheduledEventId: z.string().min(1, "Invalid event ID"),
+  memberProfileIds: z
+    .array(z.string().min(1))
+    .min(1, "At least one participant must be selected"),
+  notifyParticipants: z.boolean().default(true).optional(),
+});
+
+export type InviteEventParticipantsInput = z.infer<
+  typeof inviteEventParticipantsSchema
 >;
