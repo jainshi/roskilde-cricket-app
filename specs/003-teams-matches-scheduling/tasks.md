@@ -96,17 +96,17 @@
 
 **Goal**: Deliver User Story 4 (P4) and cross-module governance: build an ultra-fast (<30s on 360px viewport) pitch-side attendance checklist, immutable attendance locking, 1-click Danish Folkeoplysning municipal CSV report generation, and cross-module GDPR Article 17/20 hooks.
 
-- [ ] T040 [P] [US4] Define Zod validation schemas for pitch-side attendance and municipal report export in `src/modules/teams-matches/contracts/attendance.contract.ts`
-- [ ] T041 [US4] Implement attendance service in `src/modules/teams-matches/services/attendance.service.ts` defaulting to `PRESENT` for selected/available players, recording arrival times, and locking completed attendance sessions
-- [ ] T042 [US4] Implement Folkeoplysning municipal export service in `src/modules/teams-matches/services/folkeoplysning.service.ts` streaming CSV data for all attending club members across date ranges
-- [ ] T043 [US4] Implement Server Actions in `src/modules/teams-matches/actions/attendance.actions.ts` (`recordPitchSideAttendanceAction`, `lockAttendanceSessionAction`, `exportFolkeoplysningCsvAction`)
-- [ ] T044 [P] [US4] Build mobile-first pitch-side attendance checklist in `src/components/events/pitchside-attendance-list.tsx` optimized for <30 seconds completion on a 360px screen with >=44px touch targets
-- [ ] T045 [US4] Build pitch-side attendance route in `src/app/(dashboard)/events/[id]/attendance/page.tsx`
-- [ ] T046 [US4] Build Danish Folkeoplysning municipal reporting page in `src/app/(dashboard)/admin/reports/attendance/page.tsx`
-- [ ] T047 Update GDPR Article 17 erasure service in `src/modules/auth-rbac/services/gdpr-deletion.service.ts` to preserve statistical match selections and attendance records on `"Former Member #..."` while scrubbing personal transport notes and attendance notes
-- [ ] T048 Update GDPR Article 20 export service in `src/modules/auth-rbac/services/gdpr-export.service.ts` to include squad memberships, event RSVPs, match selections, and historical attendance records
-- [ ] T049 [P] Implement unit tests in `tests/unit/teams-matches/teams-gdpr-guard.test.ts` verifying personal transport note scrubbing and appearance count retention during account erasure
-- [ ] T050 Execute full verification gate across the entire application (`npx tsc --noEmit`, `npm run test:unit`, and `npm run build`)
+- [X] T040 [P] [US4] Define Zod validation schemas for pitch-side attendance and municipal report export in `src/modules/teams-matches/contracts/attendance.contract.ts`
+- [X] T041 [US4] Implement attendance service in `src/modules/teams-matches/services/attendance.service.ts` defaulting to `PRESENT` for selected/available players, recording arrival times, and locking completed attendance sessions
+- [X] T042 [US4] Implement Folkeoplysning municipal export service in `src/modules/teams-matches/services/folkeoplysning.service.ts` streaming CSV data for all attending club members across date ranges
+- [X] T043 [US4] Implement Server Actions in `src/modules/teams-matches/actions/attendance.actions.ts` (`recordPitchSideAttendanceAction`, `lockAttendanceSessionAction`, `exportFolkeoplysningCsvAction`)
+- [X] T044 [P] [US4] Build mobile-first pitch-side attendance checklist in `src/components/events/pitchside-attendance-list.tsx` optimized for <30 seconds completion on a 360px screen with >=44px touch targets
+- [X] T045 [US4] Build pitch-side attendance route in `src/app/(dashboard)/events/[id]/attendance/page.tsx`
+- [X] T046 [US4] Build Danish Folkeoplysning municipal reporting page in `src/app/(dashboard)/admin/reports/attendance/page.tsx`
+- [X] T047 Update GDPR Article 17 erasure service in `src/modules/auth-rbac/services/gdpr-deletion.service.ts` to preserve statistical match selections and attendance records on `"Former Member #..."` while scrubbing personal transport notes and attendance notes
+- [X] T048 Update GDPR Article 20 export service in `src/modules/auth-rbac/services/gdpr-export.service.ts` to include squad memberships, event RSVPs, match selections, and historical attendance records
+- [X] T049 [P] Implement unit tests in `tests/unit/teams-matches/teams-gdpr-guard.test.ts` verifying personal transport note scrubbing and appearance count retention during account erasure
+- [X] T050 Execute full verification gate across the entire application (`npx tsc --noEmit`, `npm run test:unit`, and `npm run build`)
 
 **Checkpoint**: Fast pitch-side attendance operational (<30s on 360px); Folkeoplysning municipal CSV export runs in 1-click; GDPR Article 17/20 compliance verified; full application builds cleanly.
 

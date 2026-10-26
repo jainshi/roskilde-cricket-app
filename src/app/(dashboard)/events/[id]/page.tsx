@@ -23,6 +23,7 @@ import {
   XCircle,
   HelpCircle,
   AlertTriangle,
+  ClipboardCheck,
 } from "lucide-react";
 
 interface EventDetailPageProps {
@@ -209,11 +210,18 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
         {/* Coach / Admin Action Buttons */}
         {isStaff && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              href={`/events/${event.id}/attendance`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all active:scale-[0.98]"
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              Pitch-Side Attendance (&lt;30s)
+            </Link>
             {event.eventType === "MATCH" && (
               <Link
                 href={`/events/${event.id}/selection`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition-all active:scale-[0.98]"
               >
                 <Users className="w-4 h-4" />
                 Match Selection Console

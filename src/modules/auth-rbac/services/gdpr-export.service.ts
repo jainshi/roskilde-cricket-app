@@ -89,6 +89,37 @@ export interface GdprExportPackage {
       createdAt: string;
     }[];
   }[];
+  squadMemberships: {
+    squadId: string;
+    squadName: string;
+    role: string;
+    isActive: boolean;
+    joinedAt: string;
+  }[];
+  eventRsvps: {
+    eventId: string;
+    eventTitle: string;
+    eventDate: string;
+    status: string;
+    transportNote: string | null;
+    submittedAt: string;
+  }[];
+  matchSelections: {
+    eventId: string;
+    eventTitle: string;
+    matchDate: string;
+    selectionRole: string;
+    tacticalRole: string;
+    battingOrderPosition: number | null;
+  }[];
+  attendanceHistory: {
+    eventId: string;
+    eventTitle: string;
+    sessionDate: string;
+    status: string;
+    arrivalTime: string | null;
+    notes: string | null;
+  }[];
 }
 
 /**
@@ -167,6 +198,30 @@ export async function generateGdprExport(params: {
           damageReports: true,
         },
         orderBy: { checkedOutAt: "desc" },
+      },
+      rosterMemberships: {
+        include: { teamSquad: { select: { id: true, name: true } } },
+      },
+      rsvps: {
+        include: {
+          scheduledEvent: { select: { id: true, title: true, date: true } },
+        },
+        orderBy: { submittedAt: "desc" },
+      },
+      matchSelections: {
+        include: {
+          matchSelection: {
+            include: {
+              scheduledEvent: { select: { id: true, title: true, date: true } },
+            },
+          },
+        },
+      },
+      attendances: {
+        include: {
+          scheduledEvent: { select: { id: true, title: true, date: true } },
+        },
+        orderBy: { recordedAt: "desc" },
       },
     },
   });
@@ -290,6 +345,37 @@ export async function generateGdprExport(params: {
         status: dr.status,
         createdAt: dr.createdAt.toISOString(),
       })),
+    })),
+    squadMemberships: target.rosterMemberships.map((rm) => ({
+      squadId: rm.teamSquad.id,
+      squadName: rm.teamSquad.name,
+      role: rm.rosterRole,
+      isActive: rm.isActive,
+      joinedAt: rm.joinedAt.toISOString(),
+    })),
+    eventRsvps: target.rsvps.map((r) => ({
+      eventId: r.scheduledEvent.id,
+      eventTitle: r.scheduledEvent.title,
+      eventDate: r.scheduledEvent.date.toISOString(),
+      status: r.status,
+      transportNote: r.transportNote,
+      submittedAt: r.submittedAt.toISOString(),
+    })),
+    matchSelections: target.matchSelections.map((ms) => ({
+      eventId: ms.matchSelection.scheduledEvent.id,
+      eventTitle: ms.matchSelection.scheduledEvent.title,
+      matchDate: ms.matchSelection.scheduledEvent.date.toISOString(),
+      selectionRole: ms.selectionRole,
+      tacticalRole: ms.tacticalRole,
+      battingOrderPosition: ms.battingOrderPosition,
+    })),
+    attendanceHistory: target.attendances.map((att) => ({
+      eventId: att.scheduledEvent.id,
+      eventTitle: att.scheduledEvent.title,
+      sessionDate: att.scheduledEvent.date.toISOString(),
+      status: att.status,
+      arrivalTime: att.arrivalTime?.toISOString() || null,
+      notes: att.notes,
     })),
   };
 

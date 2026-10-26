@@ -216,6 +216,29 @@ export async function executeMemberAnonymization(params: {
       },
     });
 
+    // F2. Module 3: Scrub personal transport notes from RSVPs while preserving RSVP history & appearances
+    await tx.eventRsvp.updateMany({
+      where: { memberProfileId: targetProfileId },
+      data: { transportNote: null },
+    });
+
+    // F3. Module 3: Scrub personal notes from Attendance records while preserving municipal attendance tallies
+    await tx.eventAttendance.updateMany({
+      where: { memberProfileId: targetProfileId },
+      data: { notes: null },
+    });
+
+    // F4. Module 3: Deactivate active squad roster memberships
+    await tx.teamRosterMember.updateMany({
+      where: { memberProfileId: targetProfileId },
+      data: { isActive: false },
+    });
+
+    // F5. Module 3: Remove any coach assignments
+    await tx.teamCoachAssignment.deleteMany({
+      where: { coachProfileId: targetProfileId },
+    });
+
     // G. Create permanent AuditLog entry
     await tx.auditLog.create({
       data: {
