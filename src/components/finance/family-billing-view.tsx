@@ -18,6 +18,8 @@ import {
   Filter,
 } from "lucide-react";
 
+import { MobilePaymentModal } from "./mobile-payment-modal";
+
 interface FamilyBillingViewProps {
   summary: FamilyBillingSummary;
   onPayInvoice?: (invoice: InvoiceWithRelations) => void;
@@ -25,7 +27,16 @@ interface FamilyBillingViewProps {
 
 export function FamilyBillingView({ summary, onPayInvoice }: FamilyBillingViewProps) {
   const [selectedTab, setSelectedTab] = useState<string>("ALL");
+  const [payingInvoice, setPayingInvoice] = useState<InvoiceWithRelations | null>(null);
   const isMultiChild = summary.childrenBreakdown.length > 0;
+
+  const handlePayClick = (inv: InvoiceWithRelations) => {
+    if (onPayInvoice) {
+      onPayInvoice(inv);
+    } else {
+      setPayingInvoice(inv);
+    }
+  };
 
   // Filter invoices based on selected tab
   let displayedInvoices = summary.invoices;
@@ -171,12 +182,30 @@ export function FamilyBillingView({ summary, onPayInvoice }: FamilyBillingViewPr
               <InvoiceCard
                 key={inv.id}
                 invoice={inv}
-                onPayClick={onPayInvoice}
+                onPayClick={handlePayClick}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Mobile Payment Modal */}
+      {payingInvoice && (
+        <MobilePaymentModal
+          invoice={{
+            id: payingInvoice.id,
+            invoiceNumber: payingInvoice.invoiceNumber,
+            paymentReference: payingInvoice.paymentReference,
+            totalOere: payingInvoice.totalOere,
+            paidOere: payingInvoice.paidOere,
+            dueDate: payingInvoice.dueDate,
+            beneficiaryName: `${payingInvoice.memberProfile.firstName} ${payingInvoice.memberProfile.lastName}`,
+            status: payingInvoice.status,
+          }}
+          isOpen={true}
+          onClose={() => setPayingInvoice(null)}
+        />
+      )}
     </div>
   );
 }

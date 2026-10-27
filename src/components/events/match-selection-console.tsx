@@ -40,6 +40,7 @@ export interface RosterCandidate {
   rsvpStatus: "AVAILABLE" | "UNAVAILABLE" | "MAYBE" | "NO_RESPONSE";
   transportNote?: string | null;
   hasDispensation?: boolean;
+  hasOverdueFees?: boolean;
 }
 
 export interface SelectedSlot {
@@ -465,13 +466,22 @@ export function MatchSelectionConsole({
 
                       {/* Name & Player Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-xs font-bold text-white truncate">
                             {player.firstName} {player.lastName}
                           </p>
                           {player.jerseyNumber && (
                             <span className="text-[10px] text-slate-500 font-mono">
                               #{player.jerseyNumber}
+                            </span>
+                          )}
+                          {player.hasOverdueFees && (
+                            <span
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0"
+                              title="Member has club fees overdue by more than 14 days"
+                            >
+                              <AlertTriangle className="w-3 h-3" />
+                              Fees Overdue (&gt;14d)
                             </span>
                           )}
                         </div>
@@ -537,9 +547,20 @@ export function MatchSelectionConsole({
                       className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between gap-3"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-white">
-                          {player.firstName} {player.lastName}
-                        </p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-xs font-bold text-white">
+                            {player.firstName} {player.lastName}
+                          </p>
+                          {player.hasOverdueFees && (
+                            <span
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0"
+                              title="Member has club fees overdue by more than 14 days"
+                            >
+                              <AlertTriangle className="w-3 h-3" />
+                              Fees Overdue (&gt;14d)
+                            </span>
+                          )}
+                        </div>
                         <p className="text-[10px] text-slate-400">
                           {player.battingPosition || "RHB"} • {player.bowlingStyle || "Pace"}
                         </p>
@@ -619,9 +640,20 @@ export function MatchSelectionConsole({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-white truncate">
-                            {player.firstName} {player.lastName}
-                          </p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-xs font-bold text-white truncate">
+                              {player.firstName} {player.lastName}
+                            </p>
+                            {player.hasOverdueFees && (
+                              <span
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 shrink-0"
+                                title="Member has club fees overdue by more than 14 days"
+                              >
+                                <AlertTriangle className="w-3 h-3" />
+                                Fees Overdue (&gt;14d)
+                              </span>
+                            )}
+                          </div>
                           <p className="text-[10px] text-slate-400">
                             {player.battingPosition || "RHB"} • {player.bowlingStyle || "Pace"}
                           </p>

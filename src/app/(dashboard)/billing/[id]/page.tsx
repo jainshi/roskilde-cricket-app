@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db";
 import { getInvoiceById } from "@/modules/finance/services/invoice.service";
 import { formatDanishKroner } from "@/modules/finance/domain/money-oere";
 import { PrintStatementButton } from "@/components/finance/print-statement-button";
+import { PayInvoiceButton } from "@/components/finance/pay-invoice-button";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -94,7 +95,21 @@ export default async function InvoiceDetailPage(props: {
           <span>Back to Billing Overview</span>
         </Link>
 
-        <PrintStatementButton />
+        <div className="flex items-center gap-2">
+          <PayInvoiceButton
+            invoice={{
+              id: invoice.id,
+              invoiceNumber: invoice.invoiceNumber,
+              paymentReference: invoice.paymentReference,
+              totalOere: invoice.totalOere,
+              paidOere: invoice.paidOere,
+              dueDate: invoice.dueDate,
+              beneficiaryName,
+              status: invoice.status,
+            }}
+          />
+          <PrintStatementButton />
+        </div>
       </div>
 
       {/* Official Receipt Card */}

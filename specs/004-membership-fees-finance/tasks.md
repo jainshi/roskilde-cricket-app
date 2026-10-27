@@ -84,14 +84,14 @@
 
 **Independent Test**: Open an unpaid invoice on a 360px mobile viewport, verify copyable MobilePay/bank transfer details and `RCC-INV-YYYY-####` reference, tap "Mark as Paid", approve in Treasurer reconciliation queue, send a manual overdue reminder, and verify the amber warning badge appears in Module 3's match squad selector without blocking selection.
 
-- [ ] T033 [P] [US3] Define Zod schemas and TypeScript contracts for payment reporting, reconciliation, and overdue reminders (`reportInvoicePaymentSchema`, `verifyPaymentTransactionSchema`, `waiveInvoiceSchema`, `sendOverdueReminderSchema`, `batchSendOverdueRemindersSchema`) in `src/modules/finance/contracts/payment.contract.ts` and `src/modules/finance/contracts/reconciliation.contract.ts`
-- [ ] T034 [US3] Implement member payment self-reporting service with transaction creation and receipt data generation in `src/modules/finance/services/payment.service.ts`
-- [ ] T035 [US3] Implement Treasurer reconciliation service handling verification, partial payment recording, fee waivers with mandatory audit notes, and manual single/batch overdue reminder dispatch in `src/modules/finance/services/reconciliation.service.ts`
-- [ ] T036 [US3] Implement Server Actions for payment reporting and reconciliation (`reportInvoicePaymentAction`, `verifyPaymentTransactionAction`, `waiveInvoiceAction`, `sendOverdueReminderAction`, `batchSendOverdueRemindersAction`) in `src/modules/finance/actions/payment.actions.ts` and `src/modules/finance/actions/reconciliation.actions.ts`
-- [ ] T037 [P] [US3] Build ultra-fast mobile payment modal (<30s on 360px) with MobilePay number, bank Reg./Kontonr., 1-tap `RCC-INV-YYYY-####` copy, and "Mark as Paid" action in `src/components/finance/mobile-payment-modal.tsx`
-- [ ] T038 [P] [US3] Build Treasurer Reconciliation Queue UI component with 1-click verification, partial payment dialog, fee waiver modal, and manual overdue reminder actions in `src/components/finance/treasurer-reconciliation.tsx`
-- [ ] T039 [US3] Build Admin Finance Overview & Reconciliation page in `src/app/(dashboard)/admin/finance/page.tsx`
-- [ ] T040 [US3] Integrate informational amber `"Fees Overdue (>14d)"` warning badge into Module 3's Match Squad Selection Console without blocking player selection in `src/components/events/MatchSquadSelector.tsx`
+- [X] T033 [P] [US3] Define Zod schemas and TypeScript contracts for payment reporting, reconciliation, and overdue reminders (`reportInvoicePaymentSchema`, `verifyPaymentTransactionSchema`, `waiveInvoiceSchema`, `sendOverdueReminderSchema`, `batchSendOverdueRemindersSchema`) in `src/modules/finance/contracts/payment.contract.ts` and `src/modules/finance/contracts/reconciliation.contract.ts`
+- [X] T034 [US3] Implement member payment self-reporting service with transaction creation and receipt data generation in `src/modules/finance/services/payment.service.ts`
+- [X] T035 [US3] Implement Treasurer reconciliation service handling verification, partial payment recording, fee waivers with mandatory audit notes, and manual single/batch overdue reminder dispatch in `src/modules/finance/services/reconciliation.service.ts`
+- [X] T036 [US3] Implement Server Actions for payment reporting and reconciliation (`reportInvoicePaymentAction`, `verifyPaymentTransactionAction`, `waiveInvoiceAction`, `sendOverdueReminderAction`, `batchSendOverdueRemindersAction`) in `src/modules/finance/actions/payment.actions.ts` and `src/modules/finance/actions/reconciliation.actions.ts`
+- [X] T037 [P] [US3] Build ultra-fast mobile payment modal (<30s on 360px) with MobilePay number, bank Reg./Kontonr., 1-tap `RCC-INV-YYYY-####` copy, and "Mark as Paid" action in `src/components/finance/mobile-payment-modal.tsx`
+- [X] T038 [P] [US3] Build Treasurer Reconciliation Queue UI component with 1-click verification, partial payment dialog, fee waiver modal, and manual overdue reminder actions in `src/components/finance/treasurer-reconciliation.tsx`
+- [X] T039 [US3] Build Admin Finance Overview & Reconciliation page in `src/app/(dashboard)/admin/finance/page.tsx`
+- [X] T040 [US3] Integrate informational amber `"Fees Overdue (>14d)"` warning badge into Module 3's Match Squad Selection Console without blocking player selection in `src/components/events/MatchSquadSelector.tsx`
 
 **Checkpoint**: User Story 3 functional. Mobile payments self-reported, Treasurer reconciles transactions with 1 click, overdue reminders dispatched manually, and Module 3 displays informational badges.
 

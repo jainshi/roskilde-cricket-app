@@ -81,6 +81,21 @@ export default async function MatchSelectionPage({ params }: SelectionPageProps)
     });
   }
 
+  // Module 4 Integration: Query >14d overdue invoices for candidates
+  const candidateMemberIds = event.teamSquad.roster.map((r) => r.memberProfile.id);
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+  const overdueInvoices = await prisma.invoice.findMany({
+    where: {
+      memberProfileId: { in: candidateMemberIds },
+      status: { in: ["OPEN", "PARTIALLY_PAID", "OVERDUE"] as any },
+      dueDate: { lt: fourteenDaysAgo },
+    },
+    select: { memberProfileId: true },
+  });
+  const overdueMemberIds = new Set(overdueInvoices.map((inv) => inv.memberProfileId));
+
   // Format Roster Candidates
   const rosterCandidates: RosterCandidate[] = event.teamSquad.roster.map((r) => {
     const rsvp = rsvpMap.get(r.memberProfileId);
@@ -94,6 +109,7 @@ export default async function MatchSelectionPage({ params }: SelectionPageProps)
       rsvpStatus: rsvp?.status || "NO_RESPONSE",
       transportNote: rsvp?.note || null,
       hasDispensation: r.hasDispensation,
+      hasOverdueFees: overdueMemberIds.has(r.memberProfile.id),
     };
   });
 
