@@ -7,11 +7,13 @@ import {
   enrollMemberSubscriptionSchema,
   overrideSubscriptionDiscountSchema,
   assignPlanToMembersSchema,
+  unassignPlayerFromPlanSchema,
 } from "../contracts/subscription.contract";
 import {
   enrollMemberSubscription,
   overrideSubscriptionDiscount,
   assignPlanToMembers,
+  unassignPlayerFromPlan,
 } from "../services/subscription.service";
 
 import { prisma } from "@/lib/db";
@@ -147,4 +149,40 @@ export async function assignPlanToMembersAction(
     return { success: false, error: msg };
   }
 }
+
+/**
+ * Server Action: Unassign / remove a player from a membership plan.
+ * Authorized for: Admin only.
+ */
+export async function unassignPlayerFromPlanAction(
+  formData: unknown
+): Promise<ActionResult> {
+  try {
+    const session = await requireActivatedSession();
+    if (!session.roles.includes(Role.ADMIN)) {
+      return {
+        success: false,
+        error: "Unauthorized: Only Club Administrators can unassign membership plans.",
+      };
+    }
+
+    const parsed = unassignPlayerFromPlanSchema.safeParse(formData);
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      return {
+        success: false,
+        error: issue ? `${issue.path.join(".")}: ${issue.message}` : "Validation failed.",
+      };
+    }
+
+    const result = await unassignPlayerFromPlan(parsed.data);
+    revalidatePath("/admin/finance/plans");
+    revalidatePath("/billing");
+    return { success: true, data: result };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to unassign player from plan.";
+    return { success: false, error: msg };
+  }
+}
+
 

@@ -9,6 +9,7 @@ import {
   EnrollMemberSubscriptionInput,
   OverrideSubscriptionDiscountInput,
   AssignPlanToMembersInput,
+  UnassignPlayerFromPlanInput,
 } from "../contracts/subscription.contract";
 import {
   generateNextInvoiceNumber,
@@ -428,4 +429,68 @@ export async function assignPlanToMembers(
     invoiceCount,
     errors: errors.length > 0 ? errors : undefined,
   };
+}
+
+/**
+ * Unassigns a player from a membership plan. If an open unpaid invoice exists,
+ * it is cancelled. If no settled payments exist, the subscription is cleanly deleted;
+ * if partial/full payments were recorded, it is marked as CANCELLED.
+ */
+export async function unassignPlayerFromPlan(
+  input: UnassignPlayerFromPlanInput
+): Promise<{ success: boolean; unassignedCount: number }> {
+  const { subscriptionId, memberProfileId, planId, seasonYear } = input;
+
+  const whereClause: any = {};
+  if (subscriptionId) {
+    whereClause.id = subscriptionId;
+  } else if (memberProfileId && planId) {
+    whereClause.memberProfileId = memberProfileId;
+    whereClause.planId = planId;
+    if (seasonYear) {
+      whereClause.seasonYear = seasonYear;
+    }
+  } else {
+    throw new Error("Must provide either subscriptionId or memberProfileId and planId.");
+  }
+
+  const subscriptions = await prisma.memberSubscription.findMany({
+    where: whereClause,
+    include: {
+      invoices: {
+        include: { lineItems: true },
+      },
+    },
+  });
+
+  if (subscriptions.length === 0) {
+    throw new Error("No matching subscription found to unassign.");
+  }
+
+  for (const sub of subscriptions) {
+    // 1. Cancel any open, unpaid invoices tied to this subscription
+    for (const inv of sub.invoices) {
+      if (inv.paidOere === 0 && inv.status !== InvoiceStatus.PAID && inv.status !== InvoiceStatus.CANCELLED) {
+        await prisma.invoice.update({
+          where: { id: inv.id },
+          data: { status: InvoiceStatus.CANCELLED },
+        });
+      }
+    }
+
+    // 2. Check if payments were settled
+    const hasPaidPayments = sub.invoices.some((inv) => inv.paidOere > 0);
+    if (!hasPaidPayments) {
+      await prisma.memberSubscription.delete({
+        where: { id: sub.id },
+      });
+    } else {
+      await prisma.memberSubscription.update({
+        where: { id: sub.id },
+        data: { status: SubscriptionStatus.CANCELLED },
+      });
+    }
+  }
+
+  return { success: true, unassignedCount: subscriptions.length };
 }

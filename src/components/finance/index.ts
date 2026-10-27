@@ -4,3 +4,4 @@ export * from "./invoice-card";
 export * from "./family-billing-view";
 export * from "./print-statement-button";
 export * from "./assign-plan-members-modal";
+export * from "./unassign-subscription-button";

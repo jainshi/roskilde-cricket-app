@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { listMembershipPlans } from "@/modules/finance/services/plan.service";
 import { listMemberSubscriptions } from "@/modules/finance/services/subscription.service";
 import { PlanManager } from "@/components/finance/plan-manager";
+import { UnassignSubscriptionButton } from "@/components/finance/unassign-subscription-button";
 import { formatDanishKroner } from "@/modules/finance/domain/money-oere";
 import {
   CreditCard,
@@ -143,12 +144,13 @@ export default async function AdminFinancePlansPage() {
                   <th className="py-3.5 px-4">Discount Applied</th>
                   <th className="py-3.5 px-4 text-right">Final Fee</th>
                   <th className="py-3.5 px-4 text-center">Status</th>
+                  <th className="py-3.5 px-4 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-200">
                 {subscriptions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-slate-500">
+                    <td colSpan={8} className="py-8 text-center text-slate-500">
                       No active member subscriptions found for this season.
                     </td>
                   </tr>
@@ -215,6 +217,13 @@ export default async function AdminFinancePlansPage() {
                             )}
                             {sub.status}
                           </span>
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <UnassignSubscriptionButton
+                            subscriptionId={sub.id}
+                            playerName={memberName}
+                            planName={sub.plan.name}
+                          />
                         </td>
                       </tr>
                     );
