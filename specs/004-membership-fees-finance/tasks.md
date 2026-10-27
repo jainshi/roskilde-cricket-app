@@ -45,14 +45,14 @@
 
 **Independent Test**: Create plans (Senior Competitive at 180,000 øre, Youth U15/U13 at 100,000 øre, Social/Passive at 40,000 øre, Winter Indoor at 35,000 øre), enroll two children of a single parent, verify the second child is automatically discounted to 75,000 øre, apply a manual discount override, and verify storage in the database.
 
-- [ ] T016 [P] [US1] Define Zod schemas and TypeScript contracts for plan CRUD and subscription enrollment (`createMembershipPlanSchema`, `updateMembershipPlanSchema`, `enrollMemberSubscriptionSchema`) in `src/modules/finance/contracts/plan.contract.ts` and `src/modules/finance/contracts/subscription.contract.ts`
-- [ ] T017 [US1] Implement MembershipPlan database service with validation, duplicate code prevention, and active filtering in `src/modules/finance/services/plan.service.ts`
-- [ ] T018 [US1] Implement MemberSubscription database service with automated sibling discount application and manual override metadata storage (`overrideById`, `overrideReason`) in `src/modules/finance/services/subscription.service.ts`
-- [ ] T019 [US1] Implement Server Actions for plan management and subscription enrollment (`createMembershipPlanAction`, `updateMembershipPlanAction`, `enrollMemberSubscriptionAction`) with `ADMIN`/`TREASURER` RBAC guards in `src/modules/finance/actions/plan.actions.ts` and `src/modules/finance/actions/subscription.actions.ts`
-- [ ] T020 [P] [US1] Build Membership Plan management UI component with integer `øre` inputs, category badges, and sibling discount percentage slider in `src/components/finance/plan-manager.tsx`
-- [ ] T021 [P] [US1] Build Member Subscription enrollment modal with automatic sibling discount preview and Treasurer manual discount override fields in `src/components/finance/subscription-enrollment-modal.tsx`
-- [ ] T022 [US1] Create Admin Membership Plans management dashboard page in `src/app/(dashboard)/admin/finance/plans/page.tsx`
-- [ ] T023 [US1] Integrate "Finance & Fees" navigation card into the 2-column App Launcher Grid in `src/components/layout/AppLauncherModal.tsx`
+- [X] T016 [P] [US1] Define Zod schemas and TypeScript contracts for plan CRUD and subscription enrollment (`createMembershipPlanSchema`, `updateMembershipPlanSchema`, `enrollMemberSubscriptionSchema`) in `src/modules/finance/contracts/plan.contract.ts` and `src/modules/finance/contracts/subscription.contract.ts`
+- [X] T017 [US1] Implement MembershipPlan database service with validation, duplicate code prevention, and active filtering in `src/modules/finance/services/plan.service.ts`
+- [X] T018 [US1] Implement MemberSubscription database service with automated sibling discount application and manual override metadata storage (`overrideById`, `overrideReason`) in `src/modules/finance/services/subscription.service.ts`
+- [X] T019 [US1] Implement Server Actions for plan management and subscription enrollment (`createMembershipPlanAction`, `updateMembershipPlanAction`, `enrollMemberSubscriptionAction`) with `ADMIN`/`TREASURER` RBAC guards in `src/modules/finance/actions/plan.actions.ts` and `src/modules/finance/actions/subscription.actions.ts`
+- [X] T020 [P] [US1] Build Membership Plan management UI component with integer `øre` inputs, category badges, and sibling discount percentage slider in `src/components/finance/plan-manager.tsx`
+- [X] T021 [P] [US1] Build Member Subscription enrollment modal with automatic sibling discount preview and Treasurer manual discount override fields in `src/components/finance/subscription-enrollment-modal.tsx`
+- [X] T022 [US1] Create Admin Membership Plans management dashboard page in `src/app/(dashboard)/admin/finance/plans/page.tsx`
+- [X] T023 [US1] Integrate "Finance & Fees" navigation card into the 2-column App Launcher Grid in `src/components/layout/AppLauncherModal.tsx`
 
 **Checkpoint**: User Story 1 functional and independently testable. Plans and subscriptions can be created, edited, and verified.
 

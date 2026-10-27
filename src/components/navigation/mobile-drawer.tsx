@@ -19,6 +19,7 @@ import {
   UserPlus,
   LogOut,
   UserCheck,
+  CreditCard,
 } from "lucide-react";
 
 interface MobileDrawerProps {
@@ -272,6 +273,46 @@ export function MobileDrawer({
                 <p className="text-[10px] text-slate-400 mt-0.5">Players &amp; staff</p>
               </div>
             </Link>
+
+            {/* 5. Billing & Fees (For All Members & Parents) */}
+            <Link
+              href="/billing"
+              onClick={onClose}
+              className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                isActive("/billing")
+                  ? "bg-amber-500/15 border-amber-500/40 text-white shadow-md shadow-amber-950/30"
+                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-2">
+                <CreditCard className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white leading-tight">Billing &amp; Fees</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Family invoices &amp; pay</p>
+              </div>
+            </Link>
+
+            {/* 6. Finance & Plans (If Admin) */}
+            {isAdmin && (
+              <Link
+                href="/admin/finance/plans"
+                onClick={onClose}
+                className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                  isActive("/admin/finance") || pathname.startsWith("/admin/finance")
+                    ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
+                    : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+                }`}
+              >
+                <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-tight">Finance &amp; Plans</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Rates &amp; subscriptions</p>
+                </div>
+              </Link>
+            )}
 
             {/* 5. Club Admin / Manage Members (If Admin) */}
             {isAdmin && (

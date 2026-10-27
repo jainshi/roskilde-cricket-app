@@ -16,6 +16,7 @@ import {
   Calendar,
   LogOut,
   Menu,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileSwitcher } from "@/components/profile-switcher";
@@ -222,8 +223,32 @@ export function AppShell({
                     <ShieldAlert className="w-4 h-4 text-rose-400" />
                     <span>GDPR</span>
                   </Link>
+
+                  <Link
+                    href="/admin/finance/plans"
+                    className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                      isNavActive("/admin/finance")
+                        ? "bg-sky-950/60 text-sky-300 font-medium border border-sky-800/40"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4 text-sky-400" />
+                    <span>Plans &amp; Rates</span>
+                  </Link>
                 </>
               )}
+
+              <Link
+                href="/billing"
+                className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                  isNavActive("/billing")
+                    ? "bg-amber-950/60 text-amber-300 font-medium border border-amber-800/40"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                }`}
+              >
+                <CreditCard className="w-4 h-4 text-amber-400" />
+                <span>Billing</span>
+              </Link>
             </nav>
           </div>
 
