@@ -35,6 +35,7 @@ export type AssignPlanToMembersInput = z.infer<typeof assignPlanToMembersSchema>
 export const unassignPlayerFromPlanSchema = z.object({
   subscriptionId: z.string().optional(),
   memberProfileId: z.string().min(1).optional(),
+  memberProfileIds: z.array(z.string().min(1)).optional(),
   planId: z.string().uuid().optional(),
   seasonYear: z.number().int().optional(),
 });

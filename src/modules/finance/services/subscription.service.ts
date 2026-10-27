@@ -439,11 +439,17 @@ export async function assignPlanToMembers(
 export async function unassignPlayerFromPlan(
   input: UnassignPlayerFromPlanInput
 ): Promise<{ success: boolean; unassignedCount: number }> {
-  const { subscriptionId, memberProfileId, planId, seasonYear } = input;
+  const { subscriptionId, memberProfileId, memberProfileIds, planId, seasonYear } = input;
 
   const whereClause: any = {};
   if (subscriptionId) {
     whereClause.id = subscriptionId;
+  } else if (memberProfileIds && memberProfileIds.length > 0 && planId) {
+    whereClause.memberProfileId = { in: memberProfileIds };
+    whereClause.planId = planId;
+    if (seasonYear) {
+      whereClause.seasonYear = seasonYear;
+    }
   } else if (memberProfileId && planId) {
     whereClause.memberProfileId = memberProfileId;
     whereClause.planId = planId;
@@ -451,7 +457,7 @@ export async function unassignPlayerFromPlan(
       whereClause.seasonYear = seasonYear;
     }
   } else {
-    throw new Error("Must provide either subscriptionId or memberProfileId and planId.");
+    throw new Error("Must provide either subscriptionId, memberProfileIds, or memberProfileId and planId.");
   }
 
   const subscriptions = await prisma.memberSubscription.findMany({
