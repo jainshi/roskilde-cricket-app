@@ -12,7 +12,8 @@
     "db:seed": "prisma db seed",
     "seed:inventory": "tsx scripts/seed-inventory.ts",
     "seed:teams": "tsx scripts/seed-teams-scheduling.ts",
-    "seed:users": "tsx scripts/seed-users.ts"
+    "seed:users": "tsx scripts/seed-users.ts",
+    "seed:finance": "tsx scripts/seed-finance.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

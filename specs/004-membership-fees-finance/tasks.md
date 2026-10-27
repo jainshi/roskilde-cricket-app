@@ -10,11 +10,11 @@
 
 **Purpose**: Database schema expansion, relational migrations, test data seeding, and core module directory structure.
 
-- [ ] T001 Define Module 4 enums (`MembershipCategory`, `BillingCycle`, `SubscriptionStatus`, `InvoiceCategory`, `InvoiceStatus`, `PaymentMethod`, `TransactionStatus`) and models (`MembershipPlan`, `MemberSubscription`, `Invoice`, `InvoiceLineItem`, `PaymentTransaction`) with integer minor units (`amountOere Int`, `siblingDiscountPercent Int @default(25)`) in `prisma/schema.prisma`
-- [ ] T002 Add reverse relations on `MemberProfile` (`subscriptions`, `subscriptionOverrides`, `invoicesReceived`, `invoicesBilled`, `paymentsReported`, `paymentsVerified`), `EquipmentLoan` (`adHocInvoices`), and `ScheduledEvent` (`adHocInvoices`) in `prisma/schema.prisma`
-- [ ] T003 Generate and execute database migration `add_membership_fees_finance` via `npx prisma migrate dev` in `prisma/migrations/`
-- [ ] T004 [P] Update database seed script `prisma/seed.ts` with realistic Roskilde Cricket Club membership plans (`SENIOR_COMPETITIVE` 1,800.00 DKK / 180,000 øre, `YOUTH_U15_U13` 1,000.00 DKK / 100,000 øre, `SOCIAL_PASSIVE` 400.00 DKK / 40,000 øre, `INDOOR_WINTER_ADDON` 350.00 DKK / 35,000 øre), active subscriptions, sibling discounts, sample invoices (`RCC-INV-2026-0001`), and payment transactions
-- [ ] T005 [P] Create finance module directory structure and index barrel in `src/modules/finance/index.ts`
+- [X] T001 Define Module 4 enums (`MembershipCategory`, `BillingCycle`, `SubscriptionStatus`, `InvoiceCategory`, `InvoiceStatus`, `PaymentMethod`, `TransactionStatus`) and models (`MembershipPlan`, `MemberSubscription`, `Invoice`, `InvoiceLineItem`, `PaymentTransaction`) with integer minor units (`amountOere Int`, `siblingDiscountPercent Int @default(25)`) in `prisma/schema.prisma`
+- [X] T002 Add reverse relations on `MemberProfile` (`subscriptions`, `subscriptionOverrides`, `invoicesReceived`, `invoicesBilled`, `paymentsReported`, `paymentsVerified`), `EquipmentLoan` (`adHocInvoices`), and `ScheduledEvent` (`adHocInvoices`) in `prisma/schema.prisma`
+- [X] T003 Generate and execute database migration `add_membership_fees_finance` via `npx prisma migrate dev` in `prisma/migrations/`
+- [X] T004 [P] Update database seed script `prisma/seed.ts` with realistic Roskilde Cricket Club membership plans (`SENIOR_COMPETITIVE` 1,800.00 DKK / 180,000 øre, `YOUTH_U15_U13` 1,000.00 DKK / 100,000 øre, `SOCIAL_PASSIVE` 400.00 DKK / 40,000 øre, `INDOOR_WINTER_ADDON` 350.00 DKK / 35,000 øre), active subscriptions, sibling discounts, sample invoices (`RCC-INV-2026-0001`), and payment transactions
+- [X] T005 [P] Create finance module directory structure and index barrel in `src/modules/finance/index.ts`
 
 ---
 
@@ -24,16 +24,16 @@
 
 **⚠️ CRITICAL**: No user story Server Actions or UI components can be built until these pure domain modules and their accompanying unit tests pass.
 
-- [ ] T006 [P] Implement pure zero-floating-point integer `øre` arithmetic, Danish currency formatting (`1.250,00 kr.`), deterministic `Math.round` percentage calculations, and remaining balance reconciliation in `src/modules/finance/domain/money-oere.ts`
-- [ ] T007 [P] Create Vitest unit test suite for integer `øre` math, formatting, and edge rounding in `tests/unit/finance/money-oere.test.ts`
-- [ ] T008 [P] Implement fixed club season date-range resolver (Summer Outdoor: Apr 1 – Sep 30, Winter Indoor: Oct 1 – Mar 31, Full Annual: Apr 1 – Mar 31) and invoice eligibility evaluator in `src/modules/finance/domain/season-billing.ts`
-- [ ] T009 [P] Create Vitest unit test suite for fixed club season date resolution and eligibility evaluation in `tests/unit/finance/season-billing.test.ts`
-- [ ] T010 [P] Implement automatic household youth sibling discount calculator (sort by `amountOere` descending; 25% discount off lower-priced youth tiers) and manual Treasurer override handler in `src/modules/finance/domain/family-discount.ts`
-- [ ] T011 [P] Create Vitest unit test suite for sibling discount ordering, multi-child household calculations, and manual overrides in `tests/unit/finance/family-discount.test.ts`
-- [ ] T012 [P] Implement sequential invoice reference generator (`RCC-INV-YYYY-####`), lifecycle state transitions, and `>14d` overdue badge evaluator in `src/modules/finance/domain/invoice-lifecycle.ts`
-- [ ] T013 [P] Create Vitest unit test suite for `RCC-INV-YYYY-####` reference formatting, lifecycle state transitions, and overdue badge logic in `tests/unit/finance/invoice-lifecycle.test.ts`
-- [ ] T014 [P] Implement Bogføringsloven § 10 UTF-8 CSV generator and 5-year statutory audit retention checker (`currentYear + 5 years`) in `src/modules/finance/domain/bogfoeringsloven-export.ts`
-- [ ] T015 [P] Create Vitest unit test suite for Bogføringsloven CSV ledger formatting, BOM encoding, and statutory retention evaluation in `tests/unit/finance/bogfoeringsloven-export.test.ts`
+- [X] T006 [P] Implement pure zero-floating-point integer `øre` arithmetic, Danish currency formatting (`1.250,00 kr.`), deterministic `Math.round` percentage calculations, and remaining balance reconciliation in `src/modules/finance/domain/money-oere.ts`
+- [X] T007 [P] Create Vitest unit test suite for integer `øre` math, formatting, and edge rounding in `tests/unit/finance/money-oere.test.ts`
+- [X] T008 [P] Implement fixed club season date-range resolver (Summer Outdoor: Apr 1 – Sep 30, Winter Indoor: Oct 1 – Mar 31, Full Annual: Apr 1 – Mar 31) and invoice eligibility evaluator in `src/modules/finance/domain/season-billing.ts`
+- [X] T009 [P] Create Vitest unit test suite for fixed club season date resolution and eligibility evaluation in `tests/unit/finance/season-billing.test.ts`
+- [X] T010 [P] Implement automatic household youth sibling discount calculator (sort by `amountOere` descending; 25% discount off lower-priced youth tiers) and manual Treasurer override handler in `src/modules/finance/domain/family-discount.ts`
+- [X] T011 [P] Create Vitest unit test suite for sibling discount ordering, multi-child household calculations, and manual overrides in `tests/unit/finance/family-discount.test.ts`
+- [X] T012 [P] Implement sequential invoice reference generator (`RCC-INV-YYYY-####`), lifecycle state transitions, and `>14d` overdue badge evaluator in `src/modules/finance/domain/invoice-lifecycle.ts`
+- [X] T013 [P] Create Vitest unit test suite for `RCC-INV-YYYY-####` reference formatting, lifecycle state transitions, and overdue badge logic in `tests/unit/finance/invoice-lifecycle.test.ts`
+- [X] T014 [P] Implement Bogføringsloven § 10 UTF-8 CSV generator and 5-year statutory audit retention checker (`currentYear + 5 years`) in `src/modules/finance/domain/bogfoeringsloven-export.ts`
+- [X] T015 [P] Create Vitest unit test suite for Bogføringsloven CSV ledger formatting, BOM encoding, and statutory retention evaluation in `tests/unit/finance/bogfoeringsloven-export.test.ts`
 
 **Checkpoint**: Foundation ready - all unit tests pass; domain models and rules are fully verified.
 

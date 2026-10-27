@@ -116,6 +116,14 @@ model MemberProfile {
   matchSelections         MatchSelectionPlayer[]    @relation("SelectedMatchPlayers")
   attendances             EventAttendance[]         @relation("MemberAttendances")
   attendancesRecorded     EventAttendance[]         @relation("AttendanceRecorders")
+
+  // Module 4: Membership Subscriptions, Club Fees & Finance Relations
+  subscriptions            MemberSubscription[] @relation("MemberSubscriptions")
+  subscriptionOverrides    MemberSubscription[] @relation("SubscriptionDiscountOverrides")
+  invoicesReceived         Invoice[]            @relation("InvoicesReceived")
+  invoicesBilled           Invoice[]            @relation("InvoicesBilled")
+  paymentsReported         PaymentTransaction[] @relation("PaymentsReported")
+  paymentsVerified         PaymentTransaction[] @relation("PaymentsVerified")
 }
 
 model UserAccount {
@@ -364,6 +372,7 @@ model EquipmentLoan {
   extensions      EquipmentLoanExtension[]
   damageReports   EquipmentDamageReport[]
   linkedEvents    ScheduledEvent[]         @relation("EventKitLoans")
+  adHocInvoices   Invoice[]                @relation("EquipmentLoanInvoices")
 
   @@index([borrowerProfileId, status])
   @@index([equipmentItemId, status])
@@ -429,6 +438,7 @@ model EquipmentDamageReport {
   loan          EquipmentLoan? @relation(fields: [equipmentLoanId], references: [id], onDelete: SetNull)
   reportedBy    MemberProfile  @relation("DamageReporters", fields: [reportedById], references: [id], onDelete: Restrict)
   resolvedBy    MemberProfile? @relation("DamageResolvers", fields: [resolvedById], references: [id], onDelete: SetNull)
+  invoices      Invoice[]      @relation("DamageReportInvoices")
 
   @@index([equipmentItemId, status])
   @@index([reportedById])
@@ -624,6 +634,7 @@ model ScheduledEvent {
   rsvps          EventRsvp[]
   matchSelection MatchSelection?
   attendances    EventAttendance[]
+  adHocInvoices  Invoice[]         @relation("ScheduledEventInvoices")
 
   @@index([facilityId, startAt, endAt])
   @@index([teamSquadId, date])
@@ -702,3 +713,183 @@ model EventAttendance {
   @@index([memberProfileId, status])
   @@index([scheduledEventId, isLocked])
 }
+
+// =======================================================
+// MODULE 4: MEMBERSHIP SUBSCRIPTIONS, CLUB FEES & FINANCE
+// =======================================================
+
+enum MembershipCategory {
+  SENIOR_COMPETITIVE
+  YOUTH_U15_U13
+  SOCIAL_PASSIVE
+  INDOOR_WINTER_ADDON
+}
+
+enum BillingCycle {
+  ANNUAL
+  SUMMER_OUTDOOR
+  WINTER_INDOOR
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PENDING_PAYMENT
+  EXPIRED
+  CANCELLED
+}
+
+enum InvoiceCategory {
+  MEMBERSHIP_DUES
+  EVENT_FEE
+  EQUIPMENT_CHARGE
+  AD_HOC
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PENDING_VERIFICATION
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  WAIVED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  MOBILEPAY
+  BANK_TRANSFER
+  CASH
+  WAIVER_CREDIT
+}
+
+enum TransactionStatus {
+  REPORTED
+  VERIFIED
+  REJECTED
+}
+
+model MembershipPlan {
+  id                     String             @id @default(uuid())
+  code                   String             @unique
+  name                   String
+  category               MembershipCategory
+  billingCycle           BillingCycle
+  amountOere             Int                // Integer minor units (100 øre = 1.00 DKK)
+  siblingDiscountPercent Int                @default(25)
+  description            String?
+  isActive               Boolean            @default(true)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  subscriptions MemberSubscription[]
+
+  @@index([category, isActive])
+  @@index([billingCycle])
+}
+
+model MemberSubscription {
+  id                  String             @id @default(uuid())
+  memberProfileId     String
+  planId              String
+  seasonYear          Int                // e.g. 2026
+  seasonCycle         BillingCycle
+  startDate           DateTime
+  endDate             DateTime
+  status              SubscriptionStatus @default(PENDING_PAYMENT)
+  hasSiblingDiscount  Boolean            @default(false)
+  siblingDiscountOere Int                @default(0)
+  manualDiscountOere  Int?
+  overrideById        String?
+  overrideReason      String?
+  finalFeeOere        Int                // Final calculated fee in øre
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  memberProfile MemberProfile   @relation("MemberSubscriptions", fields: [memberProfileId], references: [id], onDelete: Restrict)
+  plan          MembershipPlan  @relation(fields: [planId], references: [id], onDelete: Restrict)
+  overrideBy    MemberProfile?  @relation("SubscriptionDiscountOverrides", fields: [overrideById], references: [id], onDelete: SetNull)
+  invoices      Invoice[]
+
+  @@unique([memberProfileId, planId, seasonYear, seasonCycle])
+  @@index([memberProfileId, status])
+  @@index([seasonYear, seasonCycle])
+}
+
+model Invoice {
+  id                     String                 @id @default(uuid())
+  invoiceNumber          String                 @unique // e.g. "RCC-INV-2026-0001"
+  paymentReference       String                 @unique // Same as invoiceNumber for 1-to-1 payment matching
+  memberProfileId        String                 // Beneficiary member receiving club services
+  billedToProfileId      String                 // Debtor/Parent profile responsible for payment
+  subscriptionId         String?                // Optional link to MemberSubscription
+  category               InvoiceCategory        @default(MEMBERSHIP_DUES)
+  status                 InvoiceStatus          @default(OPEN)
+  subtotalOere           Int
+  discountOere           Int                    @default(0)
+  totalOere              Int
+  paidOere               Int                    @default(0)
+  issueDate              DateTime               @default(now())
+  dueDate                DateTime
+  paidAt                 DateTime?
+  lastReminderSentAt     DateTime?
+  reminderCount          Int                    @default(0)
+  notes                  String?                // Scrubbed during GDPR Article 17 anonymization
+  linkedEquipmentLoanId  String?                // Module 2 Equipment Loan link
+  linkedDamageReportId   String?                // Module 2 Damage Report link
+  linkedScheduledEventId String?                // Module 3 Scheduled Event link
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  memberProfile        MemberProfile          @relation("InvoicesReceived", fields: [memberProfileId], references: [id], onDelete: Restrict)
+  billedToProfile      MemberProfile          @relation("InvoicesBilled", fields: [billedToProfileId], references: [id], onDelete: Restrict)
+  subscription         MemberSubscription?    @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  lineItems            InvoiceLineItem[]
+  transactions         PaymentTransaction[]
+  linkedEquipmentLoan  EquipmentLoan?         @relation("EquipmentLoanInvoices", fields: [linkedEquipmentLoanId], references: [id], onDelete: SetNull)
+  linkedDamageReport   EquipmentDamageReport? @relation("DamageReportInvoices", fields: [linkedDamageReportId], references: [id], onDelete: SetNull)
+  linkedScheduledEvent ScheduledEvent?        @relation("ScheduledEventInvoices", fields: [linkedScheduledEventId], references: [id], onDelete: SetNull)
+
+  @@index([billedToProfileId, status])
+  @@index([memberProfileId, status])
+  @@index([dueDate, status])
+  @@index([category, status])
+}
+
+model InvoiceLineItem {
+  id            String   @id @default(uuid())
+  invoiceId     String
+  description   String
+  quantity      Int      @default(1)
+  unitPriceOere Int
+  totalOere     Int
+  createdAt     DateTime @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model PaymentTransaction {
+  id                   String            @id @default(uuid())
+  invoiceId            String
+  reportedById         String            // Member/Parent who self-reported payment
+  verifiedById         String?           // Treasurer/Admin who verified in reconciliation queue
+  amountOere           Int
+  paymentMethod        PaymentMethod
+  status               TransactionStatus @default(REPORTED)
+  transactionReference String?           // e.g. MobilePay transaction ID; scrubbed on GDPR erasure
+  reportedAt           DateTime          @default(now())
+  verifiedAt           DateTime?
+  settlementDate       DateTime
+  notes                String?           // Internal note; scrubbed on GDPR erasure
+
+  invoice    Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  reportedBy MemberProfile  @relation("PaymentsReported", fields: [reportedById], references: [id], onDelete: Restrict)
+  verifiedBy MemberProfile? @relation("PaymentsVerified", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId, status])
+  @@index([reportedById])
+  @@index([settlementDate])
+}
+
