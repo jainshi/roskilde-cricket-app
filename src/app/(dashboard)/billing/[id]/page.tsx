@@ -4,10 +4,11 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { requireActivatedSession } from "@/modules/auth-rbac/services/session-guard";
 import { Role } from "@prisma/client";
+import { prisma } from "@/lib/db";
 import { getInvoiceById } from "@/modules/finance/services/invoice.service";
 import { formatDanishKroner } from "@/modules/finance/domain/money-oere";
+import { PrintStatementButton } from "@/components/finance/print-statement-button";
 import {
-  Printer,
   ArrowLeft,
   CheckCircle2,
   Clock,
@@ -35,12 +36,45 @@ export default async function InvoiceDetailPage(props: {
     notFound();
   }
 
-  // Authorization check: User must be Admin, or beneficiary player, or debtor parent
+  // Authorization check:
+  // 1. Admin has access to all invoices
   const isAdmin = session.roles.includes(Role.ADMIN);
-  const isBeneficiary = invoice.memberProfileId === session.memberProfileId;
-  const isDebtor = invoice.billedToProfileId === session.memberProfileId;
 
-  if (!isAdmin && !isBeneficiary && !isDebtor) {
+  // 2. Direct party check (beneficiary member or billed debtor, including active profile persona)
+  const effectiveProfileIds = [
+    session.memberProfileId,
+    session.activeProfileId,
+  ].filter(Boolean) as string[];
+
+  const isDirectParty =
+    effectiveProfileIds.includes(invoice.memberProfileId) ||
+    effectiveProfileIds.includes(invoice.billedToProfileId);
+
+  // 3. Parent delegation check: if session user is linked parent of beneficiary or debtor
+  let isLinkedParent = false;
+  if (!isAdmin && !isDirectParty) {
+    const parentLink = await prisma.parentChildLink.findFirst({
+      where: {
+        parentId: { in: effectiveProfileIds },
+        playerId: { in: [invoice.memberProfileId, invoice.billedToProfileId] },
+      },
+    });
+    isLinkedParent = !!parentLink;
+  }
+
+  // 4. Linked child check: if session user is child of debtor
+  let isLinkedChild = false;
+  if (!isAdmin && !isDirectParty && !isLinkedParent) {
+    const childLink = await prisma.parentChildLink.findFirst({
+      where: {
+        playerId: { in: effectiveProfileIds },
+        parentId: { in: [invoice.memberProfileId, invoice.billedToProfileId] },
+      },
+    });
+    isLinkedChild = !!childLink;
+  }
+
+  if (!isAdmin && !isDirectParty && !isLinkedParent && !isLinkedChild) {
     redirect("/billing");
   }
 
@@ -60,13 +94,7 @@ export default async function InvoiceDetailPage(props: {
           <span>Back to Billing Overview</span>
         </Link>
 
-        <button
-          onClick={undefined}
-          className="print-trigger min-h-[38px] px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm text-white font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-        >
-          <Printer className="w-4 h-4 text-sky-400" />
-          <span>Print Statement</span>
-        </button>
+        <PrintStatementButton />
       </div>
 
       {/* Official Receipt Card */}

@@ -91,15 +91,22 @@ export async function seedFinance() {
   });
 
   let coachProfile = await prisma.memberProfile.findFirst({
-    where: { email: "coach@roskildecricket.dk" },
+    where: {
+      OR: [
+        { id: "coach001" },
+        { email: "coach001@roskildecricket.dk" },
+        { email: "coach@roskildecricket.dk" },
+      ],
+    },
   });
 
   if (!coachProfile) {
     coachProfile = await prisma.memberProfile.create({
       data: {
+        id: "coach001",
         firstName: "Henrik",
         lastName: "Mortensen",
-        email: "coach@roskildecricket.dk",
+        email: "coach001@roskildecricket.dk",
         phone: "+45 22 33 44 55",
         dateOfBirth: new Date("1980-05-12"),
         roleAssignments: { create: { role: "COACH" } },
@@ -108,15 +115,22 @@ export async function seedFinance() {
   }
 
   let parentProfile = await prisma.memberProfile.findFirst({
-    where: { email: "parent@roskildecricket.dk" },
+    where: {
+      OR: [
+        { id: "parent001" },
+        { email: "parent001@roskildecricket.dk" },
+        { email: "parent@roskildecricket.dk" },
+      ],
+    },
   });
 
   if (!parentProfile) {
     parentProfile = await prisma.memberProfile.create({
       data: {
+        id: "parent001",
         firstName: "Søren",
         lastName: "Hansen",
-        email: "parent@roskildecricket.dk",
+        email: "parent001@roskildecricket.dk",
         phone: "+45 33 44 55 66",
         dateOfBirth: new Date("1983-09-20"),
         roleAssignments: { create: { role: "PARENT" } },

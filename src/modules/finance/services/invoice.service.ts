@@ -531,10 +531,15 @@ export async function getConsolidatedFamilyBilling(
  * Retrieves a single invoice with full details for receipt printing or payment modal.
  */
 export async function getInvoiceById(
-  id: string
+  idOrNumber: string
 ): Promise<InvoiceWithRelations | null> {
-  return prisma.invoice.findUnique({
-    where: { id },
+  return prisma.invoice.findFirst({
+    where: {
+      OR: [
+        { id: idOrNumber },
+        { invoiceNumber: idOrNumber },
+      ],
+    },
     include: {
       memberProfile: {
         select: { id: true, firstName: true, lastName: true, email: true, dateOfBirth: true },
