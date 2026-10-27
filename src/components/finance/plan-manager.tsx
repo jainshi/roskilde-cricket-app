@@ -339,7 +339,7 @@ export function PlanManager({ initialPlans, candidateMembers = [] }: PlanManager
                   className="min-h-[38px] px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-xs text-white font-semibold flex items-center gap-1.5 shadow-md shadow-sky-500/20 transition-all cursor-pointer"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
-                  <span>Assign Members</span>
+                  <span>Assign Players</span>
                 </button>
               </div>
             </div>

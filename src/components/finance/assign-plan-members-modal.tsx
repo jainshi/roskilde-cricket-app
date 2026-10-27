@@ -25,6 +25,7 @@ export interface CandidateMemberForPlan {
   email: string | null;
   dateOfBirth: Date | null;
   isMinor: boolean;
+  parentName?: string;
   roles: string[];
   activeSubscriptions?: {
     planId: string;
@@ -80,7 +81,8 @@ export function AssignPlanMembersModal({
       const q = search.toLowerCase();
       const matchName = `${m.firstName} ${m.lastName}`.toLowerCase().includes(q);
       const matchEmail = m.email?.toLowerCase().includes(q);
-      if (!matchName && !matchEmail) return false;
+      const matchParent = m.parentName?.toLowerCase().includes(q);
+      if (!matchName && !matchEmail && !matchParent) return false;
     }
 
     return true;
@@ -108,7 +110,7 @@ export function AssignPlanMembersModal({
     setSuccessMsg(null);
 
     if (selectedIds.length === 0) {
-      setErrorMsg("Please select at least one member to assign to this plan.");
+      setErrorMsg("Please select at least one player to assign to this plan.");
       return;
     }
 
@@ -122,11 +124,11 @@ export function AssignPlanMembersModal({
       });
 
       if (!res.success) {
-        setErrorMsg(res.error || "Failed to assign plan to selected members.");
+        setErrorMsg(res.error || "Failed to assign plan to selected players.");
       } else {
         const data = res.data as { enrolledCount: number; invoiceCount: number };
         setSuccessMsg(
-          `Successfully assigned ${data.enrolledCount} member(s) to ${plan.name} and generated ${data.invoiceCount} invoice(s)!`
+          `Successfully assigned ${data.enrolledCount} player(s) to ${plan.name} and generated ${data.invoiceCount} invoice(s)!`
         );
         setSelectedIds([]);
         router.refresh();
@@ -145,13 +147,13 @@ export function AssignPlanMembersModal({
             </div>
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <span>Assign Plan to Members</span>
+                <span>Assign Plan to Players</span>
                 <span className="text-xs px-2 py-0.5 rounded-full font-mono font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30">
                   {formatDanishKroner(plan.amountOere)}
                 </span>
               </h3>
               <p className="text-xs text-slate-400">
-                Enroll members into <strong className="text-slate-300">{plan.name}</strong> and issue invoices.
+                Enroll club players into <strong className="text-slate-300">{plan.name}</strong>. For youth players, linked parents will receive billing notices.
               </p>
             </div>
           </div>
@@ -220,7 +222,7 @@ export function AssignPlanMembersModal({
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search by member name or email..."
+                    placeholder="Search by player name, email, or guardian..."
                     className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
@@ -249,9 +251,9 @@ export function AssignPlanMembersModal({
                         : "text-slate-400 hover:text-white bg-slate-800/40"
                     }`}
                   >
-                    {preset === "ALL" && "All Members"}
-                    {preset === "YOUTH" && "Youth Minor"}
-                    {preset === "ADULT" && "Adult"}
+                    {preset === "ALL" && "All Players"}
+                    {preset === "YOUTH" && "Youth Players"}
+                    {preset === "ADULT" && "Adult Players"}
                     {preset === "UNASSIGNED" && "Not Enrolled"}
                   </button>
                 ))}
@@ -262,7 +264,7 @@ export function AssignPlanMembersModal({
             <div className="border border-slate-800 rounded-2xl divide-y divide-slate-800/60 max-h-64 overflow-y-auto bg-slate-950/40">
               {filteredCandidates.length === 0 ? (
                 <div className="p-6 text-center text-xs text-slate-500">
-                  No members match your search or filter.
+                  No players match your search or filter.
                 </div>
               ) : (
                 filteredCandidates.map((m) => {
@@ -294,12 +296,17 @@ export function AssignPlanMembersModal({
                             <span>{m.firstName} {m.lastName}</span>
                             {m.isMinor && (
                               <span className="text-[10px] px-1.5 py-0.2 rounded font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                Youth
+                                Youth Player
                               </span>
                             )}
                           </div>
                           <div className="text-[11px] text-slate-400 font-mono">
-                            {m.email || "No email"}
+                            {m.email || "No direct email"}
+                            {m.parentName && (
+                              <span className="text-slate-500 ml-1.5">
+                                · Guardian: <strong className="text-slate-300">{m.parentName}</strong>
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -328,7 +335,7 @@ export function AssignPlanMembersModal({
           {/* Modal Footer */}
           <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between">
             <span className="text-xs text-slate-400 font-mono">
-              <strong className="text-white">{selectedIds.length}</strong> member(s) selected
+              <strong className="text-white">{selectedIds.length}</strong> player(s) selected
             </span>
 
             <div className="flex items-center gap-2">

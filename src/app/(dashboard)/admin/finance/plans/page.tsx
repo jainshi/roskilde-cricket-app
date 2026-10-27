@@ -38,9 +38,14 @@ export default async function AdminFinancePlansPage() {
   // 2. Fetch all subscriptions
   const subscriptions = await listMemberSubscriptions();
 
-  // 3. Fetch candidate members for plan assignment and enrollment selector
-  const memberProfiles = await prisma.memberProfile.findMany({
-    where: { isAnonymized: false },
+  // 3. Fetch candidate players for plan assignment (plans only associate to players)
+  const playerProfiles = await prisma.memberProfile.findMany({
+    where: {
+      isAnonymized: false,
+      roleAssignments: {
+        some: { role: Role.PLAYER },
+      },
+    },
     select: {
       id: true,
       firstName: true,
@@ -51,7 +56,11 @@ export default async function AdminFinancePlansPage() {
         select: { role: true },
       },
       parentLinksAsPlayer: {
-        select: { id: true },
+        include: {
+          parent: {
+            select: { firstName: true, lastName: true },
+          },
+        },
       },
       subscriptions: {
         where: { seasonYear: 2026 },
@@ -61,12 +70,14 @@ export default async function AdminFinancePlansPage() {
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
   });
 
-  const candidateMembers = memberProfiles.map((m) => {
+  const candidateMembers = playerProfiles.map((m) => {
     const isMinor =
       m.parentLinksAsPlayer.length > 0 ||
       (m.dateOfBirth
         ? new Date().getFullYear() - new Date(m.dateOfBirth).getFullYear() < 18
         : false);
+
+    const parent = m.parentLinksAsPlayer[0]?.parent;
 
     return {
       id: m.id,
@@ -75,6 +86,7 @@ export default async function AdminFinancePlansPage() {
       email: m.email,
       dateOfBirth: m.dateOfBirth,
       isMinor,
+      parentName: parent ? `${parent.firstName} ${parent.lastName}` : undefined,
       roles: m.roleAssignments.map((r) => r.role),
       activeSubscriptions: m.subscriptions.map((s) => ({
         planId: s.planId,
