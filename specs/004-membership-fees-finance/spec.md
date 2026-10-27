@@ -8,6 +8,16 @@
 
 **Input**: User description: "Create and checkout a new feature branch named 004-membership-fees-finance from master, and specify Module 4: Membership Subscriptions, Club Fees & Finance for the Roskilde Cricket Club web application (adhering to Constitution v1.1.0 and integrating with Module 1 001-user-auth-rbac, Module 2 002-inventory-equipment-management, and Module 3 003-teams-matches-scheduling)"
 
+## Clarifications
+
+### Session 2026-10-27
+
+- Q: How should club membership subscription periods and seasonal invoice generation be scheduled across the cricket calendar? → A: Fixed Club Seasons: Defined seasonal cycles (Summer Outdoor: Apr 1 – Sep 30; Winter Indoor: Oct 1 – Mar 31; Full Annual: Apr 1 – Mar 31) with seasonal dues batch-generated at season kickoff.
+- Q: How should the automatic sibling discount be applied when a household has multiple youth players enrolled in different tiers or age groups? → A: Lower-Priced Tier Discounted by default (highest-priced youth pays full; 25% discount applied to lower-priced/subsequent youth), with explicit Treasurer/Admin manual discount override capability per subscription or invoice.
+- Q: What level of enforcement should occur in the Match Squad Selection Console when a player has an invoice that is overdue by more than 14 days? → A: Informational Warning Badge (amber "Fees Overdue (>14d)" badge on player card in Match Selection Console; Coach retains full discretion to select the player).
+- Q: How should the deterministic invoice payment reference code be formatted for MobilePay and bank transfer matching? → A: Human-Readable Prefixed Code: `RCC-INV-YYYY-####` (e.g., `RCC-INV-2026-0042`) directly matching the invoice number for instant reconciliation.
+- Q: How should overdue payment reminder notifications be triggered to members and parents? → A: Treasurer-Controlled Manual Dispatch: Reminders are sent strictly on-demand when the Treasurer triggers them (via 1-click individual or batch "Send Overdue Reminders"), avoiding automated friction with members.
+
 ---
 
 ## User Scenarios & Testing *(mandatory)*
@@ -112,12 +122,12 @@ So that Roskilde Cricket Club complies with Danish tax/accounting law without co
 #### Membership Plans & Tiers
 - **FR-001**: System MUST support the creation, editing, and activation/deactivation of membership subscription plans across categories: `SENIOR_COMPETITIVE`, `YOUTH_U15_U13`, `SOCIAL_PASSIVE`, and `INDOOR_WINTER_ADDON`.
 - **FR-002**: System MUST store all plan prices and monetary figures strictly as integer minor units (`øre`), where 100 øre = 1.00 DKK, prohibiting floating-point types for monetary storage.
-- **FR-003**: System MUST support configurable billing cycles: `ANNUAL`, `HALF_YEARLY`, and `SEASONAL`.
-- **FR-004**: System MUST allow configuring automated household/sibling discount rules (e.g. 2nd and subsequent minor children linked to the same parent receive a specified discount percentage, defaulting to 25%).
+- **FR-003**: System MUST support defined billing cycles: `ANNUAL` (Apr 1 – Mar 31), `SUMMER_OUTDOOR` (Apr 1 – Sep 30), and `WINTER_INDOOR` (Oct 1 – Mar 31), with automated start-of-season invoice batching.
+- **FR-004**: System MUST calculate automated sibling discounts by applying the discount percentage (default 25%) to the lower-priced youth membership(s) in a household when 2+ minor players are linked to the same parent, while providing Treasurers/Admins with an explicit manual discount/waiver override per subscription or invoice.
 
 #### Invoicing & Parental Rollup
 - **FR-005**: System MUST allow Treasurers to batch-generate seasonal membership invoices for an entire squad, category, or selected member list.
-- **FR-006**: System MUST generate unique, sequential, human-readable invoice numbers adhering to a standard format (e.g., `RCC-2026-0001`).
+- **FR-006**: System MUST generate unique, sequential, human-readable invoice numbers and payment reference codes adhering to the standard format `RCC-INV-YYYY-####` (e.g., `RCC-INV-2026-0042`).
 - **FR-007**: System MUST support ad-hoc fee generation linked to Module 3 events (e.g. tournament entry fees, indoor training match fees) and Module 2 equipment incidents (e.g. unreturned/damaged gear replacement fees).
 - **FR-008**: System MUST provide a consolidated Family Billing view for parents via Module 1's `HeaderProfileSwitcher`, grouping all invoices of linked minor children (`isMinor === true`) with itemized line items and combined household totals.
 - **FR-009**: When an invoice is issued or updated for a minor player, system MUST dispatch simultaneous notifications to all registered parents (up to 2) via `NotificationService`.
@@ -133,8 +143,8 @@ So that Roskilde Cricket Club complies with Danish tax/accounting law without co
 - **FR-015**: System MUST allow Treasurers to manually record full or partial payments, specifying the received amount in øre, payment method, settlement date, and internal audit notes.
 - **FR-016**: System MUST allow Treasurers to apply fee waivers (`WAIVED`) or discounts with a required justification reason.
 - **FR-017**: System MUST automatically flag invoices as `OVERDUE` once their due date (`dueDate`) has elapsed without full payment.
-- **FR-018**: System MUST allow Treasurers to trigger automated or on-demand payment reminder emails to members (or both parents for minor players) with overdue balances.
-- **FR-019**: System MUST display an informational "Fees Overdue" warning badge in Module 3's Match Squad Selection Console (`/events/[id]/selection`) next to players with invoices overdue by more than 14 days.
+- **FR-018**: System MUST allow Treasurers to trigger on-demand payment reminder emails to members (or both parents for minor players) with overdue balances, supporting 1-click single-invoice and batch reminder dispatch without automated scheduling.
+- **FR-019**: System MUST display an informational amber "Fees Overdue (>14d)" warning badge in Module 3's Match Squad Selection Console (`/events/[id]/selection`) next to players with invoices overdue by more than 14 days, preserving full coach discretion to include or bench the player.
 
 #### Bookkeeping Compliance & Ledger Export
 - **FR-020**: System MUST generate an exportable UTF-8 CSV accounting ledger for any selected date range or accounting fiscal year conforming to the Danish Bookkeeping Act (*Bogføringsloven* § 10).
