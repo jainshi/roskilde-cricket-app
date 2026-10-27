@@ -10,6 +10,7 @@ vi.mock("@/lib/db", () => ({
       update: vi.fn(),
     },
     parentChildLink: {
+      findMany: vi.fn().mockResolvedValue([]),
       deleteMany: vi.fn(),
     },
     emergencyContact: {
@@ -41,6 +42,18 @@ vi.mock("@/lib/db", () => ({
     },
     equipmentLoan: {
       findMany: vi.fn(),
+    },
+    invoice: {
+      findMany: vi.fn().mockResolvedValue([]),
+      updateMany: vi.fn(),
+    },
+    paymentTransaction: {
+      findMany: vi.fn().mockResolvedValue([]),
+      updateMany: vi.fn(),
+    },
+    memberSubscription: {
+      findMany: vi.fn().mockResolvedValue([]),
+      updateMany: vi.fn(),
     },
     $transaction: vi.fn(async (cb: (tx: any) => Promise<any>) => {
       return await cb(prisma);

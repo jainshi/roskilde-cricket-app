@@ -223,17 +223,45 @@ export function AppShell({
                     <ShieldAlert className="w-4 h-4 text-rose-400" />
                     <span>GDPR</span>
                   </Link>
+                </>
+              )}
+
+              {(isAdmin || session.roles.includes("TREASURER")) && (
+                <>
+                  <Link
+                    href="/admin/finance"
+                    className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                      pathname === "/admin/finance"
+                        ? "bg-sky-950/60 text-sky-300 font-medium border border-sky-800/40"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4 text-sky-400" />
+                    <span>Treasurer Hub</span>
+                  </Link>
 
                   <Link
                     href="/admin/finance/plans"
                     className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
-                      isNavActive("/admin/finance")
+                      isNavActive("/admin/finance/plans")
                         ? "bg-sky-950/60 text-sky-300 font-medium border border-sky-800/40"
                         : "text-slate-300 hover:text-white hover:bg-slate-800/80"
                     }`}
                   >
                     <CreditCard className="w-4 h-4 text-sky-400" />
                     <span>Plans &amp; Rates</span>
+                  </Link>
+
+                  <Link
+                    href="/admin/finance/reports"
+                    className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                      isNavActive("/admin/finance/reports")
+                        ? "bg-sky-950/60 text-sky-300 font-medium border border-sky-800/40"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                    }`}
+                  >
+                    <BookOpen className="w-4 h-4 text-sky-400" />
+                    <span>Reports</span>
                   </Link>
                 </>
               )}

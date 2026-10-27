@@ -103,14 +103,14 @@
 
 **Independent Test**: Download the Bogføringsloven CSV export for a fiscal year and verify columns and UTF-8 BOM encoding; attempt GDPR Article 17 erasure on a member with an unpaid balance and verify it is blocked; perform erasure on a settled member and verify personal notes are scrubbed while anonymized transactions remain; run Article 20 export and verify subscriptions, invoices, and payments are included.
 
-- [ ] T041 [P] [US4] Define Zod schemas and TypeScript contracts for Bogføringsloven accounting ledger export (`exportBogfoeringslovenLedgerSchema`) in `src/modules/finance/contracts/ledger.contract.ts`
-- [ ] T042 [US4] Implement Bogføringsloven accounting ledger service generating UTF-8 BOM CSV with mandatory accounting columns and 5-year retention evaluator in `src/modules/finance/services/bogfoeringsloven.service.ts`
-- [ ] T043 [US4] Implement Server Action for Bogføringsloven CSV export (`exportBogfoeringslovenLedgerAction`) in `src/modules/finance/actions/ledger.actions.ts`
-- [ ] T044 [P] [US4] Build Bogføringsloven accounting ledger table and CSV download component in `src/components/finance/bogfoeringsloven-table.tsx`
-- [ ] T045 [US4] Build Admin Finance Reports page for Bogføringsloven statutory CSV export in `src/app/(dashboard)/admin/finance/reports/page.tsx`
-- [ ] T046 [US4] Update `gdpr-deletion.service.ts` to block Article 17 erasure when open/unpaid balances exist (`OPEN`, `PENDING_VERIFICATION`, `PARTIALLY_PAID`, `OVERDUE`) and preserve 5-year statutory records on `"Former Member #[HASH]"` while scrubbing personal payment notes in `src/modules/auth/services/gdpr-deletion.service.ts`
-- [ ] T047 [US4] Update `gdpr-export.service.ts` to include full subscription, invoice, and payment history in Article 20 "Download My Data" export in `src/modules/auth/services/gdpr-export.service.ts`
-- [ ] T048 [P] [US4] Create Vitest unit test suite verifying GDPR Article 17 erasure blocking on open balances and personal note scrubbing in `tests/unit/finance/finance-gdpr-guard.test.ts`
+- [X] T041 [P] [US4] Define Zod schemas and TypeScript contracts for Bogføringsloven accounting ledger export (`exportBogfoeringslovenLedgerSchema`) in `src/modules/finance/contracts/ledger.contract.ts`
+- [X] T042 [US4] Implement Bogføringsloven accounting ledger service generating UTF-8 BOM CSV with mandatory accounting columns and 5-year retention evaluator in `src/modules/finance/services/bogfoeringsloven.service.ts`
+- [X] T043 [US4] Implement Server Action for Bogføringsloven CSV export (`exportBogfoeringslovenLedgerAction`) in `src/modules/finance/actions/ledger.actions.ts`
+- [X] T044 [P] [US4] Build Bogføringsloven accounting ledger table and CSV download component in `src/components/finance/bogfoeringsloven-table.tsx`
+- [X] T045 [US4] Build Admin Finance Reports page for Bogføringsloven statutory CSV export in `src/app/(dashboard)/admin/finance/reports/page.tsx`
+- [X] T046 [US4] Update `gdpr-deletion.service.ts` to block Article 17 erasure when open/unpaid balances exist (`OPEN`, `PENDING_VERIFICATION`, `PARTIALLY_PAID`, `OVERDUE`) and preserve 5-year statutory records on `"Former Member #[HASH]"` while scrubbing personal payment notes in `src/modules/auth/services/gdpr-deletion.service.ts`
+- [X] T047 [US4] Update `gdpr-export.service.ts` to include full subscription, invoice, and payment history in Article 20 "Download My Data" export in `src/modules/auth/services/gdpr-export.service.ts`
+- [X] T048 [P] [US4] Create Vitest unit test suite verifying GDPR Article 17 erasure blocking on open balances and personal note scrubbing in `tests/unit/finance/finance-gdpr-guard.test.ts`
 
 **Checkpoint**: User Story 4 functional. Danish Bookkeeping Act export verified and GDPR Article 17/20 compliance hooks fully tested.
 
@@ -120,8 +120,8 @@
 
 **Purpose**: Route protection, navigation updates, end-to-end flow validation, and quickstart documentation.
 
-- [ ] T049 [P] Add finance module route permissions and navigation links to dashboard sidebar/header in `src/components/layout/Sidebar.tsx`
-- [ ] T050 Update integration documentation and verify complete quickstart workflow (`npm run test`, `npx prisma db seed`) in `specs/004-membership-fees-finance/quickstart.md`
+- [X] T049 [P] Add finance module route permissions and navigation links to dashboard sidebar/header in `src/components/layout/Sidebar.tsx`
+- [X] T050 Update integration documentation and verify complete quickstart workflow (`npm run test`, `npx prisma db seed`) in `specs/004-membership-fees-finance/quickstart.md`
 
 ---
 

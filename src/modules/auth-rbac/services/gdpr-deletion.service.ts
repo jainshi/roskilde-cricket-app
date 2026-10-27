@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/db";
+import { SubscriptionStatus } from "@prisma/client";
 import { computeAnonymizedShell } from "../domain/anonymization-rules";
 import { validateDelegationAccess } from "../domain/delegation-rules";
 import { notificationService } from "../notifications/notification.service";
 import { hasActiveOrOverdueLoans } from "@/modules/inventory/services/inventory-gdpr.service";
+import { hasOpenInvoicesOrBalances } from "@/modules/finance/services/finance-gdpr.service";
 
 export interface DeletionRequestItem {
   id: string;
@@ -77,6 +79,12 @@ export async function requestMemberDeletion(params: {
   const loanCheck = await hasActiveOrOverdueLoans(targetProfileId);
   if (loanCheck.hasActiveLoans) {
     throw new Error(loanCheck.blockingReason || "Cannot request account deletion: active equipment loans must be returned first.");
+  }
+
+  // Cross-Module Finance Safeguard: Block deletion requests if unpaid open balances or invoices exist
+  const financeCheck = await hasOpenInvoicesOrBalances(targetProfileId);
+  if (financeCheck.hasOpenInvoices) {
+    throw new Error(financeCheck.blockingReason || "Cannot request account deletion: outstanding club dues or unpaid invoices exist.");
   }
 
   // 2. Log deletion request in AuditLog
@@ -164,6 +172,12 @@ export async function executeMemberAnonymization(params: {
     throw new Error(loanCheck.blockingReason || "Cannot anonymize member: active or overdue equipment loans must be returned first.");
   }
 
+  // Cross-Module Finance Safeguard: Block irreversible anonymization if unpaid open balances exist
+  const financeCheck = await hasOpenInvoicesOrBalances(targetProfileId);
+  if (financeCheck.hasOpenInvoices) {
+    throw new Error(financeCheck.blockingReason || "Cannot anonymize member: outstanding club dues or unpaid invoices exist.");
+  }
+
   const shell = computeAnonymizedShell(target);
 
   // 2. Execute scrub and severance in atomic transaction
@@ -237,6 +251,32 @@ export async function executeMemberAnonymization(params: {
     // F5. Module 3: Remove any coach assignments
     await tx.teamCoachAssignment.deleteMany({
       where: { coachProfileId: targetProfileId },
+    });
+
+    // F6. Module 4: Cancel any active or pending membership subscriptions
+    await tx.memberSubscription.updateMany({
+      where: {
+        memberProfileId: targetProfileId,
+        status: { in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.PENDING_PAYMENT] },
+      },
+      data: { status: SubscriptionStatus.CANCELLED },
+    });
+
+    // F7. Module 4: Scrub personal notes from invoices while retaining statutory 5-year voucher records (Bogføringsloven § 10)
+    await tx.invoice.updateMany({
+      where: {
+        OR: [
+          { memberProfileId: targetProfileId },
+          { billedToProfileId: targetProfileId },
+        ],
+      },
+      data: { notes: null },
+    });
+
+    // F8. Module 4: Scrub personal notes and transaction references from payment transactions
+    await tx.paymentTransaction.updateMany({
+      where: { reportedById: targetProfileId },
+      data: { notes: null, transactionReference: null },
     });
 
     // G. Create permanent AuditLog entry

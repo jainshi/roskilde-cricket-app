@@ -120,6 +120,50 @@ export interface GdprExportPackage {
     arrivalTime: string | null;
     notes: string | null;
   }[];
+  subscriptions: {
+    id: string;
+    planName: string;
+    planCategory: string;
+    seasonYear: number;
+    seasonCycle: string;
+    status: string;
+    hasSiblingDiscount: boolean;
+    siblingDiscountOere: number;
+    manualDiscountOere: number | null;
+    finalFeeOere: number;
+    createdAt: string;
+  }[];
+  invoices: {
+    id: string;
+    invoiceNumber: string;
+    paymentReference: string;
+    category: string;
+    status: string;
+    subtotalOere: number;
+    discountOere: number;
+    totalOere: number;
+    paidOere: number;
+    issueDate: string;
+    dueDate: string;
+    paidAt: string | null;
+    lineItems: {
+      description: string;
+      quantity: number;
+      unitPriceOere: number;
+      totalOere: number;
+    }[];
+  }[];
+  paymentHistory: {
+    id: string;
+    invoiceNumber: string;
+    amountOere: number;
+    paymentMethod: string;
+    status: string;
+    transactionReference: string | null;
+    reportedAt: string;
+    verifiedAt: string | null;
+    settlementDate: string;
+  }[];
 }
 
 /**
@@ -229,6 +273,34 @@ export async function generateGdprExport(params: {
   if (!target) {
     throw new Error("Member profile not found.");
   }
+
+  // 2b. Query Module 4 financial records
+  const subscriptions = await prisma.memberSubscription.findMany({
+    where: { memberProfileId: targetProfileId },
+    include: { plan: { select: { name: true, category: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      OR: [
+        { memberProfileId: targetProfileId },
+        { billedToProfileId: targetProfileId },
+      ],
+    },
+    include: {
+      lineItems: true,
+    },
+    orderBy: { issueDate: "desc" },
+  });
+
+  const payments = await prisma.paymentTransaction.findMany({
+    where: { reportedById: targetProfileId },
+    include: {
+      invoice: { select: { invoiceNumber: true } },
+    },
+    orderBy: { reportedAt: "desc" },
+  });
 
   // 3. Assemble package
   const exportPackage: GdprExportPackage = {
@@ -376,6 +448,50 @@ export async function generateGdprExport(params: {
       status: att.status,
       arrivalTime: att.arrivalTime?.toISOString() || null,
       notes: att.notes,
+    })),
+    subscriptions: subscriptions.map((s) => ({
+      id: s.id,
+      planName: s.plan.name,
+      planCategory: s.plan.category,
+      seasonYear: s.seasonYear,
+      seasonCycle: s.seasonCycle,
+      status: s.status,
+      hasSiblingDiscount: s.hasSiblingDiscount,
+      siblingDiscountOere: s.siblingDiscountOere,
+      manualDiscountOere: s.manualDiscountOere,
+      finalFeeOere: s.finalFeeOere,
+      createdAt: s.createdAt.toISOString(),
+    })),
+    invoices: invoices.map((inv) => ({
+      id: inv.id,
+      invoiceNumber: inv.invoiceNumber,
+      paymentReference: inv.paymentReference,
+      category: inv.category,
+      status: inv.status,
+      subtotalOere: inv.subtotalOere,
+      discountOere: inv.discountOere,
+      totalOere: inv.totalOere,
+      paidOere: inv.paidOere,
+      issueDate: inv.issueDate.toISOString(),
+      dueDate: inv.dueDate.toISOString(),
+      paidAt: inv.paidAt?.toISOString() || null,
+      lineItems: inv.lineItems.map((li) => ({
+        description: li.description,
+        quantity: li.quantity,
+        unitPriceOere: li.unitPriceOere,
+        totalOere: li.totalOere,
+      })),
+    })),
+    paymentHistory: payments.map((p) => ({
+      id: p.id,
+      invoiceNumber: p.invoice.invoiceNumber,
+      amountOere: p.amountOere,
+      paymentMethod: p.paymentMethod,
+      status: p.status,
+      transactionReference: p.transactionReference,
+      reportedAt: p.reportedAt.toISOString(),
+      verifiedAt: p.verifiedAt?.toISOString() || null,
+      settlementDate: p.settlementDate.toISOString(),
     })),
   };
 

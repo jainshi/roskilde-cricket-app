@@ -43,7 +43,14 @@ export default async function AdminFinancePage() {
         </div>
 
         {/* Quick Links */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/finance/reports"
+            className="min-h-[40px] px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-xs sm:text-sm font-semibold text-emerald-300 flex items-center gap-2 transition-colors"
+          >
+            <span>Bogføringsloven Reports</span>
+            <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+          </Link>
           <Link
             href="/admin/finance/plans"
             className="min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-300 flex items-center gap-2 transition-colors"

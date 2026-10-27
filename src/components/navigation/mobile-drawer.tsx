@@ -293,25 +293,63 @@ export function MobileDrawer({
               </div>
             </Link>
 
-            {/* 6. Finance & Plans (If Admin) */}
-            {isAdmin && (
-              <Link
-                href="/admin/finance/plans"
-                onClick={onClose}
-                className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
-                  isActive("/admin/finance") || pathname.startsWith("/admin/finance")
-                    ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
-                    : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
-                }`}
-              >
-                <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white leading-tight">Finance &amp; Plans</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Rates &amp; subscriptions</p>
-                </div>
-              </Link>
+            {/* 6. Finance & Plans (If Admin or Treasurer) */}
+            {(isAdmin || session.roles.includes("TREASURER")) && (
+              <>
+                <Link
+                  href="/admin/finance"
+                  onClick={onClose}
+                  className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                    pathname === "/admin/finance"
+                      ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
+                      : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white leading-tight">Treasurer Hub</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Reconciliation &amp; dues</p>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/admin/finance/plans"
+                  onClick={onClose}
+                  className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                    isActive("/admin/finance/plans")
+                      ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
+                      : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white leading-tight">Finance &amp; Plans</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Rates &amp; subscriptions</p>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/admin/finance/reports"
+                  onClick={onClose}
+                  className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                    isActive("/admin/finance/reports")
+                      ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
+                      : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white leading-tight">Statutory Reports</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Bogføringsloven CSV</p>
+                  </div>
+                </Link>
+              </>
             )}
 
             {/* 5. Club Admin / Manage Members (If Admin) */}
