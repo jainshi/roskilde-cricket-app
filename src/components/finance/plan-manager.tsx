@@ -13,6 +13,7 @@ import {
   Plus,
   Edit2,
   Users,
+  UserPlus,
   CheckCircle2,
   AlertCircle,
   Tag,
@@ -20,14 +21,20 @@ import {
   Sparkles,
   Percent,
 } from "lucide-react";
+import {
+  AssignPlanMembersModal,
+  CandidateMemberForPlan,
+} from "./assign-plan-members-modal";
 
 interface PlanManagerProps {
   initialPlans: MembershipPlanWithStats[];
+  candidateMembers?: CandidateMemberForPlan[];
 }
 
-export function PlanManager({ initialPlans }: PlanManagerProps) {
+export function PlanManager({ initialPlans, candidateMembers = [] }: PlanManagerProps) {
   const [plans, setPlans] = useState<MembershipPlanWithStats[]>(initialPlans);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [assigningPlan, setAssigningPlan] = useState<MembershipPlanWithStats | null>(null);
   const [editingPlan, setEditingPlan] = useState<MembershipPlanWithStats | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -312,7 +319,7 @@ export function PlanManager({ initialPlans }: PlanManagerProps) {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-end gap-2">
+              <div className="mt-5 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-end gap-2">
                 <button
                   onClick={() => handleToggleActive(plan)}
                   disabled={isPending}
@@ -322,10 +329,17 @@ export function PlanManager({ initialPlans }: PlanManagerProps) {
                 </button>
                 <button
                   onClick={() => handleOpenEdit(plan)}
-                  className="min-h-[38px] px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-sky-400 font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="min-h-[38px] px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
+                  <Edit2 className="w-3.5 h-3.5 text-slate-400" />
                   <span>Edit Rate</span>
+                </button>
+                <button
+                  onClick={() => setAssigningPlan(plan)}
+                  className="min-h-[38px] px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-xs text-white font-semibold flex items-center gap-1.5 shadow-md shadow-sky-500/20 transition-all cursor-pointer"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Assign Members</span>
                 </button>
               </div>
             </div>
@@ -489,6 +503,16 @@ export function PlanManager({ initialPlans }: PlanManagerProps) {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Assign Members to Plan Modal */}
+      {assigningPlan && (
+        <AssignPlanMembersModal
+          plan={assigningPlan}
+          candidateMembers={candidateMembers}
+          isOpen={true}
+          onClose={() => setAssigningPlan(null)}
+        />
       )}
     </div>
   );

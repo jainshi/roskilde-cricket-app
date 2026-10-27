@@ -6,10 +6,12 @@ import { Role } from "@prisma/client";
 import {
   enrollMemberSubscriptionSchema,
   overrideSubscriptionDiscountSchema,
+  assignPlanToMembersSchema,
 } from "../contracts/subscription.contract";
 import {
   enrollMemberSubscription,
   overrideSubscriptionDiscount,
+  assignPlanToMembers,
 } from "../services/subscription.service";
 
 import { prisma } from "@/lib/db";
@@ -110,3 +112,39 @@ export async function overrideSubscriptionDiscountAction(
     return { success: false, error: msg };
   }
 }
+
+/**
+ * Server Action: Batch-assign a membership plan to selected members.
+ * Authorized for: Admin only.
+ */
+export async function assignPlanToMembersAction(
+  formData: unknown
+): Promise<ActionResult> {
+  try {
+    const session = await requireActivatedSession();
+    if (!session.roles.includes(Role.ADMIN)) {
+      return {
+        success: false,
+        error: "Unauthorized: Only Club Administrators can assign membership plans.",
+      };
+    }
+
+    const parsed = assignPlanToMembersSchema.safeParse(formData);
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      return {
+        success: false,
+        error: issue ? `${issue.path.join(".")}: ${issue.message}` : "Validation failed.",
+      };
+    }
+
+    const result = await assignPlanToMembers(parsed.data, session.memberProfileId);
+    revalidatePath("/admin/finance/plans");
+    revalidatePath("/billing");
+    return { success: true, data: result };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to assign plan to members.";
+    return { success: false, error: msg };
+  }
+}
+

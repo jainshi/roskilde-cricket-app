@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const enrollMemberSubscriptionSchema = z.object({
-  memberProfileId: z.string().uuid("Invalid member profile ID"),
+  memberProfileId: z.string().min(1, "Member profile ID is required"),
   planId: z.string().uuid("Invalid plan ID"),
   seasonYear: z.number().int().min(2025).max(2050),
   manualDiscountOere: z.number().int().min(0, "Discount cannot be negative").optional(),
@@ -21,3 +21,13 @@ export const overrideSubscriptionDiscountSchema = z.object({
 });
 
 export type OverrideSubscriptionDiscountInput = z.infer<typeof overrideSubscriptionDiscountSchema>;
+
+export const assignPlanToMembersSchema = z.object({
+  planId: z.string().uuid("Invalid plan ID"),
+  memberProfileIds: z.array(z.string().min(1)).min(1, "Select at least one member"),
+  seasonYear: z.number().int().min(2025).max(2050).default(2026),
+  generateInvoices: z.boolean().default(true),
+  dueDateDays: z.number().int().min(1).max(180).default(30),
+});
+
+export type AssignPlanToMembersInput = z.infer<typeof assignPlanToMembersSchema>;

@@ -153,7 +153,7 @@ async function resolveBillingRecipientEmails(memberProfileId: string): Promise<s
 /**
  * Dispatches simultaneous dual-parent billing notices via NotificationService.
  */
-async function dispatchBillingNotification(
+export async function dispatchBillingNotification(
   invoice: InvoiceWithRelations,
   title: string
 ) {

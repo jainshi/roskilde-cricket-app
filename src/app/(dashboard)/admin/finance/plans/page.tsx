@@ -38,36 +38,49 @@ export default async function AdminFinancePlansPage() {
   // 2. Fetch all subscriptions
   const subscriptions = await listMemberSubscriptions();
 
-  // 3. Fetch candidate members for enrollment selector
+  // 3. Fetch candidate members for plan assignment and enrollment selector
   const memberProfiles = await prisma.memberProfile.findMany({
     where: { isAnonymized: false },
     select: {
       id: true,
       firstName: true,
       lastName: true,
+      email: true,
       dateOfBirth: true,
+      roleAssignments: {
+        select: { role: true },
+      },
       parentLinksAsPlayer: {
-        include: {
-          parent: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
+        select: { id: true },
+      },
+      subscriptions: {
+        where: { seasonYear: 2026 },
+        include: { plan: true },
       },
     },
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
   });
 
-  const memberOptions = memberProfiles.map((m) => {
-    const parent = m.parentLinksAsPlayer[0]?.parent;
-    const isMinor = m.parentLinksAsPlayer.length > 0;
+  const candidateMembers = memberProfiles.map((m) => {
+    const isMinor =
+      m.parentLinksAsPlayer.length > 0 ||
+      (m.dateOfBirth
+        ? new Date().getFullYear() - new Date(m.dateOfBirth).getFullYear() < 18
+        : false);
+
     return {
       id: m.id,
-      name: `${m.firstName} ${m.lastName}`,
+      firstName: m.firstName,
+      lastName: m.lastName,
+      email: m.email,
+      dateOfBirth: m.dateOfBirth,
       isMinor,
-      parentName: parent ? `${parent.firstName} ${parent.lastName}` : undefined,
+      roles: m.roleAssignments.map((r) => r.role),
+      activeSubscriptions: m.subscriptions.map((s) => ({
+        planId: s.planId,
+        planName: s.plan.name,
+        seasonYear: s.seasonYear,
+      })),
     };
   });
 
@@ -90,7 +103,7 @@ export default async function AdminFinancePlansPage() {
       </div>
 
       {/* 1. Plans Manager Section */}
-      <PlanManager initialPlans={plans} />
+      <PlanManager initialPlans={plans} candidateMembers={candidateMembers} />
 
       {/* 2. Active Member Subscriptions Table */}
       <div className="space-y-4">

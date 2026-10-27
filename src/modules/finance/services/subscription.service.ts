@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { MemberSubscription, SubscriptionStatus } from "@prisma/client";
+import { MemberSubscription, SubscriptionStatus, InvoiceCategory, InvoiceStatus } from "@prisma/client";
 import { getSeasonDateRange } from "../domain/season-billing";
 import {
   calculateHouseholdYouthFees,
@@ -8,7 +8,12 @@ import {
 import {
   EnrollMemberSubscriptionInput,
   OverrideSubscriptionDiscountInput,
+  AssignPlanToMembersInput,
 } from "../contracts/subscription.contract";
+import {
+  generateNextInvoiceNumber,
+  dispatchBillingNotification,
+} from "./invoice.service";
 
 export type MemberSubscriptionWithDetails = MemberSubscription & {
   memberProfile: {
@@ -277,4 +282,150 @@ export async function overrideSubscriptionDiscount(
       finalFeeOere,
     },
   });
+}
+
+/**
+ * Batch-assigns a membership plan to multiple members, creating their seasonal
+ * subscriptions and optionally generating their initial seasonal invoices.
+ */
+export async function assignPlanToMembers(
+  input: AssignPlanToMembersInput,
+  actorProfileId?: string
+): Promise<{ success: boolean; enrolledCount: number; invoiceCount: number; errors?: string[] }> {
+  const { planId, memberProfileIds, seasonYear, generateInvoices = true, dueDateDays = 30 } = input;
+
+  const plan = await prisma.membershipPlan.findUnique({
+    where: { id: planId },
+  });
+
+  if (!plan) {
+    throw new Error(`Membership plan with ID "${planId}" not found.`);
+  }
+
+  let enrolledCount = 0;
+  let invoiceCount = 0;
+  const errors: string[] = [];
+
+  for (const memberProfileId of memberProfileIds) {
+    try {
+      // 1. Enroll member into seasonal subscription
+      const sub = await enrollMemberSubscription(
+        {
+          memberProfileId,
+          planId,
+          seasonYear,
+        },
+        actorProfileId
+      );
+      enrolledCount++;
+
+      // 2. Generate initial seasonal invoice if requested
+      if (generateInvoices) {
+        const existingInvoice = await prisma.invoice.findFirst({
+          where: { subscriptionId: sub.id, category: InvoiceCategory.MEMBERSHIP_DUES },
+        });
+
+        if (!existingInvoice) {
+          const member = await prisma.memberProfile.findUnique({
+            where: { id: memberProfileId },
+            include: {
+              parentLinksAsPlayer: {
+                include: { parent: true },
+              },
+            },
+          });
+
+          if (member) {
+            const primaryParent = member.parentLinksAsPlayer[0]?.parent;
+            const billedToProfileId = primaryParent ? primaryParent.id : member.id;
+
+            const invoiceNumber = await generateNextInvoiceNumber(seasonYear);
+            const subtotalOere = plan.amountOere;
+            const discountOere = sub.hasSiblingDiscount
+              ? sub.siblingDiscountOere
+              : sub.manualDiscountOere ?? 0;
+            const totalOere = sub.finalFeeOere;
+
+            const lineItemsData = [
+              {
+                description: `${plan.name} (${seasonYear} Season)`,
+                quantity: 1,
+                unitPriceOere: subtotalOere,
+                totalOere: subtotalOere,
+              },
+            ];
+
+            if (discountOere > 0) {
+              lineItemsData.push({
+                description: sub.hasSiblingDiscount
+                  ? `Automatic ${plan.siblingDiscountPercent}% Sibling Discount`
+                  : `Treasurer Manual Override: ${sub.overrideReason || "Approved Discount"}`,
+                quantity: 1,
+                unitPriceOere: -discountOere,
+                totalOere: -discountOere,
+              });
+            }
+
+            const now = new Date();
+            const dueDate = new Date(now.getTime() + dueDateDays * 24 * 60 * 60 * 1000);
+
+            const createdInvoice = await prisma.invoice.create({
+              data: {
+                invoiceNumber,
+                paymentReference: invoiceNumber,
+                memberProfileId: member.id,
+                billedToProfileId,
+                subscriptionId: sub.id,
+                category: InvoiceCategory.MEMBERSHIP_DUES,
+                status: InvoiceStatus.OPEN,
+                subtotalOere,
+                discountOere,
+                totalOere,
+                paidOere: 0,
+                issueDate: now,
+                dueDate,
+                lineItems: {
+                  create: lineItemsData,
+                },
+              },
+              include: {
+                memberProfile: {
+                  select: { id: true, firstName: true, lastName: true, email: true, dateOfBirth: true },
+                },
+                billedToProfile: {
+                  select: { id: true, firstName: true, lastName: true, email: true },
+                },
+                lineItems: true,
+                transactions: true,
+                subscription: {
+                  include: { plan: true },
+                },
+                linkedEquipmentLoan: {
+                  include: { equipmentItem: true },
+                },
+                linkedScheduledEvent: true,
+              },
+            });
+
+            invoiceCount++;
+
+            // Dispatch notification notice to player/parents
+            await dispatchBillingNotification(
+              createdInvoice as any,
+              `Membership Dues Invoice: ${plan.name}`
+            );
+          }
+        }
+      }
+    } catch (err: any) {
+      errors.push(`Member ${memberProfileId}: ${err.message}`);
+    }
+  }
+
+  return {
+    success: enrolledCount > 0,
+    enrolledCount,
+    invoiceCount,
+    errors: errors.length > 0 ? errors : undefined,
+  };
 }
