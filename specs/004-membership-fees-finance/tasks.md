@@ -64,15 +64,15 @@
 
 **Independent Test**: Trigger a seasonal billing batch for a squad, issue an ad-hoc equipment charge linked to an equipment loan, log in as a parent with 2 youth players, open the Family Billing dashboard, verify itemized charges for both children roll up into a single household total, and verify simultaneous dual-parent notification dispatch via `NotificationService`.
 
-- [ ] T024 [P] [US2] Define Zod schemas and TypeScript contracts for seasonal batch invoicing and ad-hoc fee creation (`generateSeasonalInvoicesSchema`, `createAdHocInvoiceSchema`) in `src/modules/finance/contracts/invoice.contract.ts`
-- [ ] T025 [US2] Implement seasonal batch invoice generator and ad-hoc fee creation service linking Module 2 equipment (`linkedEquipmentLoanId`) and Module 3 event (`linkedScheduledEventId`) in `src/modules/finance/services/invoice.service.ts`
-- [ ] T026 [US2] Implement Server Actions for seasonal batch and ad-hoc invoice creation (`generateSeasonalInvoicesAction`, `createAdHocInvoiceAction`) in `src/modules/finance/actions/invoice.actions.ts`
-- [ ] T027 [US2] Integrate simultaneous dual-parent notification dispatch into `InvoiceService` via Module 1's `NotificationService` in `src/modules/finance/services/invoice.service.ts`
-- [ ] T028 [P] [US2] Build itemized Invoice Card component with status badge (`OPEN`, `PAID`, `OVERDUE`, `PARTIALLY_PAID`, `WAIVED`), line-item breakdown, and printable view trigger in `src/components/finance/invoice-card.tsx`
-- [ ] T029 [P] [US2] Build Consolidated Family Billing View component grouping household invoices by child and displaying combined balance due in `src/components/finance/family-billing-view.tsx`
-- [ ] T030 [US2] Build Member & Parent Billing Dashboard page integrated with `HeaderProfileSwitcher` in `src/app/(dashboard)/billing/page.tsx`
-- [ ] T031 [US2] Build Invoice Detail view and printable HTML/PDF receipt page with club header and payment metadata in `src/app/(dashboard)/billing/[id]/page.tsx`
-- [ ] T032 [US2] Add Ad-Hoc Fee creation dialog to Module 2 equipment loan return flow for damaged/unreturned gear in `src/components/equipment/loan-return-modal.tsx`
+- [X] T024 [P] [US2] Define Zod schemas and TypeScript contracts for seasonal batch invoicing and ad-hoc fee creation (`generateSeasonalInvoicesSchema`, `createAdHocInvoiceSchema`) in `src/modules/finance/contracts/invoice.contract.ts`
+- [X] T025 [US2] Implement seasonal batch invoice generator and ad-hoc fee creation service linking Module 2 equipment (`linkedEquipmentLoanId`) and Module 3 event (`linkedScheduledEventId`) in `src/modules/finance/services/invoice.service.ts`
+- [X] T026 [US2] Implement Server Actions for seasonal batch and ad-hoc invoice creation (`generateSeasonalInvoicesAction`, `createAdHocInvoiceAction`) in `src/modules/finance/actions/invoice.actions.ts`
+- [X] T027 [US2] Integrate simultaneous dual-parent notification dispatch into `InvoiceService` via Module 1's `NotificationService` in `src/modules/finance/services/invoice.service.ts`
+- [X] T028 [P] [US2] Build itemized Invoice Card component with status badge (`OPEN`, `PAID`, `OVERDUE`, `PARTIALLY_PAID`, `WAIVED`), line-item breakdown, and printable view trigger in `src/components/finance/invoice-card.tsx`
+- [X] T029 [P] [US2] Build Consolidated Family Billing View component grouping household invoices by child and displaying combined balance due in `src/components/finance/family-billing-view.tsx`
+- [X] T030 [US2] Build Member & Parent Billing Dashboard page integrated with `HeaderProfileSwitcher` in `src/app/(dashboard)/billing/page.tsx`
+- [X] T031 [US2] Build Invoice Detail view and printable HTML/PDF receipt page with club header and payment metadata in `src/app/(dashboard)/billing/[id]/page.tsx`
+- [X] T032 [US2] Add Ad-Hoc Fee creation dialog to Module 2 equipment loan return flow for damaged/unreturned gear in `src/components/equipment/loan-return-modal.tsx`
 
 **Checkpoint**: User Story 2 functional. Seasonal invoices batch-generate, ad-hoc fees link to modules, and parents view consolidated family balances.
 

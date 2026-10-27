@@ -16,7 +16,9 @@ import {
   AlertCircle,
   DollarSign,
   ChevronDown,
+  CreditCard,
 } from "lucide-react";
+import { EquipmentFeeModal } from "@/components/equipment/loan-return-modal";
 
 export interface DamageReportItem {
   id: string;
@@ -64,6 +66,7 @@ export function DamageReportsTable({
 }) {
   const router = useRouter();
   const [activeReportId, setActiveReportId] = useState<string | null>(null);
+  const [feeModalReport, setFeeModalReport] = useState<DamageReportItem | null>(null);
   const [resolutionType, setResolutionType] = useState<
     "REPAIRED" | "RETIRED_WRITTEN_OFF" | "DISMISSED"
   >("REPAIRED");
@@ -244,7 +247,18 @@ export function DamageReportsTable({
 
               {/* Resolution Action Trigger */}
               {isPending && !isResolving && (
-                <div className="flex items-center justify-end pt-2">
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  {report.loan && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setFeeModalReport(report)}
+                      className="text-xs border-amber-500/40 text-amber-300 hover:bg-amber-950/30 font-medium flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Issue Fee Invoice</span>
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     onClick={() => setActiveReportId(report.id)}
@@ -354,6 +368,26 @@ export function DamageReportsTable({
           );
         })}
       </div>
+
+      {feeModalReport && feeModalReport.loan && (
+        <EquipmentFeeModal
+          isOpen={true}
+          onClose={() => setFeeModalReport(null)}
+          loan={{
+            id: feeModalReport.loan.id,
+            borrowerProfile: feeModalReport.loan.borrowerProfile,
+            equipmentItem: {
+              id: feeModalReport.equipmentItem.id,
+              name: feeModalReport.equipmentItem.name,
+              assetTag: feeModalReport.equipmentItem.assetTag,
+            },
+          }}
+          damageReportId={feeModalReport.id}
+          onSuccess={() => {
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
