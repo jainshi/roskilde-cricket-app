@@ -24,7 +24,12 @@ import {
   HelpCircle,
   AlertTriangle,
   ClipboardCheck,
+  CloudRain,
 } from "lucide-react";
+import { WeatherCancellationButton } from "@/components/communications/weather-cancellation-button";
+import { getEventVolunteerSlots } from "@/modules/volunteers/services/volunteer.service";
+import { VolunteerBadge } from "@/components/volunteers/volunteer-badge";
+import { VolunteerRosterConsole } from "@/components/volunteers/volunteer-roster-console";
 
 interface EventDetailPageProps {
   params: Promise<{ id: string }>;
@@ -164,8 +169,74 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     });
   }
 
+  // Query cancellation announcement if cancelled
+  const cancellationAnnouncement =
+    event.lifecycleStatus === "CANCELLED"
+      ? await prisma.announcement.findFirst({
+          where: {
+            linkedEventId: event.id,
+            category: "WEATHER_ALERT",
+          },
+          include: {
+            authorProfile: {
+              select: { firstName: true, lastName: true },
+            },
+          },
+          orderBy: { publishedAt: "desc" },
+        })
+      : null;
+
+  // Fetch volunteer duty slots and staffing fulfillment metrics
+  const { slots: volunteerSlots, fulfillment: volunteerFulfillment } =
+    await getEventVolunteerSlots(event.id);
+
+  // Check if target player is in confirmed starting XI (for Playing XI conflict warning)
+  const isPlayingInLineup =
+    publishedLineup?.selectedPlayers.some(
+      (p) => p.memberProfileId === targetPlayer.id && p.selectionRole === "STARTING"
+    ) || false;
+
+  // Club members for staff direct volunteer duty assignment
+  const clubMembers = isStaff
+    ? candidatePlayers.map((p) => ({
+        id: p.id,
+        name: `${p.firstName} ${p.lastName}`,
+        role: p.squadName,
+      }))
+    : [];
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Active Cancellation Notice Banner */}
+      {event.lifecycleStatus === "CANCELLED" && (
+        <div className="bg-destructive/15 border border-destructive/40 rounded-2xl p-4 sm:p-5 text-destructive shadow-lg flex items-start gap-3.5 animate-in fade-in">
+          <div className="p-2 bg-destructive text-destructive-foreground rounded-xl shrink-0 mt-0.5">
+            <CloudRain className="w-5 h-5 animate-pulse" />
+          </div>
+          <div className="space-y-1 flex-1">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h3 className="text-base font-bold text-destructive">
+                {cancellationAnnouncement?.title || "Fixture Cancelled - Pitch Unplayable / Weather Alert"}
+              </h3>
+              <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-destructive text-white">
+                Cancelled
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">
+              {cancellationAnnouncement?.content ||
+                "This scheduled fixture has been officially called off due to unplayable pitch or weather conditions. All RSVP and attendance obligations are released."}
+            </p>
+            {cancellationAnnouncement && (
+              <p className="text-[11px] text-muted-foreground pt-1">
+                Issued by {cancellationAnnouncement.authorProfile.firstName}{" "}
+                {cancellationAnnouncement.authorProfile.lastName} on{" "}
+                {new Date(cancellationAnnouncement.publishedAt).toLocaleString("da-DK")}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Top Breadcrumb & Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -201,6 +272,9 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   {event.isHome ? "HOME" : "AWAY"}
                 </span>
               )}
+
+              {/* Volunteer Duty Badge */}
+              <VolunteerBadge fulfillment={volunteerFulfillment} size="sm" />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold font-serif text-white tracking-tight">
               {event.title}
@@ -211,6 +285,14 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         {/* Coach / Admin Action Buttons */}
         {isStaff && (
           <div className="flex items-center gap-2 flex-wrap">
+            {event.lifecycleStatus !== "CANCELLED" && (
+              <WeatherCancellationButton
+                eventId={event.id}
+                eventTitle={event.title}
+                eventDate={event.startAt}
+                venueName={event.facility?.name || event.venueName}
+              />
+            )}
             <Link
               href={`/events/${event.id}/attendance`}
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all active:scale-[0.98]"
@@ -483,6 +565,20 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Match-Day Volunteer Duty Roster Console */}
+      <div className="pt-2">
+        <VolunteerRosterConsole
+          eventId={event.id}
+          eventTitle={event.title}
+          slots={volunteerSlots}
+          fulfillment={volunteerFulfillment}
+          currentProfileId={targetPlayer.id}
+          isStaff={isStaff}
+          isPlayingInLineup={isPlayingInLineup}
+          clubMembers={clubMembers}
+        />
       </div>
     </div>
   );

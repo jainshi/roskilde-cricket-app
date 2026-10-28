@@ -3,6 +3,8 @@ import { getCurrentSession } from "@/modules/auth-rbac/services/session-guard";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { SignInForm } from "./signin-form";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Sign In | Roskilde Cricket Club",
   description: "Sign in to access your RCC member dashboard",

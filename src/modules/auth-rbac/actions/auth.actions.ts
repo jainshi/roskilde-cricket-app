@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   authenticateUser,
@@ -16,7 +16,11 @@ import {
   requireSession,
   getCurrentSession,
 } from "../services/session-guard";
-import { revokeSession } from "../services/session.service";
+import {
+  revokeSession,
+  SESSION_COOKIE_NAME,
+  SESSION_EXPIRY_DAYS,
+} from "../services/session.service";
 import { SignInSchema, ResetPasswordSchema } from "../contracts/schemas";
 
 export interface ActionState<T = any> {
@@ -41,9 +45,16 @@ export async function signInAction(
     };
   }
 
-  const reqHeaders = await headers();
-  const userAgent = reqHeaders.get("user-agent") || undefined;
-  const ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+  let userAgent: string | undefined;
+  let ipAddress: string | undefined;
+
+  try {
+    const reqHeaders = await headers();
+    userAgent = reqHeaders.get("user-agent") || undefined;
+    ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+  } catch {
+    // Graceful fallback if headers() is called outside an active request scope
+  }
 
   const result = await authenticateUser({
     email: parsed.data.email,
@@ -58,7 +69,14 @@ export async function signInAction(
     };
   }
 
-  await setSessionCookie(result.sessionToken);
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE_NAME, result.sessionToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_EXPIRY_DAYS * 24 * 60 * 60,
+  });
 
   // If mandatory password reset required, route directly to /reset-password
   if (result.mustResetPassword) {
@@ -79,10 +97,15 @@ export async function requestPasswordResetAction(
     return { error: "auth.errors.invalidCredentials" };
   }
 
-  const reqHeaders = await headers();
-  const host = reqHeaders.get("host") || "localhost:3000";
-  const protocol = reqHeaders.get("x-forwarded-proto") || "http";
-  const baseUrl = `${protocol}://${host}`;
+  let baseUrl = "http://localhost:3000";
+  try {
+    const reqHeaders = await headers();
+    const host = reqHeaders.get("host") || "localhost:3000";
+    const protocol = reqHeaders.get("x-forwarded-proto") || "http";
+    baseUrl = `${protocol}://${host}`;
+  } catch {
+    // Fallback if headers() is called outside request scope
+  }
 
   await requestPasswordReset({
     email,
@@ -174,8 +197,13 @@ export async function consentAction(
     return { error: "auth.errors.consentRequired" };
   }
 
-  const reqHeaders = await headers();
-  const ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+  let ipAddress: string | undefined;
+  try {
+    const reqHeaders = await headers();
+    ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+  } catch {
+    // Fallback if headers() is called outside request scope
+  }
 
   await recordGdprConsent({
     subjectProfileId: session.memberProfileId,
@@ -191,6 +219,7 @@ export async function signOutAction(): Promise<void> {
   if (session) {
     await revokeSession(session.sessionToken);
   }
-  await clearSessionCookie();
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE_NAME);
   redirect("/signin");
 }

@@ -20,6 +20,7 @@ import {
   Dumbbell,
 } from "lucide-react";
 import { ScheduledEventSummary } from "@/modules/teams-matches/services/event.service";
+import { VolunteerBadge } from "@/components/volunteers/volunteer-badge";
 
 interface SquadOption {
   id: string;
@@ -407,6 +408,14 @@ export function EventCalendarView({
                                   ? "RSVP Needed"
                                   : `My RSVP: ${ev.userRsvp.status}`}
                               </span>
+                            )}
+
+                            {/* Volunteer Duty Fulfillment Badge */}
+                            {ev.volunteerFulfillment && ev.volunteerFulfillment.totalSlots > 0 && (
+                              <VolunteerBadge
+                                fulfillment={ev.volunteerFulfillment}
+                                size="sm"
+                              />
                             )}
                           </div>
 

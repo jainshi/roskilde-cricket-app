@@ -13,7 +13,8 @@
     "seed:inventory": "tsx scripts/seed-inventory.ts",
     "seed:teams": "tsx scripts/seed-teams-scheduling.ts",
     "seed:users": "tsx scripts/seed-users.ts",
-    "seed:finance": "tsx scripts/seed-finance.ts"
+    "seed:finance": "tsx scripts/seed-finance.ts",
+    "seed:communications": "tsx scripts/seed-communications.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -120,8 +120,13 @@ export async function parentConsentForYouthAction(
     };
   }
 
-  const reqHeaders = await headers();
-  const ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+  let ipAddress: string | undefined;
+  try {
+    const reqHeaders = await headers();
+    ipAddress = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined;
+  } catch {
+    // Fallback if headers() is called outside request scope
+  }
 
   try {
     await recordGdprConsent({

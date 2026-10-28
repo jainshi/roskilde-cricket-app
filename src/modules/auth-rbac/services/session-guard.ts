@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 import {
   SESSION_COOKIE_NAME,
   SESSION_EXPIRY_DAYS,
@@ -14,34 +13,46 @@ import { getActivationStepForProfile } from "./auth.service";
  * Sets session cookie with strict security flags.
  */
 export async function setSessionCookie(sessionToken: string): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_EXPIRY_DAYS * 24 * 60 * 60,
-  });
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_EXPIRY_DAYS * 24 * 60 * 60,
+    });
+  } catch (err) {
+    console.warn("[setSessionCookie] Unable to set cookie in current scope:", err);
+  }
 }
 
 /**
  * Clears session cookie from browser.
  */
 export async function clearSessionCookie(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(SESSION_COOKIE_NAME);
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete(SESSION_COOKIE_NAME);
+  } catch (err) {
+    console.warn("[clearSessionCookie] Unable to clear cookie in current scope:", err);
+  }
 }
 
 /**
- * Retrieves and validates the current active session (cached per request).
+ * Retrieves and validates the current active session.
  */
-export const getCurrentSession = cache(async (): Promise<ActiveSessionData | null> => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  if (!token) return null;
+export async function getCurrentSession(): Promise<ActiveSessionData | null> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    if (!token) return null;
 
-  return await validateSession(token);
-});
+    return await validateSession(token);
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Route guard: requires an active session. Redirects to /signin if not signed in.

@@ -13,6 +13,10 @@ import {
 import { calculateAgeOnCutoff } from "../domain/age-eligibility";
 import { notificationService } from "@/modules/auth-rbac/notifications/notification.service";
 import { EventLifecycleStatus, EventType } from "@prisma/client";
+import {
+  calculateEventVolunteerFulfillment,
+  EventVolunteerFulfillment,
+} from "@/modules/volunteers/domain/volunteer-roster";
 
 export interface ScheduledEventSummary {
   id: string;
@@ -50,6 +54,7 @@ export interface ScheduledEventSummary {
     transportNote: string | null;
   } | null;
   canReply?: boolean;
+  volunteerFulfillment?: EventVolunteerFulfillment | null;
 }
 
 /**
@@ -565,6 +570,20 @@ export async function listScheduledEvents(params: {
           transportNote: true,
         },
       },
+      volunteerSlots: {
+        select: {
+          id: true,
+          eventId: true,
+          dutyType: true,
+          title: true,
+          status: true,
+          assignedProfileId: true,
+          claimedAt: true,
+          swapRequestedAt: true,
+          swapReason: true,
+          carpoolSeats: true,
+        },
+      },
     },
   });
 
@@ -591,6 +610,11 @@ export async function listScheduledEvents(params: {
       : false;
 
     const canReply = Boolean(userRsvpRecord || isMemberRostered);
+
+    const volunteerFulfillment =
+      event.volunteerSlots && event.volunteerSlots.length > 0
+        ? calculateEventVolunteerFulfillment(event.volunteerSlots as any)
+        : null;
 
     return {
       id: event.id,
@@ -624,6 +648,7 @@ export async function listScheduledEvents(params: {
           }
         : null,
       canReply,
+      volunteerFulfillment,
     };
   });
 }

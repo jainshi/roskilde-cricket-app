@@ -1,7 +1,6 @@
 "use client";
 
-import { useActionState, useId } from "react";
-import { signInAction } from "@/modules/auth-rbac/actions/auth.actions";
+import { useState, useTransition, useId } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,28 +21,60 @@ export function SignInForm({
   fromPath = "/dashboard",
   reason,
 }: SignInFormProps) {
-  const [state, formAction, isPending] = useActionState(signInAction, null);
+  const [isPending, startTransition] = useTransition();
+  const [errorKey, setErrorKey] = useState<string | null>(null);
   const emailId = useId();
   const passwordId = useId();
 
   // Resolve error text from dictionary if key matches
   let errorMessage: string | null = null;
-  if (state?.error) {
-    if (state.error === "auth.errors.invalidCredentials") {
+  if (errorKey) {
+    if (errorKey === "auth.errors.invalidCredentials") {
       errorMessage = dict.auth.errors.invalidCredentials;
-    } else if (state.error === "auth.errors.accountLocked") {
+    } else if (errorKey === "auth.errors.accountLocked") {
       errorMessage = dict.auth.errors.accountLocked;
-    } else if (state.error === "auth.errors.invitationExpired") {
+    } else if (errorKey === "auth.errors.invitationExpired") {
       errorMessage = dict.auth.errors.invitationExpired;
-    } else if (state.error === "auth.errors.accountDeactivated") {
+    } else if (errorKey === "auth.errors.accountDeactivated") {
       errorMessage = dict.auth.errors.accountDeactivated;
     } else {
       errorMessage = dict.auth.errors.genericError;
     }
   }
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorKey(null);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const from = (formData.get("from") as string) || fromPath;
+
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/auth/signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, from }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          setErrorKey(data.error || "auth.errors.invalidCredentials");
+          return;
+        }
+
+        const destination = data.redirectTo || fromPath || "/dashboard";
+        window.location.href = destination;
+      } catch (err) {
+        setErrorKey("auth.errors.genericError");
+      }
+    });
+  };
+
   return (
-    <form action={formAction} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <input type="hidden" name="from" value={fromPath} />
 
       {reason === "password_reset_success" && (
