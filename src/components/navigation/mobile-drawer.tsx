@@ -20,6 +20,10 @@ import {
   LogOut,
   UserCheck,
   CreditCard,
+  Bell,
+  HeartHandshake,
+  FileText,
+  ClipboardCheck,
 } from "lucide-react";
 
 interface MobileDrawerProps {
@@ -212,6 +216,63 @@ export function MobileDrawer({
               <div>
                 <p className="text-xs font-bold text-white leading-tight">Events</p>
                 <p className="text-[10px] text-slate-400 mt-0.5">Fixtures &amp; nets</p>
+              </div>
+            </Link>
+
+            {/* Noticeboard */}
+            <Link
+              href="/communications"
+              onClick={onClose}
+              className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                isActive("/communications") || pathname.startsWith("/communications/")
+                  ? "bg-amber-500/15 border-amber-500/40 text-white shadow-md shadow-amber-950/30"
+                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-2">
+                <Bell className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white leading-tight">Noticeboard</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Club announcements</p>
+              </div>
+            </Link>
+
+            {/* Volunteer Roster */}
+            <Link
+              href="/volunteers"
+              onClick={onClose}
+              className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                isActive("/volunteers")
+                  ? "bg-rose-500/15 border-rose-500/40 text-white shadow-md shadow-rose-950/30"
+                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-2">
+                <HeartHandshake className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white leading-tight">Volunteer Roster</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Match duties &amp; claims</p>
+              </div>
+            </Link>
+
+            {/* Club Documents */}
+            <Link
+              href="/documents"
+              onClick={onClose}
+              className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                isActive("/documents")
+                  ? "bg-sky-500/15 border-sky-500/40 text-white shadow-md shadow-sky-950/30"
+                  : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-2">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white leading-tight">Club Documents</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Bylaws &amp; sign-offs</p>
               </div>
             </Link>
 
@@ -411,6 +472,27 @@ export function MobileDrawer({
                 <div>
                   <p className="text-xs font-bold text-white leading-tight">Onboard</p>
                   <p className="text-[10px] text-slate-400 mt-0.5">Register member</p>
+                </div>
+              </Link>
+            )}
+
+            {/* Compliance Audit (If Admin) */}
+            {isAdmin && (
+              <Link
+                href="/admin/compliance"
+                onClick={onClose}
+                className={`p-3 rounded-xl border flex flex-col justify-between transition-all active:scale-[0.98] ${
+                  isActive("/admin/compliance")
+                    ? "bg-emerald-500/15 border-emerald-500/40 text-white shadow-md shadow-emerald-950/30"
+                    : "bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/80 text-slate-200"
+                }`}
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-2">
+                  <ClipboardCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-tight">Compliance</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Audit &amp; sign-offs</p>
                 </div>
               </Link>
             )}

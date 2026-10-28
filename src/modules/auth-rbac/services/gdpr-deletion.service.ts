@@ -5,6 +5,10 @@ import { validateDelegationAccess } from "../domain/delegation-rules";
 import { notificationService } from "../notifications/notification.service";
 import { hasActiveOrOverdueLoans } from "@/modules/inventory/services/inventory-gdpr.service";
 import { hasOpenInvoicesOrBalances } from "@/modules/finance/services/finance-gdpr.service";
+import {
+  vacateUpcomingVolunteerDuties,
+  scrubCommunicationsAndVolunteerData,
+} from "@/modules/communications/services/communications-gdpr.service";
 
 export interface DeletionRequestItem {
   id: string;
@@ -278,6 +282,12 @@ export async function executeMemberAnonymization(params: {
       where: { reportedById: targetProfileId },
       data: { notes: null, transactionReference: null },
     });
+
+    // F9. Module 5: Vacate upcoming volunteer duties held by the erased member so squad roles can be refilled
+    await vacateUpcomingVolunteerDuties(targetProfileId, tx);
+
+    // F10. Module 5: Scrub telemetry and notes from historical duties, delete read receipts, scrub sign-off audit IP/telemetry
+    await scrubCommunicationsAndVolunteerData(targetProfileId, tx);
 
     // G. Create permanent AuditLog entry
     await tx.auditLog.create({

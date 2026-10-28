@@ -17,6 +17,10 @@ import {
   LogOut,
   Menu,
   CreditCard,
+  Bell,
+  HeartHandshake,
+  FileText,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileSwitcher } from "@/components/profile-switcher";
@@ -137,6 +141,42 @@ export function AppShell({
               </Link>
 
               <Link
+                href="/communications"
+                className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                  isNavActive("/communications")
+                    ? "bg-slate-800 text-white font-medium"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                }`}
+              >
+                <Bell className="w-4 h-4 text-amber-400" />
+                <span>Noticeboard</span>
+              </Link>
+
+              <Link
+                href="/volunteers"
+                className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                  isNavActive("/volunteers")
+                    ? "bg-slate-800 text-white font-medium"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                }`}
+              >
+                <HeartHandshake className="w-4 h-4 text-rose-400" />
+                <span>Volunteers</span>
+              </Link>
+
+              <Link
+                href="/documents"
+                className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                  isNavActive("/documents")
+                    ? "bg-slate-800 text-white font-medium"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                }`}
+              >
+                <FileText className="w-4 h-4 text-sky-400" />
+                <span>Documents</span>
+              </Link>
+
+              <Link
                 href="/profile/gear"
                 className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
                   isNavActive("/profile/gear")
@@ -222,6 +262,18 @@ export function AppShell({
                   >
                     <ShieldAlert className="w-4 h-4 text-rose-400" />
                     <span>GDPR</span>
+                  </Link>
+
+                  <Link
+                    href="/admin/compliance"
+                    className={`px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ${
+                      isNavActive("/admin/compliance")
+                        ? "bg-emerald-950/60 text-emerald-300 font-medium border border-emerald-800/40"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                    }`}
+                  >
+                    <ClipboardCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Compliance</span>
                   </Link>
                 </>
               )}

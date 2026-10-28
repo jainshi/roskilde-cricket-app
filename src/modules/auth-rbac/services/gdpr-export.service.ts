@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { validateDelegationAccess } from "../domain/delegation-rules";
+import { getCommunicationsGdprExportData } from "@/modules/communications/services/communications-gdpr.service";
 
 export interface GdprExportPackage {
   metadata: {
@@ -164,6 +165,38 @@ export interface GdprExportPackage {
     verifiedAt: string | null;
     settlementDate: string;
   }[];
+  communicationsAndVolunteers: {
+    authoredAnnouncements: {
+      id: string;
+      title: string;
+      slug: string;
+      category: string;
+      priority: string;
+      publishedAt: string;
+    }[];
+    readReceipts: {
+      announcementId: string;
+      announcementTitle: string;
+      readAt: string;
+    }[];
+    volunteerDutyHistory: {
+      slotId: string;
+      eventId: string;
+      eventTitle: string;
+      eventDate: string;
+      dutyType: string;
+      status: string;
+      claimedAt: string | null;
+      carpoolSeats: number | null;
+    }[];
+    signedDocuments: {
+      documentId: string;
+      documentTitle: string;
+      category: string;
+      versionSigned: string;
+      signedAt: string;
+    }[];
+  };
 }
 
 /**
@@ -301,6 +334,8 @@ export async function generateGdprExport(params: {
     },
     orderBy: { reportedAt: "desc" },
   });
+
+  const communicationsAndVolunteers = await getCommunicationsGdprExportData(targetProfileId);
 
   // 3. Assemble package
   const exportPackage: GdprExportPackage = {
@@ -493,6 +528,7 @@ export async function generateGdprExport(params: {
       verifiedAt: p.verifiedAt?.toISOString() || null,
       settlementDate: p.settlementDate.toISOString(),
     })),
+    communicationsAndVolunteers,
   };
 
   // 4. Log export event

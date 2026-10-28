@@ -5,6 +5,7 @@ export * from "./domain/announcement-dispatcher";
 export * from "./domain/policy-compliance";
 export * from "./services/announcement.service";
 export * from "./services/document.service";
+export * from "./services/communications-gdpr.service";
 export * from "./actions/announcement.actions";
 export {
   createClubDocumentAction,

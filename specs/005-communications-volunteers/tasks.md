@@ -103,12 +103,12 @@
 
 **Independent Test**: Execute GDPR erasure on a member with upcoming and past volunteer duties, verify upcoming duties revert to `OPEN` while past duties link to `"Former Member #[HASH]"`, run Article 20 export verifying communications data is present, and verify desktop and mobile navigation links.
 
-- [ ] T037 [US4] Implement communications and volunteer GDPR helper service in `src/modules/communications/services/communications-gdpr.service.ts`
-- [ ] T038 [US4] Update `gdpr-deletion.service.ts` to vacate upcoming volunteer duty slots (`assignedProfileId = null`, `status = OPEN`), anonymize historical duties onto `"Former Member #[HASH]"`, and scrub personal announcement commentary upon approved erasure in `src/modules/auth-rbac/services/gdpr-deletion.service.ts`
-- [ ] T039 [US4] Update `gdpr-export.service.ts` to include authored announcements, read receipts, volunteer duty history, and signed documents in Article 20 "Download My Data" export package in `src/modules/auth-rbac/services/gdpr-export.service.ts`
-- [ ] T040 [P] [US4] Create Vitest unit test suite verifying GDPR Article 17 upcoming slot vacating, historical duty anonymization, and Article 20 data extraction in `tests/unit/communications/communications-gdpr-guard.test.ts`
-- [ ] T041 [P] [US4] Update desktop navigation top-bar in `src/components/navigation/app-shell.tsx` with links to Noticeboard (`/communications`), Volunteer Roster (`/volunteers`), and Club Documents (`/documents`)
-- [ ] T042 [P] [US4] Update mobile App Launcher 2-column grid in `src/components/navigation/mobile-drawer.tsx` with cards for Noticeboard, Volunteer Roster, Club Documents, and Admin Compliance
+- [X] T037 [US4] Implement communications and volunteer GDPR helper service in `src/modules/communications/services/communications-gdpr.service.ts`
+- [X] T038 [US4] Update `gdpr-deletion.service.ts` to vacate upcoming volunteer duty slots (`assignedProfileId = null`, `status = OPEN`), anonymize historical duties onto `"Former Member #[HASH]"`, and scrub personal announcement commentary upon approved erasure in `src/modules/auth-rbac/services/gdpr-deletion.service.ts`
+- [X] T039 [US4] Update `gdpr-export.service.ts` to include authored announcements, read receipts, volunteer duty history, and signed documents in Article 20 "Download My Data" export package in `src/modules/auth-rbac/services/gdpr-export.service.ts`
+- [X] T040 [P] [US4] Create Vitest unit test suite verifying GDPR Article 17 upcoming slot vacating, historical duty anonymization, and Article 20 data extraction in `tests/unit/communications/communications-gdpr-guard.test.ts`
+- [X] T041 [P] [US4] Update desktop navigation top-bar in `src/components/navigation/app-shell.tsx` with links to Noticeboard (`/communications`), Volunteer Roster (`/volunteers`), and Club Documents (`/documents`)
+- [X] T042 [P] [US4] Update mobile App Launcher 2-column grid in `src/components/navigation/mobile-drawer.tsx` with cards for Noticeboard, Volunteer Roster, Club Documents, and Admin Compliance
 
 **Checkpoint**: User Story 4 functional. GDPR Article 17/20 hooks verified with unit tests and global navigation updated.
 
@@ -118,10 +118,10 @@
 
 **Purpose**: Type check, full test suite pass, production build validation, and quickstart documentation.
 
-- [ ] T043 Update developer integration and verification documentation in `specs/005-communications-volunteers/quickstart.md`
-- [ ] T044 Run TypeScript compiler check `npx tsc --noEmit` and resolve any type discrepancies
-- [ ] T045 Run full unit test suite `npm run test:unit` ensuring 100% pass rate across all 35+ test files
-- [ ] T046 Run production build `npm run build` ensuring all 40+ static and dynamic routes generate with 0 errors
+- [X] T043 Update developer integration and verification documentation in `specs/005-communications-volunteers/quickstart.md`
+- [X] T044 Run TypeScript compiler check `npx tsc --noEmit` and resolve any type discrepancies
+- [X] T045 Run full unit test suite `npm run test:unit` ensuring 100% pass rate across all 35+ test files
+- [X] T046 Run production build `npm run build` ensuring all 40+ static and dynamic routes generate with 0 errors
 
 ---
 
