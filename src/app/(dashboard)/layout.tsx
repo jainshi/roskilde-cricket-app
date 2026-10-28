@@ -4,6 +4,8 @@ import { getActiveContext } from "@/modules/auth-rbac/services/context.service";
 import { getLinkedYouthForParent } from "@/modules/auth-rbac/services/parent-child.service";
 import { AppShell } from "@/components/navigation/app-shell";
 import { switchContextAction } from "@/modules/auth-rbac/actions/context.actions";
+import { getMemberPolicyCompliance } from "@/modules/communications/services/document.service";
+import { PolicyWarningBanner } from "@/components/communications/policy-warning-banner";
 import { ArrowRightLeft } from "lucide-react";
 
 export default async function DashboardLayout({
@@ -21,6 +23,10 @@ export default async function DashboardLayout({
     getActiveContext(),
     getLinkedYouthForParent(session.memberProfileId),
   ]);
+
+  const targetProfileId =
+    context?.activeProfileId || session.activeProfileId || session.memberProfileId;
+  const compliance = await getMemberPolicyCompliance(targetProfileId);
 
   const isDelegated = context?.isDelegated ?? false;
 
@@ -41,7 +47,7 @@ export default async function DashboardLayout({
         playerId: ly.playerId,
         playerName: ly.playerName,
       }))}
-      activeProfileId={context?.activeProfileId || session.memberProfileId}
+      activeProfileId={targetProfileId}
     >
       {/* Pitch-Side Context Delegation Banner */}
       {isDelegated && context?.targetChild && (
@@ -70,6 +76,16 @@ export default async function DashboardLayout({
               Switch back ({session.firstName})
             </button>
           </form>
+        </div>
+      )}
+
+      {/* Persistent Soft Warning Banner for Mandatory Governance Policies */}
+      {compliance.shouldShowWarningBanner && (
+        <div className="mb-4">
+          <PolicyWarningBanner
+            evaluation={compliance}
+            targetProfileId={targetProfileId}
+          />
         </div>
       )}
 

@@ -83,15 +83,15 @@
 
 **Independent Test**: Upload a mandatory child-safety policy for coaches, verify an unacknowledged coach sees the persistent amber dashboard banner, complete 1-click digital sign-off, verify the banner clears, and check the admin compliance audit report.
 
-- [ ] T028 [P] [US3] Define Zod schemas and TypeScript contracts for documents and sign-offs (`createClubDocumentSchema`, `signOffDocumentSchema`) in `src/modules/communications/contracts/document.contract.ts`
-- [ ] T029 [US3] Implement Document Service managing document versioning, digital sign-offs with audit logs, and soft-warning banner evaluation in `src/modules/communications/services/document.service.ts`
-- [ ] T030 [US3] Implement Server Actions for document management and sign-offs (`createClubDocumentAction`, `signOffDocumentAction`, `sendPolicyReminderAction`) in `src/modules/communications/actions/document.actions.ts`
-- [ ] T031 [P] [US3] Build persistent amber soft-warning policy banner component for unacknowledged mandatory documents in `src/components/communications/policy-warning-banner.tsx`
-- [ ] T032 [P] [US3] Build document sign-off modal with policy markdown viewer and 1-click confirmation in `src/components/communications/document-sign-off-modal.tsx`
-- [ ] T033 [P] [US3] Build club document library table component with category filters and version tags in `src/components/communications/document-library.tsx`
-- [ ] T034 [US3] Build Club Documents & Policy Sign-Offs page in `src/app/(dashboard)/documents/page.tsx`
-- [ ] T035 [US3] Build Admin Document Compliance & Audit Report page in `src/app/(dashboard)/admin/compliance/page.tsx`
-- [ ] T036 [US3] Integrate `PolicyWarningBanner` into the global dashboard layout in `src/app/(dashboard)/layout.tsx`
+- [X] T028 [P] [US3] Define Zod schemas and TypeScript contracts for documents and sign-offs (`createClubDocumentSchema`, `signOffDocumentSchema`) in `src/modules/communications/contracts/document.contract.ts`
+- [X] T029 [US3] Implement Document Service managing document versioning, digital sign-offs with audit logs, and soft-warning banner evaluation in `src/modules/communications/services/document.service.ts`
+- [X] T030 [US3] Implement Server Actions for document management and sign-offs (`createClubDocumentAction`, `signOffDocumentAction`, `sendPolicyReminderAction`) in `src/modules/communications/actions/document.actions.ts`
+- [X] T031 [P] [US3] Build persistent amber soft-warning policy banner component for unacknowledged mandatory documents in `src/components/communications/policy-warning-banner.tsx`
+- [X] T032 [P] [US3] Build document sign-off modal with policy markdown viewer and 1-click confirmation in `src/components/communications/document-sign-off-modal.tsx`
+- [X] T033 [P] [US3] Build club document library table component with category filters and version tags in `src/components/communications/document-library.tsx`
+- [X] T034 [US3] Build Club Documents & Policy Sign-Offs page in `src/app/(dashboard)/documents/page.tsx`
+- [X] T035 [US3] Build Admin Document Compliance & Audit Report page in `src/app/(dashboard)/admin/compliance/page.tsx`
+- [X] T036 [US3] Integrate `PolicyWarningBanner` into the global dashboard layout in `src/app/(dashboard)/layout.tsx`
 
 **Checkpoint**: User Story 3 functional. Document repository active, 1-click sign-offs logged with timestamps, persistent amber soft-warning banner renders on unacknowledged accounts, and admin compliance auditing active.
 
